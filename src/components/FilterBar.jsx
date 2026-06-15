@@ -1,43 +1,17 @@
 import { Filter, ChevronDown, ChevronUp, RotateCcw, X } from 'lucide-react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import { useFilters } from '../hooks/useFilters';
 
 export default function FilterBar({ filters, onFilterChange, onClear }) {
   const { centros, familias, macetas, alturas } = useFilters();
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const timerRef = useRef(null);
-
-  const clearTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  const resetTimer = useCallback(() => {
-    clearTimer();
-    timerRef.current = setTimeout(() => {
-      setFiltersOpen(false);
-    }, 3000);
-  }, [clearTimer]);
-
-  useEffect(() => {
-    if (filtersOpen) {
-      resetTimer();
-    } else {
-      clearTimer();
-    }
-    return clearTimer;
-  }, [filtersOpen, resetTimer, clearTimer]);
 
   const handleFilterChange = (key, value) => {
     onFilterChange(key, value);
-    if (filtersOpen) resetTimer();
   };
 
   const handleClear = () => {
     onClear();
-    if (filtersOpen) resetTimer();
   };
 
   const hasActiveFilters = filters.search || filters.centro || filters.familia || filters.maceta || filters.altura;

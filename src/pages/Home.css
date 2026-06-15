@@ -1259,7 +1259,6 @@
 .precio-line {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end;
   gap: 5px;
   white-space: nowrap;
   padding: 1px 0;
