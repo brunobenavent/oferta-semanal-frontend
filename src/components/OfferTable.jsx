@@ -17,14 +17,24 @@ const OFFER_CENTERS = [
   { key: 'ofertaEstacion', label: 'Estación', color: 'naranja' },
 ];
 
+function getPriceConfig(role, priceTier) {
+  if (!role) {
+    return { p1: true, l1: 'PVP', p2: false, p3: false };
+  }
+  if (role === 'client') {
+    return {
+      p1: true, l1: 'PVP',
+      p2: priceTier === 2, l2: 'Precio',
+      p3: priceTier === 3, l3: 'Precio',
+    };
+  }
+  return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3' };
+}
+
 export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
-  const role = user?.role;
-  const priceTier = user?.priceTier;
-
-  const showPrice2 = role === 'employee' || role === 'admin' || role === 'superadmin' || (role === 'client' && priceTier === 2);
-  const showPrice3 = role === 'employee' || role === 'admin' || role === 'superadmin' || (role === 'client' && priceTier === 3);
+  const pc = getPriceConfig(user?.role, user?.priceTier);
 
   const handleRowClick = (offer) => {
     if (offer.imagenUrl && onSelect) {
@@ -125,19 +135,21 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                     {offer.descripcion && <span className="list-tag-sm">{offer.descripcion}</span>}
                   </span>
                   <div className="precios-stacked">
-                    <span className="precio-line precio-pvp">
-                      <span className="precio-label">{role === 'client' ? 'PVP' : 'T1'}</span>
-                      <span className="precio-valor">{offer.precio1?.toFixed(2)} €</span>
-                    </span>
-                    {showPrice2 && offer.precio2 != null && (
+                    {pc.p1 && offer.precio1 != null && (
+                      <span className="precio-line precio-pvp">
+                        <span className="precio-label">{pc.l1}</span>
+                        <span className="precio-valor">{offer.precio1.toFixed(2)} €</span>
+                      </span>
+                    )}
+                    {pc.p2 && offer.precio2 != null && (
                       <span className="precio-line">
-                        <span className="precio-label">{role === 'client' ? 'Precio' : 'T2'}</span>
+                        <span className="precio-label">{pc.l2}</span>
                         <span className="precio-valor">{offer.precio2.toFixed(2)} €</span>
                       </span>
                     )}
-                    {showPrice3 && offer.precio3 != null && (
+                    {pc.p3 && offer.precio3 != null && (
                       <span className="precio-line">
-                        <span className="precio-label">{role === 'client' ? 'Precio' : 'T3'}</span>
+                        <span className="precio-label">{pc.l3}</span>
                         <span className="precio-valor">{offer.precio3.toFixed(2)} €</span>
                       </span>
                     )}
@@ -171,19 +183,21 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
               </td>
               <td className="cell-precios">
                 <div className="precios-stacked">
-                  <span className="precio-line precio-pvp">
-                    <span className="precio-label">{role === 'client' ? 'PVP' : 'T1'}</span>
-                    <span className="precio-valor">{offer.precio1?.toFixed(2)} €</span>
-                  </span>
-                  {showPrice2 && offer.precio2 != null && (
+                  {pc.p1 && offer.precio1 != null && (
+                    <span className="precio-line precio-pvp">
+                      <span className="precio-label">{pc.l1}</span>
+                      <span className="precio-valor">{offer.precio1.toFixed(2)} €</span>
+                    </span>
+                  )}
+                  {pc.p2 && offer.precio2 != null && (
                     <span className="precio-line">
-                      <span className="precio-label">{role === 'client' ? 'Precio' : 'T2'}</span>
+                      <span className="precio-label">{pc.l2}</span>
                       <span className="precio-valor">{offer.precio2.toFixed(2)} €</span>
                     </span>
                   )}
-                  {showPrice3 && offer.precio3 != null && (
+                  {pc.p3 && offer.precio3 != null && (
                     <span className="precio-line">
-                      <span className="precio-label">{role === 'client' ? 'Precio' : 'T3'}</span>
+                      <span className="precio-label">{pc.l3}</span>
                       <span className="precio-valor">{offer.precio3.toFixed(2)} €</span>
                     </span>
                   )}

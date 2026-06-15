@@ -47,25 +47,21 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
             </Link>
           </div>
           <div className="navbar-right">
+            <div className="nav-links-row">
+              <Link to="/" className={`nav-link nav-link-uppercase${pathname === '/' ? ' nav-link--active' : ''}`}>LISTADO</Link>
+              <span className="nav-link-sep">|</span>
+              <Link to="/contact" className={`nav-link nav-link-uppercase${pathname.startsWith('/contact') ? ' nav-link--active' : ''}`}>CONTACTO</Link>
+              {isSuperadminOrAdmin && (
+                <>
+                  <span className="nav-link-sep">|</span>
+                  <Link to="/users" className={`nav-link nav-link-uppercase${pathname.startsWith('/users') ? ' nav-link--active' : ''}`}>USUARIOS</Link>
+                </>
+              )}
+            </div>
             {!isAuthenticated ? (
-              <Link to="/login" className="nav-link">Acceder</Link>
+              <Link to="/login" className="nav-login-link">Acceder</Link>
             ) : (
               <div className="nav-user-info">
-                <div className="nav-links-row">
-                  <Link to="/" className={`nav-link nav-link-uppercase${pathname === '/' ? ' nav-link--active' : ''}`}>LISTADO</Link>
-                  {user && (
-                    <>
-                      <span className="nav-link-sep">|</span>
-                      <Link to="/contact" className={`nav-link nav-link-uppercase${pathname.startsWith('/contact') ? ' nav-link--active' : ''}`}>CONTACTO</Link>
-                    </>
-                  )}
-                  {isSuperadminOrAdmin && (
-                    <>
-                      <span className="nav-link-sep">|</span>
-                      <Link to="/users" className={`nav-link nav-link-uppercase${pathname.startsWith('/users') ? ' nav-link--active' : ''}`}>USUARIOS</Link>
-                    </>
-                  )}
-                </div>
                 <Link to="/profile" className="nav-user-avatar">
                   {user.photo ? (
                     <img src={user.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -93,7 +89,14 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
         </Link>
         <div className="mobile-nav-right">
           {!isAuthenticated ? (
-            <Link to="/login" className="mobile-login-link">Acceder</Link>
+            <>
+              <Link to="/contact" className={`mobile-icon-btn${pathname.startsWith('/contact') ? ' mobile-icon-btn--active' : ''}`} title="Contacto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </Link>
+              <Link to="/login" className="mobile-login-link">Acceder</Link>
+            </>
           ) : (
             <>
               <Link to="/profile" className={`mobile-icon-btn${pathname.startsWith('/profile') ? ' mobile-icon-btn--active' : ''}`} title="Perfil">

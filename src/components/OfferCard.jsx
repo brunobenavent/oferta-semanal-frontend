@@ -16,13 +16,24 @@ const OFFER_CENTERS = [
   { key: 'ofertaEstacion', label: 'Estación', color: 'naranja' },
 ];
 
+function getPriceConfig(role, priceTier) {
+  if (!role) {
+    return { p1: true, l1: 'PVP', p2: false, p3: false };
+  }
+  if (role === 'client') {
+    return {
+      p1: true, l1: 'PVP',
+      p2: priceTier === 2, l2: 'Precio',
+      p3: priceTier === 3, l3: 'Precio',
+    };
+  }
+  return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3' };
+}
+
 export default function OfferCard({ offer, onSelect }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
-  const role = user?.role;
-  const priceTier = user?.priceTier;
-  const showPrice2 = role === 'employee' || role === 'admin' || role === 'superadmin' || (role === 'client' && priceTier === 2);
-  const showPrice3 = role === 'employee' || role === 'admin' || role === 'superadmin' || (role === 'client' && priceTier === 3);
+  const pc = getPriceConfig(user?.role, user?.priceTier);
   const fav = isFavorite(offer.codigoArticulo);
   const activeCenters = OFFER_CENTERS.filter(c => offer[c.key]);
 
@@ -75,21 +86,21 @@ export default function OfferCard({ offer, onSelect }) {
           {offer.ubicacion && <span className="meta-item">Ubic: {offer.ubicacion}</span>}
         </div>
         <div className="offer-prices">
-          {offer.precio1 != null && (
+          {pc.p1 && offer.precio1 != null && (
             <div className="offer-price offer-price--pvp">
-              <span className="offer-price-label">{role === 'client' ? 'PVP' : 'T1'}</span>
+              <span className="offer-price-label">{pc.l1}</span>
               <span className="offer-price-value">{offer.precio1.toFixed(2)} €</span>
             </div>
           )}
-          {showPrice2 && offer.precio2 != null && (
+          {pc.p2 && offer.precio2 != null && (
             <div className="offer-price offer-price--secondary">
-              <span className="offer-price-label">{role === 'client' ? 'Precio' : 'T2'}</span>
+              <span className="offer-price-label">{pc.l2}</span>
               <span className="offer-price-value">{offer.precio2.toFixed(2)} €</span>
             </div>
           )}
-          {showPrice3 && offer.precio3 != null && (
+          {pc.p3 && offer.precio3 != null && (
             <div className="offer-price offer-price--secondary">
-              <span className="offer-price-label">{role === 'client' ? 'Precio' : 'T3'}</span>
+              <span className="offer-price-label">{pc.l3}</span>
               <span className="offer-price-value">{offer.precio3.toFixed(2)} €</span>
             </div>
           )}
