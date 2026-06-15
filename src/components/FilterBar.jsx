@@ -1,17 +1,50 @@
 import { Filter, ChevronDown, ChevronUp, RotateCcw, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useFilters } from '../hooks/useFilters';
 
 export default function FilterBar({ filters, onFilterChange, onClear }) {
   const { centros, familias, macetas, alturas } = useFilters();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [selectFocused, setSelectFocused] = useState(false);
+  const timerRef = useRef(null);
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const startTimer = useCallback(() => {
+    clearTimer();
+    timerRef.current = setTimeout(() => {
+      setFiltersOpen(false);
+    }, 2000);
+  }, [clearTimer]);
+
+  // When filters are open and no select is focused → start/restart timer
+  // When a select is focused → pause timer
+  useEffect(() => {
+    if (filtersOpen && !selectFocused) {
+      startTimer();
+    } else {
+      clearTimer();
+    }
+    return clearTimer;
+  }, [filtersOpen, selectFocused, startTimer, clearTimer]);
 
   const handleFilterChange = (key, value) => {
     onFilterChange(key, value);
+    if (filtersOpen && !selectFocused) startTimer();
   };
 
   const handleClear = () => {
     onClear();
+  };
+
+  const selectFocusProps = {
+    onFocus: () => setSelectFocused(true),
+    onBlur: () => setSelectFocused(false),
   };
 
   const hasActiveFilters = filters.search || filters.centro || filters.familia || filters.maceta || filters.altura;
@@ -63,19 +96,19 @@ export default function FilterBar({ filters, onFilterChange, onClear }) {
       <div className={`filters-bar ${filtersOpen ? 'open' : ''}`}>
         <div className="filter-group">
           <Filter size={16} className="filter-icon" />
-          <select value={filters.centro} onChange={(e) => handleFilterChange('centro', e.target.value)} className="filter-select">
+          <select value={filters.centro} onChange={(e) => handleFilterChange('centro', e.target.value)} className="filter-select" {...selectFocusProps}>
             <option value="">Todos los centros</option>
             {centros.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-          <select value={filters.familia} onChange={(e) => handleFilterChange('familia', e.target.value)} className="filter-select">
+          <select value={filters.familia} onChange={(e) => handleFilterChange('familia', e.target.value)} className="filter-select" {...selectFocusProps}>
             <option value="">Todas las familias</option>
             {familias.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
-          <select value={filters.maceta} onChange={(e) => handleFilterChange('maceta', e.target.value)} className="filter-select">
+          <select value={filters.maceta} onChange={(e) => handleFilterChange('maceta', e.target.value)} className="filter-select" {...selectFocusProps}>
             <option value="">Todas las macetas</option>
             {macetas.map(m => <option key={m} value={m}>{m}</option>)}
           </select>
-          <select value={filters.altura} onChange={(e) => handleFilterChange('altura', e.target.value)} className="filter-select">
+          <select value={filters.altura} onChange={(e) => handleFilterChange('altura', e.target.value)} className="filter-select" {...selectFocusProps}>
             <option value="">Todas las alturas</option>
             {alturas.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
