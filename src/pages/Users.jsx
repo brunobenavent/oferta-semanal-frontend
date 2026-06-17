@@ -5,8 +5,8 @@ import { Users as UsersIcon, Search, X, RefreshCw, Trash, Pencil, UserCheck, Pow
 import UserFormModal from '../components/UserFormModal';
 import './AuthPages.css';
 
-export default function UsersPage() {
-  const { isSuperadminOrAdmin, fetchUsers, updateUserById, deleteUser, resendVerification, adminVerifyUser } = useAuth();
+export default function UsersPage({ mode = 'empleados' }) {
+  const { isSuperadminOrAdmin, isCommercial, isEmployee, fetchUsers, updateUserById, deleteUser, resendVerification, adminVerifyUser } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,13 +22,17 @@ export default function UsersPage() {
   const [deleteError, setDeleteError] = useState('');
   const [deleting, setDeleting] = useState(false);
 
+  const canAccessEmpleados = isSuperadminOrAdmin || isEmployee || isCommercial;
+  const canAccessClientes = isSuperadminOrAdmin || isCommercial;
+  const canAccess = mode === 'clientes' ? canAccessClientes : canAccessEmpleados;
+
   useEffect(() => {
-    if (!isSuperadminOrAdmin) {
+    if (!canAccess) {
       navigate('/');
       return;
     }
     loadUsers();
-  }, [isSuperadminOrAdmin, navigate]);
+  }, [canAccess, navigate]);
 
   const loadUsers = async () => {
     try {
@@ -95,6 +99,10 @@ export default function UsersPage() {
   };
 
   const filteredUsers = users.filter(u => {
+    // Pre-filter by mode
+    if (mode === 'clientes' && u.role !== 'client') return false;
+    if (mode === 'empleados' && u.role === 'client') return false;
+
     const matchesSearch = !search ||
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
       u.nombre?.toLowerCase().includes(search.toLowerCase());
@@ -125,17 +133,17 @@ export default function UsersPage() {
       case 'admin': return 'Admin';
       case 'employee': return 'Empleado';
       case 'client': return 'Cliente';
+      case 'commercial': return 'Comercial';
       default: return role;
     }
   };
 
   return (
-    <div className="auth-page" style={{ alignItems: 'flex-start' }}>
-      <div className="auth-card" style={{ maxWidth: '1200px' }}>
+    <div className="dashboard">
         <div className="auth-header">
           <UsersIcon size={32} />
-          <h1>Usuarios</h1>
-          <p>Gestiona los usuarios del sistema</p>
+          <h1>{mode === 'clientes' ? 'Clientes' : 'Empleados'}</h1>
+          <p>{mode === 'clientes' ? 'Gestiona los clientes del sistema' : 'Gestiona los empleados del sistema'}</p>
         </div>
 
         {/* ── Toolbar: search + actions ── */}
@@ -208,21 +216,26 @@ export default function UsersPage() {
               }}
             >
               <Plus size={16} />
-              + Nuevo
+              Nuevo
             </button>
           </div>
         </div>
 
         {/* ── Role tabs ── */}
         <div className="role-tabs">
-          {[
-            { key: 'all', label: 'Todos' },
-            { key: 'admin', label: 'Administradores' },
-            { key: 'employee', label: 'Empleados' },
-            { key: 'client-tier2', label: 'Clientes T2' },
-            { key: 'client-tier3', label: 'Clientes T3' },
-            { key: 'commercial', label: 'Comerciales' },
-          ].map(tab => {
+          {(mode === 'clientes'
+            ? [
+                { key: 'all', label: 'Todos' },
+                { key: 'client-tier2', label: 'T2' },
+                { key: 'client-tier3', label: 'T3' },
+              ]
+            : [
+                { key: 'all', label: 'Todos' },
+                { key: 'admin', label: 'Administradores' },
+                { key: 'employee', label: 'Empleados' },
+                { key: 'commercial', label: 'Comerciales' },
+              ]
+          ).map(tab => {
             const count = tab.key === 'all'
               ? users.length
               : tab.key === 'admin'
@@ -252,17 +265,33 @@ export default function UsersPage() {
         {loading ? (
           <>
             <div className="users-table">
-              <table>
+              <table key={mode}>
+                <colgroup>
+                  <col className="col-foto" />
+                  <col className="col-nombre" />
+                  <col className="col-email" />
+                  {mode === 'empleados' && <col className="col-rol" />}
+                  <col className="col-telefono" />
+                  {mode === 'empleados' && <col className="col-puesto" />}
+                  {mode === 'empleados' && <col className="col-idiomas" />}
+                  {mode === 'clientes' && <col className="col-cif" />}
+                  {mode === 'clientes' && <col className="col-autorizado" />}
+                  {mode === 'clientes' && <col className="col-tarifa" />}
+                  <col className="col-estado" />
+                  <col className="col-acciones" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>Foto</th>
-                    <th>Nombre</th>
+                    <th>{mode === 'clientes' ? 'Empresa' : 'Nombre'}</th>
                     <th>Email</th>
-                    <th>Rol</th>
+                    {mode === 'empleados' && <th>Rol</th>}
                     <th>Teléfono</th>
-                    <th>Puesto</th>
-                    <th>Idiomas</th>
-                    <th>Precio</th>
+                    {mode === 'empleados' && <th>Puesto</th>}
+                    {mode === 'empleados' && <th>Idiomas</th>}
+                    {mode === 'clientes' && <th>CIF</th>}
+                    {mode === 'clientes' && <th>Autorizado</th>}
+                    {mode === 'clientes' && <th>Tarifa</th>}
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>
@@ -273,11 +302,13 @@ export default function UsersPage() {
                       <td><div className="skeleton" style={{ width: 40, height: 40, borderRadius: '50%' }} /></td>
                       <td><div className="skeleton" style={{ width: 100, height: 16, borderRadius: 4 }} /></td>
                       <td><div className="skeleton" style={{ width: 160, height: 16, borderRadius: 4 }} /></td>
-                      <td><div className="skeleton" style={{ width: 70, height: 22, borderRadius: 999 }} /></td>
+                      {mode === 'empleados' && <td><div className="skeleton" style={{ width: 70, height: 22, borderRadius: 999 }} /></td>}
                       <td><div className="skeleton" style={{ width: 100, height: 16, borderRadius: 4 }} /></td>
-                      <td><div className="skeleton" style={{ width: 90, height: 16, borderRadius: 4 }} /></td>
-                      <td><div className="skeleton" style={{ width: 60, height: 16, borderRadius: 4 }} /></td>
-                      <td><div className="skeleton" style={{ width: 50, height: 16, borderRadius: 4 }} /></td>
+                      {mode === 'empleados' && <td><div className="skeleton" style={{ width: 90, height: 16, borderRadius: 4 }} /></td>}
+                      {mode === 'empleados' && <td><div className="skeleton" style={{ width: 60, height: 16, borderRadius: 4 }} /></td>}
+                      {mode === 'clientes' && <td><div className="skeleton" style={{ width: 80, height: 16, borderRadius: 4 }} /></td>}
+                      {mode === 'clientes' && <td><div className="skeleton" style={{ width: 110, height: 16, borderRadius: 4 }} /></td>}
+                      {mode === 'clientes' && <td><div className="skeleton" style={{ width: 50, height: 16, borderRadius: 4 }} /></td>}
                       <td><div className="skeleton" style={{ width: 60, height: 16, borderRadius: 4 }} /></td>
                       <td><div className="skeleton" style={{ width: 130, height: 32, borderRadius: 6 }} /></td>
                     </tr>
@@ -313,17 +344,33 @@ export default function UsersPage() {
           <>
             {/* ── Desktop table ── */}
             <div className="users-table">
-              <table>
+              <table key={mode}>
+                <colgroup>
+                  <col className="col-foto" />
+                  <col className="col-nombre" />
+                  <col className="col-email" />
+                  {mode === 'empleados' && <col className="col-rol" />}
+                  <col className="col-telefono" />
+                  {mode === 'empleados' && <col className="col-puesto" />}
+                  {mode === 'empleados' && <col className="col-idiomas" />}
+                  {mode === 'clientes' && <col className="col-cif" />}
+                  {mode === 'clientes' && <col className="col-autorizado" />}
+                  {mode === 'clientes' && <col className="col-tarifa" />}
+                  <col className="col-estado" />
+                  <col className="col-acciones" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>Foto</th>
-                    <th>Nombre</th>
+                    <th>{mode === 'clientes' ? 'Empresa' : 'Nombre'}</th>
                     <th>Email</th>
-                    <th>Rol</th>
+                    {mode === 'empleados' && <th>Rol</th>}
                     <th>Teléfono</th>
-                    <th>Puesto</th>
-                    <th>Idiomas</th>
-                    <th>Precio</th>
+                    {mode === 'empleados' && <th>Puesto</th>}
+                    {mode === 'empleados' && <th>Idiomas</th>}
+                    {mode === 'clientes' && <th>CIF</th>}
+                    {mode === 'clientes' && <th>Autorizado</th>}
+                    {mode === 'clientes' && <th>Tarifa</th>}
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>
@@ -331,7 +378,7 @@ export default function UsersPage() {
                 <tbody>
                   {filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={10} style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--color-text-muted)' }}>
+                      <td colSpan={9} style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--color-text-muted)' }}>
                         {search ? 'No se encontraron usuarios con ese criterio' : 'No hay usuarios registrados'}
                       </td>
                     </tr>
@@ -347,7 +394,7 @@ export default function UsersPage() {
                             <img
                               src={u.photo}
                               alt={u.nombre || u.name}
-                              style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
+                              style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', maxWidth: 'none' }}
                             />
                           ) : (
                             <span style={{
@@ -366,45 +413,53 @@ export default function UsersPage() {
                             </span>
                           )}
                         </td>
-                        <td style={{ fontWeight: 500, color: 'var(--color-text)' }}>{u.nombre || u.name || '—'}</td>
+                        <td style={{ fontWeight: 500, color: 'var(--color-text)' }}>{mode === 'clientes' ? (u.clientName || '—') : (u.nombre || u.name || '—')}</td>
                         <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email || '—'}</td>
-                        <td>
-                          <span className={`role-badge ${roleBadgeClass(u.role)}`}>
-                            {roleLabel(u.role)}
-                          </span>
-                        </td>
+                        {mode === 'empleados' && (
+                          <td>
+                            <span className={`role-badge ${roleBadgeClass(u.role)}`}>
+                              {roleLabel(u.role)}
+                            </span>
+                          </td>
+                        )}
                         <td style={{ whiteSpace: 'nowrap' }}>{u.phone || '—'}</td>
-                        <td>{u.position || '—'}</td>
-                        <td>
-                          {u.languages && u.languages.length > 0 ? (
-                            <div style={{ display: 'flex', gap: 4 }}>
-                              {u.languages.map(lang => (
-                                <span
-                                  key={lang.code}
-                                  style={{
-                                    width: 16,
-                                    height: 16,
-                                    borderRadius: '50%',
-                                    overflow: 'hidden',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    background: '#fff',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                  }}
-                                >
+                        {mode === 'empleados' && <td>{u.position || '—'}</td>}
+                        {mode === 'clientes' && <td>{u.cif ? u.cif : '—'}</td>}
+                        {mode === 'empleados' && (
+                          <td>
+                            {u.languages && u.languages.length > 0 ? (
+                              <div style={{ display: 'flex', gap: 4 }}>
+                                {u.languages.map(lang => (
                                   <span
-                                    className={`fi fi-${lang.code}`}
-                                    style={{ fontSize: 16, lineHeight: 1, transform: 'scale(1.6)', display: 'inline-block' }}
-                                  />
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <span style={{ color: 'var(--color-text-muted)' }}>—</span>
-                          )}
-                        </td>
-                        <td>{u.role === 'client' ? `Tier ${u.priceTier || 2}` : '—'}</td>
+                                    key={lang.code}
+                                    style={{
+                                      width: 16,
+                                      height: 16,
+                                      borderRadius: '50%',
+                                      overflow: 'hidden',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      background: '#fff',
+                                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                    }}
+                                  >
+                                    <span
+                                      className={`fi fi-${lang.code}`}
+                                      style={{ fontSize: 16, lineHeight: 1, transform: 'scale(1.6)', display: 'inline-block' }}
+                                    />
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span style={{ color: 'var(--color-text-muted)' }}>—</span>
+                            )}
+                          </td>
+                        )}
+                        {mode === 'clientes' && (
+                          <td>{u.authorizedName ? u.authorizedName : '—'}</td>
+                        )}
+                        {mode === 'clientes' && <td><strong>T{u.priceTier || 2}</strong></td>}
                         <td>
                           <span style={{
                             display: 'inline-flex',
@@ -491,7 +546,7 @@ export default function UsersPage() {
                     <div className="user-card-header">
                       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                         {u.photo ? (
-                          <img src={u.photo} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                          <img src={u.photo} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', maxWidth: 'none' }} />
                         ) : (
                           <span style={{
                             width: 32,
@@ -517,9 +572,12 @@ export default function UsersPage() {
                     <div className="user-card-body">
                       <p>{u.email || '—'}</p>
                       {u.phone && <p>Tel: {u.phone}</p>}
-                      {u.position && <p>Puesto: {u.position}</p>}
-                      {u.role === 'client' && <p>Cliente: {u.clientName || '—'} (Tier {u.priceTier || 2})</p>}
-                      {u.languages && u.languages.length > 0 && (
+                      {u.position && u.role !== 'client' && <p>Puesto: {u.position}</p>}
+                      {u.role === 'client' && <p>Cliente: {u.clientName || '—'} (<strong>T{u.priceTier || 2}</strong>)</p>}
+                      {u.role === 'client' && u.cif && <p>CIF: {u.cif}</p>}
+                      {u.role === 'client' && u.taxAddress && <p>Dir. Fiscal: {u.taxAddress}</p>}
+                      {u.role === 'client' && u.authorizedName && <p>Autorizado: {u.authorizedName}</p>}
+                      {u.languages && u.languages.length > 0 && u.role !== 'client' && (
                         <p>Idiomas: {u.languages.map(l => l.name).join(', ')}</p>
                       )}
                       <p>
@@ -585,11 +643,11 @@ export default function UsersPage() {
             </div>
           </>
         )}
-      </div>
 
       {/* ── UserFormModal (add/edit unificado) ── */}
       {formModal && (
         <UserFormModal
+          pageMode={mode}
           mode={formModal === 'add' ? 'add' : 'edit'}
           user={formModal === 'add' ? null : formModal}
           onClose={() => setFormModal(null)}

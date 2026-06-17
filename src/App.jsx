@@ -20,6 +20,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import Users from './pages/Users';
+import Clients from './pages/Clients';
+import NotFound from './pages/NotFound';
 import Contacto from './pages/Contacto';
 // UserForm deprecated — all CRUD via modal in Users.jsx
 // import UserForm from './pages/UserForm';
@@ -86,6 +88,8 @@ function App() {
               <Route path="/users" element={<Users />} />
               <Route path="/users/new" element={<Navigate to="/users" replace />} />
               <Route path="/users/:id/edit" element={<Navigate to="/users" replace />} />
+              <Route path="/clientes" element={<Clients />} />
+              <Route path="*" element={<NotFound />} />
               <Route path="/aviso-legal" element={<AvisoLegal />} />
               <Route path="/condiciones-generales" element={<CondicionesGenerales />} />
               <Route path="/privacidad" element={<Privacidad />} />

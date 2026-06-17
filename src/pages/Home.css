@@ -344,6 +344,7 @@
 .filter-select {
   padding: var(--space-sm) var(--space-md);
   padding-right: 32px;
+  width: 180px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -526,17 +527,7 @@
 }
 
 .skeleton-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--color-surface-elevated);
-  border-bottom: 1px solid var(--color-border-light);
   pointer-events: none;
-}
-
-.skeleton-row:last-child {
-  border-bottom: none;
 }
 
 .skeleton-cell {
@@ -849,26 +840,66 @@
   font-variant-numeric: tabular-nums;
 }
 
+.offer-price--pvp {
+  background: linear-gradient(135deg, rgba(43, 107, 75, 0.06), rgba(43, 107, 75, 0.02));
+  border-radius: 6px;
+  padding: 3px 8px;
+  margin: 0 -8px;
+}
+
 .offer-price--pvp .offer-price-label {
-  font-size: 0.85rem;
-  color: var(--color-primary);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--color-primary);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 4px;
+  line-height: 1.4;
 }
 
 .offer-price--pvp .offer-price-value {
-  font-size: 1rem;
-  color: var(--color-primary);
-  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-primary-dark);
+  font-weight: 800;
 }
 
 .offer-price--secondary .offer-price-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 .offer-price--secondary .offer-price-value {
-  font-size: 0.85rem;
-  color: var(--color-text);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
   font-weight: 600;
+}
+
+.offer-price--primary {
+  display: inline-flex;
+  align-self: flex-start;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 8px;
+  padding: 3px 10px;
+  margin: 1px -6px;
+  box-shadow: 0 2px 8px rgba(43, 107, 75, 0.25);
+}
+
+.offer-price--primary .offer-price-label,
+.offer-price--primary .offer-price-value {
+  color: white;
+  font-weight: 700;
+}
+
+.offer-price--primary .offer-price-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.offer-price--primary .offer-price-value {
+  font-size: 0.95rem;
 }
 
 /* List View */
@@ -1275,6 +1306,20 @@
   font-variant-numeric: tabular-nums;
   text-align: right;
   font-weight: 600;
+}
+
+.precio-line.precio-destacado {
+  display: inline-flex;
+  align-self: flex-start;
+  background: var(--color-primary);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 0 -6px;
+}
+
+.precio-line.precio-destacado .precio-label,
+.precio-line.precio-destacado .precio-valor {
+  color: white;
 }
 
 .precio-line.precio-pvp {

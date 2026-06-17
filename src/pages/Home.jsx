@@ -154,16 +154,16 @@ export default function Home({ onExport, onShare, onSemana, onCounts }) {
           <div className="dashboard-title">
             <h1>Oferta de la Semana <span className="week-highlight">{semana || ''}</span></h1>
             <p>Explora las ofertas semanales de Viveros Guzmán</p>
-            {totalSinFiltros > 0 && (
-              <p className="dashboard-count-label">
-                {showFavoritesOnly
+            <p className="dashboard-count-label">
+              {totalSinFiltros > 0
+                ? showFavoritesOnly
                   ? `${displayTotal.toLocaleString('es')} favoritos`
-                  : (totalSinFiltros === displayTotal
-                      ? `${totalSinFiltros.toLocaleString('es')} artículos`
-                      : `${displayTotal.toLocaleString('es')} de ${totalSinFiltros.toLocaleString('es')} artículos encontrados`)
-                }
-              </p>
-            )}
+                  : totalSinFiltros === displayTotal
+                    ? `${totalSinFiltros.toLocaleString('es')} artículos`
+                    : `${displayTotal.toLocaleString('es')} de ${totalSinFiltros.toLocaleString('es')} artículos encontrados`
+                : '\u00A0'
+              }
+            </p>
           </div>
         <div className="search-toolbar">
           <div className="search-input-wrapper">
@@ -207,44 +207,11 @@ export default function Home({ onExport, onShare, onSemana, onCounts }) {
         </div>
       </div>
 
-      {loading && (!showFavoritesOnly || !offers.length) ? (
-        view === 'list' ? (
-          <div className="skeleton-table">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="skeleton-row">
-                <div className="skeleton-cell" style={{ width: '12%' }} />
-                <div className="skeleton-cell" style={{ width: '38%' }} />
-                <div className="skeleton-cell" style={{ width: '14%' }} />
-                <div className="skeleton-cell" style={{ width: '14%' }} />
-                <div className="skeleton-cell" style={{ width: '10%' }} />
-                <div className="skeleton-cell" style={{ width: '12%' }} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="skeleton-grid">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="skeleton-card">
-                <div className="skeleton-preview" />
-                <div style={{ padding: 'var(--space-md)' }}>
-                  <div className="skeleton-line" style={{ width: '60%', height: '14px' }} />
-                  <div className="skeleton-line" style={{ width: '40%', height: '12px', marginTop: '8px' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-      ) : error ? (
+      {error ? (
         <div className="dashboard-empty">
           <ImageIcon size={48} />
           <h3>Error al cargar las ofertas</h3>
           <p>{error}</p>
-        </div>
-      ) : !offers.length ? (
-        <div className="dashboard-empty">
-          <ImageIcon size={48} />
-          <h3>No se encontraron resultados</h3>
-          <p>Intenta con otros términos de búsqueda</p>
         </div>
       ) : view === 'list' ? (
         <OfferTable
@@ -256,14 +223,35 @@ export default function Home({ onExport, onShare, onSemana, onCounts }) {
           onPageChange={changePage}
           sortBy={filters.sortBy}
           onSortChange={() => updateFilter('sortBy', filters.sortBy === 'nombre' ? '' : 'nombre')}
+          loading={loading}
         />
       ) : (
         <>
-          <div className="offer-grid">
-            {displayOffers.map(offer => (
-              <OfferCard key={offer.codigoArticulo} offer={offer} onSelect={openLightbox} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="skeleton-grid">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-preview" />
+                  <div style={{ padding: 'var(--space-md)' }}>
+                    <div className="skeleton-line" style={{ width: '60%', height: '14px' }} />
+                    <div className="skeleton-line" style={{ width: '40%', height: '12px', marginTop: '8px' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : !displayOffers.length ? (
+            <div className="dashboard-empty">
+              <ImageIcon size={48} />
+              <h3>No se encontraron resultados</h3>
+              <p>Intenta con otros términos de búsqueda</p>
+            </div>
+          ) : (
+            <div className="offer-grid">
+              {displayOffers.map(offer => (
+                <OfferCard key={offer.codigoArticulo} offer={offer} onSelect={openLightbox} />
+              ))}
+            </div>
+          )}
           <Pagination pagination={displayPagination} onPageChange={changePage} />
         </>
       )}

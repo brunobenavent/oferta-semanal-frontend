@@ -19,19 +19,22 @@ const OFFER_CENTERS = [
 
 function getPriceConfig(role, priceTier) {
   if (!role) {
-    return { p1: true, l1: 'PVP', p2: false, p3: false };
+    return { p1: true, l1: 'PVP', p2: false, p3: false, isStaff: false, highlightLine: null };
   }
   if (role === 'client') {
+    const activeTier = priceTier || 2;
     return {
       p1: true, l1: 'PVP',
-      p2: priceTier === 2, l2: 'Precio',
-      p3: priceTier === 3, l3: 'Precio',
+      p2: activeTier === 2, l2: 'Precio',
+      p3: activeTier === 3, l3: 'Precio',
+      isStaff: false,
+      highlightLine: activeTier,
     };
   }
-  return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3' };
+  return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3', isStaff: true, highlightLine: null };
 }
 
-export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange }) {
+export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const pc = getPriceConfig(user?.role, user?.priceTier);
@@ -84,127 +87,149 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
           </tr>
         </thead>
         <tbody>
-          {offers.map(offer => (
-            <tr key={offer.codigoArticulo} className="offer-row" onClick={() => handleRowClick(offer)}>
-              <td className="cell-img">
-                <div className="img-frame">
-                  {offer.imagenUrl ? (
-                    <img src={getCloudinaryUrl(offer.imagenUrl, 'small')} alt={offer.descripcionArticulo} className="img-tumblr" />
-                  ) : (
-                    <div className="img-placeholder">
-                      <svg className="img-placeholder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                      </svg>
-                      <span className="img-placeholder-code">{offer.codigoArticulo}</span>
-                    </div>
-                  )}
-                  <button
-                    className="btn-fav-table"
-                    onClick={(e) => { e.stopPropagation(); toggleFavorite(offer.codigoArticulo); }}
-                    title={isFavorite(offer.codigoArticulo) ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-                  >
-                    <HeartIcon size={16} filled={isFavorite(offer.codigoArticulo)} />
-                  </button>
-                </div>
+          {loading ? (
+            Array.from({ length: 8 }).map((_, i) => (
+              <tr key={`skeleton-${i}`} className="skeleton-row">
+                <td><div className="skeleton-cell" style={{ width: 40, height: 40, borderRadius: '50%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '70%' }} /></td>
+                <td className="cell-info"><div className="skeleton-cell" style={{ width: '50%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '30%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '40%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '35%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '25%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '50%' }} /></td>
+                <td><div className="skeleton-cell" style={{ width: '40%' }} /></td>
+              </tr>
+            ))
+          ) : !offers || offers.length === 0 ? (
+            <tr>
+              <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
+                No se encontraron resultados
               </td>
-              <td className="cell-name">
-                <div className="cell-name-inner">
-                  <span className="cell-art-name">{offer.descripcionArticulo}</span>
-                  <span className="cell-art-code">{offer.codigoArticulo}</span>
-                  <span className="cell-art-meta">
-                    {offer.ean || ''}
-                  </span>
-                  <div className="cell-offers">
-                    {OFFER_CENTERS.filter(c => offer[c.key]).map(c => (
-                      <span key={c.key} className={'list-tag list-tag-offer list-tag-' + c.color}>{c.label}</span>
-                    ))}
+            </tr>
+          ) : (
+            offers.map(offer => (
+              <tr key={offer.codigoArticulo} className="offer-row" onClick={() => handleRowClick(offer)}>
+                <td className="cell-img">
+                  <div className="img-frame">
+                    {offer.imagenUrl ? (
+                      <img src={getCloudinaryUrl(offer.imagenUrl, 'small')} alt={offer.descripcionArticulo} className="img-tumblr" />
+                    ) : (
+                      <div className="img-placeholder">
+                        <svg className="img-placeholder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <span className="img-placeholder-code">{offer.codigoArticulo}</span>
+                      </div>
+                    )}
+                    <button
+                      className="btn-fav-table"
+                      onClick={(e) => { e.stopPropagation(); toggleFavorite(offer.codigoArticulo); }}
+                      title={isFavorite(offer.codigoArticulo) ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+                    >
+                      <HeartIcon size={16} filled={isFavorite(offer.codigoArticulo)} />
+                    </button>
                   </div>
-                </div>
-              </td>
-              <td className="cell-info">
-                <div className="info-stacked">
-                  <span className="info-line info-maceta">
-                    {offer.maceta || '—'} · {offer.presentacion || '—'}
-                  </span>
-                  <span className="info-line info-altcal">
-                    {offer.altura || '—'} / {offer.calibre || '—'}
-                  </span>
-                  <span className="info-line info-familia">
-                    {offer.descripcion && <span className="list-tag-sm">{offer.descripcion}</span>}
-                  </span>
+                </td>
+                <td className="cell-name">
+                  <div className="cell-name-inner">
+                    <span className="cell-art-name">{offer.descripcionArticulo}</span>
+                    <span className="cell-art-code">{offer.codigoArticulo}</span>
+                    <span className="cell-art-meta">
+                      {offer.ean || ''}
+                    </span>
+                    <div className="cell-offers">
+                      {OFFER_CENTERS.filter(c => offer[c.key]).map(c => (
+                        <span key={c.key} className={'list-tag list-tag-offer list-tag-' + c.color}>{c.label}</span>
+                      ))}
+                    </div>
+                  </div>
+                </td>
+                <td className="cell-info">
+                  <div className="info-stacked">
+                    <span className="info-line info-maceta">
+                      {offer.maceta || '—'} · {offer.presentacion || '—'}
+                    </span>
+                    <span className="info-line info-altcal">
+                      {offer.altura || '—'} / {offer.calibre || '—'}
+                    </span>
+                    <span className="info-line info-familia">
+                      {offer.descripcion && <span className="list-tag-sm">{offer.descripcion}</span>}
+                    </span>
+                    <div className="precios-stacked">
+                      {pc.p1 && offer.precio1 != null && (
+                        <span className="precio-line">
+                          <span className="precio-label">{pc.l1}</span>
+                          <span className="precio-valor">{offer.precio1.toFixed(2)} €</span>
+                        </span>
+                      )}
+                      {pc.p2 && offer.precio2 != null && (
+                        <span className={`precio-line${pc.highlightLine === 2 ? ' precio-destacado' : ''}`}>
+                          <span className="precio-label">{pc.l2}</span>
+                          <span className="precio-valor">{offer.precio2.toFixed(2)} €</span>
+                        </span>
+                      )}
+                      {pc.p3 && offer.precio3 != null && (
+                        <span className={`precio-line${pc.highlightLine === 3 ? ' precio-destacado' : ''}`}>
+                          <span className="precio-label">{pc.l3}</span>
+                          <span className="precio-valor">{offer.precio3.toFixed(2)} €</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="cell-ubic">
+                  {offer.ubicacion || '—'}
+                </td>
+                <td className="cell-stacked">
+                  <div className="cell-stacked-inner">
+                    <span>{offer.maceta || '—'}</span>
+                    <span className="stacked-sub">{offer.presentacion || '—'}</span>
+                  </div>
+                </td>
+                <td className="cell-stacked">
+                  <div className="cell-stacked-inner">
+                    <span>{offer.altura || '—'}</span>
+                    <span className="stacked-sub">{offer.calibre || '—'}</span>
+                  </div>
+                </td>
+                <td className="cell-stacked cell-uds">
+                  <div className="cell-stacked-inner">
+                    <span>UCC {offer.undsCarro ?? '—'}</span>
+                    <span>UTA {offer.undsTabla ?? '—'}</span>
+                    <span>UCA {offer.undsCaja ?? '—'}</span>
+                  </div>
+                </td>
+                <td className="cell-fam">
+                  {offer.descripcion && <span className="list-tag">{offer.descripcion}</span>}
+                </td>
+                <td className="cell-precios">
                   <div className="precios-stacked">
                     {pc.p1 && offer.precio1 != null && (
-                      <span className="precio-line precio-pvp">
+                      <span className="precio-line">
                         <span className="precio-label">{pc.l1}</span>
                         <span className="precio-valor">{offer.precio1.toFixed(2)} €</span>
                       </span>
                     )}
                     {pc.p2 && offer.precio2 != null && (
-                      <span className="precio-line">
+                      <span className={`precio-line${pc.highlightLine === 2 ? ' precio-destacado' : ''}`}>
                         <span className="precio-label">{pc.l2}</span>
                         <span className="precio-valor">{offer.precio2.toFixed(2)} €</span>
                       </span>
                     )}
                     {pc.p3 && offer.precio3 != null && (
-                      <span className="precio-line">
+                      <span className={`precio-line${pc.highlightLine === 3 ? ' precio-destacado' : ''}`}>
                         <span className="precio-label">{pc.l3}</span>
                         <span className="precio-valor">{offer.precio3.toFixed(2)} €</span>
                       </span>
                     )}
                   </div>
-                </div>
-              </td>
-              <td className="cell-ubic">
-                {offer.ubicacion || '—'}
-              </td>
-              <td className="cell-stacked">
-                <div className="cell-stacked-inner">
-                  <span>{offer.maceta || '—'}</span>
-                  <span className="stacked-sub">{offer.presentacion || '—'}</span>
-                </div>
-              </td>
-              <td className="cell-stacked">
-                <div className="cell-stacked-inner">
-                  <span>{offer.altura || '—'}</span>
-                  <span className="stacked-sub">{offer.calibre || '—'}</span>
-                </div>
-              </td>
-              <td className="cell-stacked cell-uds">
-                <div className="cell-stacked-inner">
-                  <span>UCC {offer.undsCarro ?? '—'}</span>
-                  <span>UTA {offer.undsTabla ?? '—'}</span>
-                  <span>UCA {offer.undsCaja ?? '—'}</span>
-                </div>
-              </td>
-              <td className="cell-fam">
-                {offer.descripcion && <span className="list-tag">{offer.descripcion}</span>}
-              </td>
-              <td className="cell-precios">
-                <div className="precios-stacked">
-                  {pc.p1 && offer.precio1 != null && (
-                    <span className="precio-line precio-pvp">
-                      <span className="precio-label">{pc.l1}</span>
-                      <span className="precio-valor">{offer.precio1.toFixed(2)} €</span>
-                    </span>
-                  )}
-                  {pc.p2 && offer.precio2 != null && (
-                    <span className="precio-line">
-                      <span className="precio-label">{pc.l2}</span>
-                      <span className="precio-valor">{offer.precio2.toFixed(2)} €</span>
-                    </span>
-                  )}
-                  {pc.p3 && offer.precio3 != null && (
-                    <span className="precio-line">
-                      <span className="precio-label">{pc.l3}</span>
-                      <span className="precio-valor">{offer.precio3.toFixed(2)} €</span>
-                    </span>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       <div className="offer-table-footer">

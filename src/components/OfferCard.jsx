@@ -18,16 +18,19 @@ const OFFER_CENTERS = [
 
 function getPriceConfig(role, priceTier) {
   if (!role) {
-    return { p1: true, l1: 'PVP', p2: false, p3: false };
+    return { p1: true, l1: 'PVP', p2: false, p3: false, isStaff: false, highlightLine: null };
   }
   if (role === 'client') {
+    const activeTier = priceTier || 2;
     return {
       p1: true, l1: 'PVP',
-      p2: priceTier === 2, l2: 'Precio',
-      p3: priceTier === 3, l3: 'Precio',
+      p2: activeTier === 2, l2: 'Precio',
+      p3: activeTier === 3, l3: 'Precio',
+      isStaff: false,
+      highlightLine: activeTier,
     };
   }
-  return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3' };
+  return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3', isStaff: true, highlightLine: null };
 }
 
 export default function OfferCard({ offer, onSelect }) {
@@ -93,13 +96,13 @@ export default function OfferCard({ offer, onSelect }) {
             </div>
           )}
           {pc.p2 && offer.precio2 != null && (
-            <div className="offer-price offer-price--secondary">
+            <div className={`offer-price${pc.highlightLine === 2 ? ' offer-price--primary' : ' offer-price--secondary'}`}>
               <span className="offer-price-label">{pc.l2}</span>
               <span className="offer-price-value">{offer.precio2.toFixed(2)} €</span>
             </div>
           )}
           {pc.p3 && offer.precio3 != null && (
-            <div className="offer-price offer-price--secondary">
+            <div className={`offer-price${pc.highlightLine === 3 ? ' offer-price--primary' : ' offer-price--secondary'}`}>
               <span className="offer-price-label">{pc.l3}</span>
               <span className="offer-price-value">{offer.precio3.toFixed(2)} €</span>
             </div>

@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Goodbye.css';
 
 export default function Goodbye() {
   const [visible, setVisible] = useState(false);
   const [name, setName] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const timerRef = useRef(null);
 
   useEffect(() => {
     const goodbyeData = sessionStorage.getItem('goodbye');
@@ -16,17 +18,17 @@ export default function Goodbye() {
         setVisible(true);
         sessionStorage.removeItem('goodbye');
 
-        setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           setVisible(false);
-          if (window.location.pathname !== '/login') {
-            navigate('/login', { replace: true });
-          }
         }, 2500);
       } catch (e) {
         console.error('Error parsing goodbye data:', e);
       }
     }
-  }, [navigate]);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [location.key]);
 
   if (!visible) return null;
 

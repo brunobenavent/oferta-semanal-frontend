@@ -107,6 +107,7 @@ export function AuthProvider({ children }) {
   const isSuperadmin = role === 'superadmin';
   const isAdmin = role === 'admin';
   const isEmployee = role === 'employee';
+  const isCommercial = role === 'commercial';
   const isSuperadminOrAdmin = isSuperadmin || isAdmin;
 
   const value = {
@@ -117,6 +118,7 @@ export function AuthProvider({ children }) {
     isSuperadmin,
     isAdmin,
     isEmployee,
+    isCommercial,
     isSuperadminOrAdmin,
     login,
     register,

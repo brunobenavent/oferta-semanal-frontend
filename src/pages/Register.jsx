@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { UserPlus, CheckCircle } from 'lucide-react';
 import './AuthPages.css';
 
 export default function Register() {
-  const { register } = useAuth();
+  const { register, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -64,6 +64,9 @@ export default function Register() {
       </div>
     );
   }
+
+  if (authLoading) return null;
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   return (
     <div className="auth-page">

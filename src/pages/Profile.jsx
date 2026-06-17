@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import {
-  User, Shield, ShieldCheck, BadgeCheck, Mail, DollarSign, Store,
-  Lock, CheckCircle2, Camera, Crop,
+  User, Shield, ShieldCheck, BadgeCheck, Briefcase, Mail, DollarSign, Store,
+  FileText, Lock, CheckCircle2, Camera, Crop, MapPin,
 } from 'lucide-react';
 import PhotoCropOverlay from '../components/PhotoCropOverlay';
 import './AuthPages.css';
@@ -15,9 +15,9 @@ const roleLabels = {
 };
 
 const priceTierLabels = {
-  1: 'Tier 1',
-  2: 'Tier 2',
-  3: 'Tier 3',
+  1: 'T1',
+  2: 'T2',
+  3: 'T3',
 };
 
 export default function Profile() {
@@ -461,6 +461,85 @@ export default function Profile() {
                 </span>
                 <span className="profile-value">{user.clientName}</span>
               </div>
+            )}
+
+            {user.role === 'client' && (user.cif || user.taxAddress) && (
+              <>
+                <div className="section-divider" />
+                <h3 style={{
+                  fontFamily: "'Archivo Narrow', sans-serif",
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  margin: '0 0 var(--space-md)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}>
+                  Información Fiscal
+                </h3>
+                {user.cif && (
+                  <div className="profile-row">
+                    <span className="profile-label">
+                      <FileText size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                      CIF / NIF
+                    </span>
+                    <span className="profile-value">{user.cif}</span>
+                  </div>
+                )}
+                {user.taxAddress && (
+                  <div className="profile-row">
+                    <span className="profile-label">
+                      <MapPin size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                      Dirección Fiscal
+                    </span>
+                    <span className="profile-value">{user.taxAddress}</span>
+                  </div>
+                )}
+              </>
+            )}
+
+            {user.role === 'client' && (user.authorizedName || user.authorizedPosition || user.authorizedEmail) && (
+              <>
+                <div className="section-divider" />
+                <h3 style={{
+                  fontFamily: "'Archivo Narrow', sans-serif",
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  margin: '0 0 var(--space-md)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}>
+                  Persona Autorizada
+                </h3>
+                {user.authorizedName && (
+                  <div className="profile-row">
+                    <span className="profile-label">
+                      <User size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                      Nombre
+                    </span>
+                    <span className="profile-value">{user.authorizedName}</span>
+                  </div>
+                )}
+                {user.authorizedPosition && (
+                  <div className="profile-row">
+                    <span className="profile-label">
+                      <Briefcase size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                      Puesto
+                    </span>
+                    <span className="profile-value">{user.authorizedPosition}</span>
+                  </div>
+                )}
+                {user.authorizedEmail && (
+                  <div className="profile-row">
+                    <span className="profile-label">
+                      <Mail size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                      Email
+                    </span>
+                    <span className="profile-value">{user.authorizedEmail}</span>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

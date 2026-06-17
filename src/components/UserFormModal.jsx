@@ -13,17 +13,18 @@ const NAME_TO_CODE = Object.fromEntries(
   Object.entries(LANGUAGE_NAMES).map(([code, name]) => [name.toLowerCase(), code])
 );
 
-const emptyForm = {
-  email: '', nombre: '', role: 'client', priceTier: 2, clientName: '',
+const buildEmptyForm = (pageMode) => ({
+  email: '', nombre: '', role: pageMode === 'clientes' ? 'client' : 'employee', priceTier: 2, clientName: '',
   phone: '', position: '', languages: '', isActive: true,
-};
+  cif: '', taxAddress: '', authorizedName: '', authorizedPosition: '', authorizedEmail: '',
+});
 
-export default function UserFormModal({ mode, user, onClose, onSaved }) {
+export default function UserFormModal({ pageMode = 'empleados', mode, user, onClose, onSaved }) {
   const { createUser, updateUserById, fetchUsers } = useAuth();
   const isEdit = mode === 'edit';
 
   const [formType, setFormType] = useState('user'); // 'user' | 'commercial'
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState(buildEmptyForm(pageMode));
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -50,6 +51,11 @@ export default function UserFormModal({ mode, user, onClose, onSaved }) {
         position: user.position || '',
         languages: (user.languages || []).map(l => l.name).join(', '),
         isActive: user.isActive !== undefined ? user.isActive : true,
+        cif: user.cif || '',
+        taxAddress: user.taxAddress || '',
+        authorizedName: user.authorizedName || '',
+        authorizedPosition: user.authorizedPosition || '',
+        authorizedEmail: user.authorizedEmail || '',
       });
       if (user.photo) {
         setPreviewUrl(user.photo);
@@ -155,16 +161,22 @@ export default function UserFormModal({ mode, user, onClose, onSaved }) {
     setError('');
 
     try {
-      const languages = form.role === 'commercial' ? parseLanguages() : [];
+      const isEmployee = form.role !== 'client' && form.role !== 'superadmin';
+      const languages = isEmployee ? parseLanguages() : [];
       const payload = {
         nombre: form.nombre,
         email: form.email,
         role: form.role,
-        priceTier: form.role !== 'commercial' ? form.priceTier : undefined,
-        clientName: form.role !== 'commercial' ? (form.clientName || null) : undefined,
-        phone: form.role === 'commercial' ? form.phone : undefined,
-        position: form.role === 'commercial' ? form.position : undefined,
-        languages: form.role === 'commercial' ? languages : undefined,
+        priceTier: form.role === 'client' ? form.priceTier : undefined,
+        clientName: form.role === 'client' ? (form.clientName || null) : undefined,
+        phone: form.phone || undefined,
+        position: isEmployee ? form.position : undefined,
+        languages: isEmployee ? languages : undefined,
+        cif: form.role === 'client' ? (form.cif || undefined) : undefined,
+        taxAddress: form.role === 'client' ? (form.taxAddress || undefined) : undefined,
+        authorizedName: form.role === 'client' ? (form.authorizedName || undefined) : undefined,
+        authorizedPosition: form.role === 'client' ? (form.authorizedPosition || undefined) : undefined,
+        authorizedEmail: form.role === 'client' ? (form.authorizedEmail || undefined) : undefined,
         isActive: isEdit ? form.isActive : undefined,
       };
 
@@ -474,14 +486,14 @@ export default function UserFormModal({ mode, user, onClose, onSaved }) {
                 {form.role === 'client' && (
                   <>
                     <div className="auth-field">
-                      <label>Tier de Precio</label>
+                      <label>T2/T3</label>
                       <select
                         value={form.priceTier}
                         onChange={e => handleChange('priceTier', parseInt(e.target.value))}
                         className="auth-select"
                       >
-                        <option value={2}>Precio 2</option>
-                        <option value={3}>Precio 3</option>
+                        <option value={2}>T2</option>
+                        <option value={3}>T3</option>
                       </select>
                     </div>
                     <div className="auth-field">
@@ -493,13 +505,65 @@ export default function UserFormModal({ mode, user, onClose, onSaved }) {
                         placeholder="Viveros Ejemplo S.L."
                       />
                     </div>
+
+                    <div className="auth-field">
+                      <label>CIF / NIF</label>
+                      <input
+                        type="text"
+                        value={form.cif}
+                        onChange={e => handleChange('cif', e.target.value)}
+                        placeholder="B12345678"
+                      />
+                    </div>
+
+                    <div className="auth-field">
+                      <label>Dirección Fiscal</label>
+                      <input
+                        type="text"
+                        value={form.taxAddress}
+                        onChange={e => handleChange('taxAddress', e.target.value)}
+                        placeholder="Calle Ejemplo 123, 41001 Sevilla"
+                      />
+                    </div>
+
+                    <h4 style={{ margin: 'var(--space-md) 0 var(--space-sm)', fontFamily: "'Archivo Narrow', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text)' }}>Persona Autorizada</h4>
+
+                    <div className="auth-field">
+                      <label>Nombre del Autorizado</label>
+                      <input
+                        type="text"
+                        value={form.authorizedName}
+                        onChange={e => handleChange('authorizedName', e.target.value)}
+                        placeholder="Nombre y apellidos"
+                      />
+                    </div>
+
+                    <div className="auth-field">
+                      <label>Puesto del Autorizado</label>
+                      <input
+                        type="text"
+                        value={form.authorizedPosition}
+                        onChange={e => handleChange('authorizedPosition', e.target.value)}
+                        placeholder="Ej: Director de compras"
+                      />
+                    </div>
+
+                    <div className="auth-field">
+                      <label>Email del Autorizado</label>
+                      <input
+                        type="email"
+                        value={form.authorizedEmail}
+                        onChange={e => handleChange('authorizedEmail', e.target.value)}
+                        placeholder="autorizado@ejemplo.com"
+                      />
+                    </div>
                   </>
                 )}
               </>
             )}
 
-            {/* ── Commercial-specific fields (based on selected role) ── */}
-            {form.role === 'commercial' && (
+            {/* ── Employee fields (teléfono, puesto, idiomas) ── */}
+            {form.role !== 'client' && (
               <>
                 <div className="auth-field">
                   <label>Teléfono</label>

@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogIn } from 'lucide-react';
 import './AuthPages.css';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +25,9 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  if (authLoading) return null;
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   return (
     <div className="auth-page">

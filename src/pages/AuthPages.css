@@ -453,13 +453,33 @@
 
 .users-table {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 6px -2px rgba(0,0,0,0.04), 0 10px 30px -6px rgba(0,0,0,0.08);
 }
 
 .users-table table {
   width: 100%;
+  min-width: 800px;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.875rem;
 }
+
+/* ─── Fixed column widths (match <.col-name> in JSX) ─── */
+.users-table .col-foto { width: 60px; }
+.users-table .col-nombre { width: 150px; }
+.users-table .col-email { width: auto; }
+.users-table .col-rol { width: 100px; }
+.users-table .col-telefono { width: 130px; }
+.users-table .col-puesto { width: 120px; }
+.users-table .col-idiomas { width: 90px; }
+.users-table .col-cif { width: 120px; }
+.users-table .col-autorizado { width: 150px; }
+.users-table .col-tarifa { width: 60px; }
+.users-table .col-estado { width: 90px; }
+.users-table .col-acciones { width: 180px; }
 
 .users-table th,
 .users-table td {
