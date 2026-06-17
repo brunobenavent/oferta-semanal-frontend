@@ -41,7 +41,8 @@ export default function UserForm() {
       const user = (data.users || data).find(u => u._id === id);
       if (user) {
         // Superadmin cannot be edited
-        if (user.role === 'superadmin') {
+        const userRoles = user.roles || [user.role || 'client'];
+        if (userRoles.includes('superadmin')) {
           setIsSuperadminUser(true);
           setError('No puedes modificar al superadmin');
           setLoadingUser(false);
@@ -50,7 +51,7 @@ export default function UserForm() {
         setForm({
           email: user.email || '',
           nombre: user.nombre || '',
-          role: user.role || 'client',
+          role: userRoles.find(r => r !== 'admin') || userRoles[0] || 'client',
           priceTier: user.priceTier || 2,
           clientName: user.clientName || '',
           isActive: user.isActive !== undefined ? user.isActive : true,

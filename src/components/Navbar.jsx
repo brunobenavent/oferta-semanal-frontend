@@ -29,11 +29,16 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
     navigate('/');
   };
 
-  const roleBadgeClass = user?.role === 'superadmin'
+  const userRoles = user?.roles || [user?.role || 'client'];
+  const sortedRoles = [...userRoles].sort(
+    (a, b) => ['superadmin','admin','commercial','employee','client'].indexOf(a) - ['superadmin','admin','commercial','employee','client'].indexOf(b)
+  );
+
+  const roleBadgeClass = userRoles.includes('superadmin')
     ? 'role-badge--superadmin'
-    : user?.role === 'admin'
+    : userRoles.includes('admin')
       ? 'role-badge--admin'
-      : user?.role === 'employee'
+      : userRoles.includes('employee')
         ? 'role-badge--employee'
         : 'role-badge--default';
 
@@ -78,9 +83,13 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
                   )}
                 </Link>
                 <Link to="/profile" className="nav-user-name">{user.nombre}</Link>
-                <span className={`role-badge ${roleBadgeClass}`}>
-                  {user.role === 'superadmin' ? 'Superadmin' : user.role === 'admin' ? 'Admin' : user.role === 'employee' ? 'Empleado' : user.role === 'client' ? 'Cliente' : user.role}
-                </span>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {sortedRoles.map(r => (
+                    <span key={r} className={`role-badge ${roleBadgeClass}`}>
+                      {r === 'superadmin' ? 'Superadmin' : r === 'admin' ? 'Admin' : r === 'employee' ? 'Empleado' : r === 'commercial' ? 'Comercial' : r === 'client' ? 'Cliente' : r}
+                    </span>
+                  ))}
+                </div>
                 <button onClick={() => setShowLogoutConfirm(true)} className="nav-logout-btn">
                   Salir
                 </button>

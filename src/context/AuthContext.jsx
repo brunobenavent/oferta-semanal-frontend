@@ -103,11 +103,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAuthenticated = !!user;
-  const role = user?.role;
-  const isSuperadmin = role === 'superadmin';
-  const isAdmin = role === 'admin';
-  const isEmployee = role === 'employee';
-  const isCommercial = role === 'commercial';
+  const roles = user?.roles || (user?.role ? [user.role] : []);
+  const isSuperadmin = roles.includes('superadmin');
+  const isAdmin = roles.includes('admin');
+  const isEmployee = roles.includes('employee');
+  const isCommercial = roles.includes('commercial');
   const isSuperadminOrAdmin = isSuperadmin || isAdmin;
 
   const value = {

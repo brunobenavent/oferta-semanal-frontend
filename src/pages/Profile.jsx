@@ -55,7 +55,10 @@ export default function Profile() {
 
   if (!user) return null;
 
-  const roleLabel = roleLabels[user.role] || user.role;
+  const userRoles = user.roles || [user.role || 'client'];
+  const sortedRoles = [...userRoles].sort(
+    (a, b) => ['superadmin','admin','commercial','employee','client'].indexOf(a) - ['superadmin','admin','commercial','employee','client'].indexOf(b)
+  );
   const roleBadgeClass = isSuperadmin
     ? 'role-badge--superadmin'
     : isAdmin
@@ -397,9 +400,11 @@ export default function Profile() {
                 Rol
               </span>
               <span className="profile-value">
-                <span className={`role-badge ${roleBadgeClass}`}>
-                  {roleLabel}
-                </span>
+                {sortedRoles.map(r => (
+                  <span key={r} className={`role-badge ${roleBadgeClass}`} style={{ marginRight: 4 }}>
+                    {roleLabels[r] || r}
+                  </span>
+                ))}
               </span>
             </div>
 
@@ -441,7 +446,7 @@ export default function Profile() {
               </div>
             )}
 
-            {user.role === 'client' && user.priceTier && (
+            {user.roles?.includes('client') && user.priceTier && (
               <div className="profile-row">
                 <span className="profile-label">
                   <DollarSign size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
@@ -463,7 +468,7 @@ export default function Profile() {
               </div>
             )}
 
-            {user.role === 'client' && (user.cif || user.taxAddress) && (
+            {user.roles?.includes('client') && (user.cif || user.taxAddress) && (
               <>
                 <div className="section-divider" />
                 <h3 style={{
@@ -498,7 +503,7 @@ export default function Profile() {
               </>
             )}
 
-            {user.role === 'client' && (user.authorizedName || user.authorizedPosition || user.authorizedEmail) && (
+            {user.roles?.includes('client') && (user.authorizedName || user.authorizedPosition || user.authorizedEmail) && (
               <>
                 <div className="section-divider" />
                 <h3 style={{

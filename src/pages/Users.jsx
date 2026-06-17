@@ -101,8 +101,9 @@ export default function UsersPage({ mode = 'empleados' }) {
 
   const filteredUsers = users.filter(u => {
     // Pre-filter by mode
-    if (mode === 'clientes' && u.role !== 'client') return false;
-    if (mode === 'empleados' && u.role === 'client') return false;
+    const userRoles = u.roles || [u.role || 'client'];
+    if (mode === 'clientes' && !userRoles.includes('client')) return false;
+    if (mode === 'empleados' && userRoles.includes('client')) return false;
 
     const matchesSearch = !search ||
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
@@ -110,11 +111,11 @@ export default function UsersPage({ mode = 'empleados' }) {
     if (!matchesSearch) return false;
 
     if (roleFilter === 'all') return true;
-    if (roleFilter === 'admin') return u.role === 'admin' || u.role === 'superadmin';
-    if (roleFilter === 'employee') return u.role === 'employee';
-    if (roleFilter === 'commercial') return u.role === 'commercial';
-    if (roleFilter === 'client-tier2') return u.role === 'client' && u.priceTier === 2;
-    if (roleFilter === 'client-tier3') return u.role === 'client' && u.priceTier === 3;
+    if (roleFilter === 'admin') return userRoles.includes('admin') || userRoles.includes('superadmin');
+    if (roleFilter === 'employee') return userRoles.includes('employee');
+    if (roleFilter === 'commercial') return userRoles.includes('commercial');
+    if (roleFilter === 'client-tier2') return userRoles.includes('client') && u.priceTier === 2;
+    if (roleFilter === 'client-tier3') return userRoles.includes('client') && u.priceTier === 3;
     return true;
   });
 
@@ -123,6 +124,7 @@ export default function UsersPage({ mode = 'empleados' }) {
       case 'superadmin': return 'role-badge--superadmin';
       case 'admin': return 'role-badge--admin';
       case 'employee': return 'role-badge--employee';
+      case 'commercial': return 'role-badge--commercial';
       case 'client': return 'role-badge--client';
       default: return 'role-badge--default';
     }
@@ -236,14 +238,14 @@ export default function UsersPage({ mode = 'empleados' }) {
             const count = tab.key === 'all'
               ? users.length
               : tab.key === 'admin'
-                ? users.filter(u => u.role === 'admin' || u.role === 'superadmin').length
+                ? users.filter(u => (u.roles || [u.role]).includes('admin') || (u.roles || [u.role]).includes('superadmin')).length
                 : tab.key === 'employee'
-                  ? users.filter(u => u.role === 'employee').length
+                  ? users.filter(u => (u.roles || [u.role]).includes('employee')).length
                   : tab.key === 'client-tier2'
-                    ? users.filter(u => u.role === 'client' && u.priceTier === 2).length
+                    ? users.filter(u => (u.roles || [u.role]).includes('client') && u.priceTier === 2).length
                     : tab.key === 'client-tier3'
-                      ? users.filter(u => u.role === 'client' && u.priceTier === 3).length
-                      : users.filter(u => u.role === 'commercial').length;
+                      ? users.filter(u => (u.roles || [u.role]).includes('client') && u.priceTier === 3).length
+                      : users.filter(u => (u.roles || [u.role]).includes('commercial')).length;
 
             return (
               <button
@@ -414,9 +416,13 @@ export default function UsersPage({ mode = 'empleados' }) {
                         <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email || '—'}</td>
                         {mode === 'empleados' && (
                           <td>
-                            <span className={`role-badge ${roleBadgeClass(u.role)}`}>
-                              {roleLabel(u.role)}
-                            </span>
+                            {(u.roles || [u.role || 'client'])
+                              .sort((a, b) => ['superadmin','admin','commercial','employee','client'].indexOf(a) - ['superadmin','admin','commercial','employee','client'].indexOf(b))
+                              .map(r => (
+                                <span key={r} className={`role-badge ${roleBadgeClass(r)}`} style={{ marginRight: 4 }}>
+                                  {roleLabel(r)}
+                                </span>
+                              ))}
                           </td>
                         )}
                         <td style={{ whiteSpace: 'nowrap' }}>{u.phone || '—'}</td>
@@ -477,7 +483,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                         </td>
                         <td>
                           <div className="user-actions">
-                            {u.role !== 'superadmin' && (
+                            {!(u.roles || [u.role]).includes('superadmin') && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); setFormModal(u); }}
                                 className="user-action-btn"
@@ -486,7 +492,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                                 <Pencil size={15} />
                               </button>
                             )}
-                            {u.role !== 'superadmin' && (
+                            {!(u.roles || [u.role]).includes('superadmin') && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleToggleActive(u); }}
                                 className={`user-action-btn ${!u.isActive ? 'user-action-btn--success' : ''}`}
@@ -513,7 +519,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                                 </button>
                               </>
                             )}
-                            {u.role !== 'superadmin' && (
+                            {!(u.roles || [u.role]).includes('superadmin') && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); setDeleteTarget(u); }}
                                 className="user-action-btn user-action-btn--danger"
@@ -562,19 +568,25 @@ export default function UsersPage({ mode = 'empleados' }) {
                         )}
                         <strong>{u.nombre || u.name || 'Sin nombre'}</strong>
                       </div>
-                      <span className={`role-badge ${roleBadgeClass(u.role)}`}>
-                        {roleLabel(u.role)}
-                      </span>
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                        {(u.roles || [u.role || 'client'])
+                          .sort((a, b) => ['superadmin','admin','commercial','employee','client'].indexOf(a) - ['superadmin','admin','commercial','employee','client'].indexOf(b))
+                          .map(r => (
+                            <span key={r} className={`role-badge ${roleBadgeClass(r)}`}>
+                              {roleLabel(r)}
+                            </span>
+                          ))}
+                      </div>
                     </div>
                     <div className="user-card-body">
                       <p>{u.email || '—'}</p>
                       {u.phone && <p>Tel: {u.phone}</p>}
-                      {u.position && u.role !== 'client' && <p>Puesto: {u.position}</p>}
-                      {u.role === 'client' && <p>Cliente: {u.clientName || '—'} (<strong>T{u.priceTier || 2}</strong>)</p>}
-                      {u.role === 'client' && u.cif && <p>CIF: {u.cif}</p>}
-                      {u.role === 'client' && u.taxAddress && <p>Dir. Fiscal: {u.taxAddress}</p>}
-                      {u.role === 'client' && u.authorizedName && <p>Autorizado: {u.authorizedName}</p>}
-                      {u.languages && u.languages.length > 0 && u.role !== 'client' && (
+                      {u.position && !(u.roles || [u.role]).includes('client') && <p>Puesto: {u.position}</p>}
+                      {(u.roles || [u.role]).includes('client') && <p>Cliente: {u.clientName || '—'} (<strong>T{u.priceTier || 2}</strong>)</p>}
+                      {(u.roles || [u.role]).includes('client') && u.cif && <p>CIF: {u.cif}</p>}
+                      {(u.roles || [u.role]).includes('client') && u.taxAddress && <p>Dir. Fiscal: {u.taxAddress}</p>}
+                      {(u.roles || [u.role]).includes('client') && u.authorizedName && <p>Autorizado: {u.authorizedName}</p>}
+                      {u.languages && u.languages.length > 0 && !(u.roles || [u.role]).includes('client') && (
                         <p>Idiomas: {u.languages.map(l => l.name).join(', ')}</p>
                       )}
                       <p>
@@ -588,7 +600,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                       </p>
                     </div>
                     <div className="user-card-actions">
-                      {u.role !== 'superadmin' && (
+                      {!(u.roles || [u.role]).includes('superadmin') && (
                         <button
                           onClick={() => setFormModal(u)}
                           className="user-action-btn"
@@ -597,7 +609,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                           <Pencil size={15} />
                         </button>
                       )}
-                      {u.role !== 'superadmin' && (
+                      {!(u.roles || [u.role]).includes('superadmin') && (
                         <button
                           onClick={() => handleToggleActive(u)}
                           className={`user-action-btn ${!u.isActive ? 'user-action-btn--success' : ''}`}
@@ -624,7 +636,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                           </button>
                         </>
                       )}
-                      {u.role !== 'superadmin' && (
+                      {!(u.roles || [u.role]).includes('superadmin') && (
                         <button
                           onClick={() => setDeleteTarget(u)}
                           className="user-action-btn user-action-btn--danger"

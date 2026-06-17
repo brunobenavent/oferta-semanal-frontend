@@ -17,11 +17,11 @@ const OFFER_CENTERS = [
   { key: 'ofertaEstacion', label: 'Estación', color: 'naranja' },
 ];
 
-function getPriceConfig(role, priceTier) {
-  if (!role) {
+function getPriceConfig(roles, priceTier) {
+  if (!roles || roles.length === 0) {
     return { p1: true, l1: 'PVP', p2: false, p3: false, isStaff: false, highlightLine: null };
   }
-  if (role === 'client') {
+  if (roles.includes('client')) {
     const activeTier = priceTier || 2;
     return {
       p1: true, l1: 'PVP',
@@ -37,7 +37,7 @@ function getPriceConfig(role, priceTier) {
 export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
-  const pc = getPriceConfig(user?.role, user?.priceTier);
+  const pc = getPriceConfig(user?.roles || [user?.role].filter(Boolean), user?.priceTier);
 
   const handleRowClick = (offer) => {
     if (offer.imagenUrl && onSelect) {

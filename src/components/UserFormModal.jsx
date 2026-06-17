@@ -17,6 +17,7 @@ const buildEmptyForm = (pageMode) => ({
   email: '', nombre: '', role: pageMode === 'clientes' ? 'client' : 'employee', priceTier: 2, clientName: '',
   phone: '', position: '', languages: '', isActive: true,
   cif: '', taxAddress: '', authorizedName: '', authorizedPosition: '', authorizedEmail: '',
+  isAdmin: false,
 });
 
 export default function UserFormModal({ pageMode = 'empleados', mode, user, onClose, onSaved }) {
@@ -40,11 +41,15 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
 
   useEffect(() => {
     if (isEdit && user) {
-      setFormType(user.role === 'commercial' ? 'commercial' : 'user');
+      const userRoles = user.roles || (user.role ? [user.role] : ['client']);
+      setFormType(userRoles.includes('commercial') ? 'commercial' : 'user');
+      // Primary role = first non-admin role for display, fallback to first
+      const primaryRole = userRoles.find(r => r !== 'admin') || userRoles[0] || 'client';
       setForm({
         email: user.email || '',
         nombre: user.nombre || user.name || '',
-        role: user.role || 'client',
+        role: primaryRole,
+        isAdmin: userRoles.includes('admin') && primaryRole !== 'admin',
         priceTier: user.priceTier || 2,
         clientName: user.clientName || '',
         phone: user.phone || '',
@@ -163,20 +168,26 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
     try {
       const isEmployee = form.role !== 'client' && form.role !== 'superadmin';
       const languages = isEmployee ? parseLanguages() : [];
+      // Build roles array: base role + optional admin
+      const baseRole = formType === 'commercial' ? 'commercial' : form.role;
+      const roles = [baseRole];
+      if (form.isAdmin && baseRole !== 'admin') {
+        roles.push('admin');
+      }
       const payload = {
         nombre: form.nombre,
         email: form.email,
-        role: form.role,
-        priceTier: form.role === 'client' ? form.priceTier : undefined,
-        clientName: form.role === 'client' ? (form.clientName || null) : undefined,
+        roles,
+        priceTier: baseRole === 'client' ? form.priceTier : undefined,
+        clientName: baseRole === 'client' ? (form.clientName || null) : undefined,
         phone: form.phone || undefined,
         position: isEmployee ? form.position : undefined,
         languages: isEmployee ? languages : undefined,
-        cif: form.role === 'client' ? (form.cif || undefined) : undefined,
-        taxAddress: form.role === 'client' ? (form.taxAddress || undefined) : undefined,
-        authorizedName: form.role === 'client' ? (form.authorizedName || undefined) : undefined,
-        authorizedPosition: form.role === 'client' ? (form.authorizedPosition || undefined) : undefined,
-        authorizedEmail: form.role === 'client' ? (form.authorizedEmail || undefined) : undefined,
+        cif: baseRole === 'client' ? (form.cif || undefined) : undefined,
+        taxAddress: baseRole === 'client' ? (form.taxAddress || undefined) : undefined,
+        authorizedName: baseRole === 'client' ? (form.authorizedName || undefined) : undefined,
+        authorizedPosition: baseRole === 'client' ? (form.authorizedPosition || undefined) : undefined,
+        authorizedEmail: baseRole === 'client' ? (form.authorizedEmail || undefined) : undefined,
         isActive: isEdit ? form.isActive : undefined,
       };
 
@@ -248,7 +259,7 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
               overflow: 'hidden',
             }}>
               <button
-                onClick={() => { setFormType('user'); handleChange('role', 'client'); setError(''); }}
+                onClick={() => { setFormType('user'); handleChange('role', 'client'); handleChange('isAdmin', false); setError(''); }}
                 style={{
                   flex: 1,
                   padding: '10px 16px',
@@ -269,7 +280,7 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
                 Usuario
               </button>
               <button
-                onClick={() => { setFormType('commercial'); handleChange('role', 'commercial'); setError(''); }}
+                onClick={() => { setFormType('commercial'); handleChange('role', 'commercial'); handleChange('isAdmin', false); setError(''); }}
                 style={{
                   flex: 1,
                   padding: '10px 16px',
@@ -482,6 +493,22 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
                     <option value="commercial">Comercial</option>
                   </select>
                 </div>
+
+                {form.role !== 'admin' && (
+                  <div className="auth-field">
+                    <label className="toggle-label" style={{ flexDirection: 'row', alignItems: 'center', gap: 'var(--space-sm)', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={form.isAdmin}
+                        onChange={e => handleChange('isAdmin', e.target.checked)}
+                        style={{ width: 18, height: 18, accentColor: 'var(--color-primary)' }}
+                      />
+                      <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>
+                        ¿Es administrador?
+                      </span>
+                    </label>
+                  </div>
+                )}
 
                 {form.role === 'client' && (
                   <>
