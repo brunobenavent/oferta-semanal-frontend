@@ -452,6 +452,8 @@
 /* ===== Users table ===== */
 
 .users-table {
+  max-width: 960px;
+  margin: 0 auto;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--color-surface-elevated);
@@ -469,17 +471,17 @@
 
 /* ─── Fixed column widths (match <.col-name> in JSX) ─── */
 .users-table .col-foto { width: 60px; }
-.users-table .col-nombre { width: 150px; }
+.users-table .col-nombre { width: 130px; }
 .users-table .col-email { width: auto; }
-.users-table .col-rol { width: 100px; }
-.users-table .col-telefono { width: 130px; }
-.users-table .col-puesto { width: 120px; }
-.users-table .col-idiomas { width: 90px; }
-.users-table .col-cif { width: 120px; }
-.users-table .col-autorizado { width: 150px; }
+.users-table .col-rol { width: 90px; }
+.users-table .col-telefono { width: 110px; }
+.users-table .col-puesto { width: 100px; }
+.users-table .col-idiomas { width: 80px; }
+.users-table .col-cif { width: 110px; }
+.users-table .col-autorizado { width: 130px; }
 .users-table .col-tarifa { width: 60px; }
 .users-table .col-estado { width: 90px; }
-.users-table .col-acciones { width: 180px; }
+.users-table .col-acciones { width: 160px; }
 
 .users-table th,
 .users-table td {
