@@ -147,13 +147,9 @@ export default function UsersPage({ mode = 'empleados' }) {
           <p>{mode === 'clientes' ? 'Gestiona los clientes del sistema' : 'Gestiona los empleados del sistema'}</p>
         </div>
 
+        <div className="users-content">
         {/* ── Toolbar: search + actions ── */}
-        <div style={{
-          display: 'flex',
-          gap: 'var(--space-sm)',
-          marginBottom: 'var(--space-md)',
-          flexWrap: 'wrap'
-        }}>
+        <div className="users-toolbar">
           <div className="search-input-wrapper" style={{ flex: 1, minWidth: 200 }}>
             <Search size={16} />
             <input
@@ -644,6 +640,7 @@ export default function UsersPage({ mode = 'empleados' }) {
             </div>
           </>
         )}
+        </div>
 
       {/* ── UserFormModal (add/edit unificado) ── */}
       {formModal && (
