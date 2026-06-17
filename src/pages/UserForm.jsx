@@ -7,7 +7,7 @@ import './AuthPages.css';
 export default function UserForm() {
   const { id } = useParams();
   const isEdit = !!id;
-  const { isSuperadminOrAdmin, createUser, fetchUsers, updateUserById } = useAuth();
+  const { isSuperadminOrAdmin, createUser, fetchUsers, updateUserById, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -24,6 +24,7 @@ export default function UserForm() {
   const [isSuperadminUser, setIsSuperadminUser] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isSuperadminOrAdmin) {
       navigate('/');
       return;
@@ -31,7 +32,7 @@ export default function UserForm() {
     if (isEdit && id) {
       loadUser();
     }
-  }, [isSuperadminOrAdmin, id, isEdit, navigate]);
+  }, [isSuperadminOrAdmin, id, isEdit, navigate, authLoading]);
 
   const loadUser = async () => {
     try {

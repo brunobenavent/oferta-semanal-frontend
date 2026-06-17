@@ -6,7 +6,7 @@ import UserFormModal from '../components/UserFormModal';
 import './AuthPages.css';
 
 export default function UsersPage({ mode = 'empleados' }) {
-  const { isSuperadminOrAdmin, isCommercial, isEmployee, fetchUsers, updateUserById, deleteUser, resendVerification, adminVerifyUser } = useAuth();
+  const { isSuperadminOrAdmin, isCommercial, isEmployee, fetchUsers, updateUserById, deleteUser, resendVerification, adminVerifyUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,12 +27,13 @@ export default function UsersPage({ mode = 'empleados' }) {
   const canAccess = mode === 'clientes' ? canAccessClientes : canAccessEmpleados;
 
   useEffect(() => {
+    if (authLoading) return;
     if (!canAccess) {
       navigate('/');
       return;
     }
     loadUsers();
-  }, [canAccess, navigate]);
+  }, [canAccess, navigate, authLoading]);
 
   const loadUsers = async () => {
     try {
