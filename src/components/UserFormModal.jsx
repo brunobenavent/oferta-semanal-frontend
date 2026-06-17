@@ -169,7 +169,7 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
       const isEmployee = form.role !== 'client' && form.role !== 'superadmin';
       const languages = isEmployee ? parseLanguages() : [];
       // Build roles array: base role + optional admin
-      const baseRole = formType === 'commercial' ? 'commercial' : form.role;
+      const baseRole = form.role;
       const roles = [baseRole];
       if (form.isAdmin && baseRole !== 'admin') {
         roles.push('admin');
@@ -497,12 +497,14 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
                 {form.role !== 'admin' && (
                   <div className="auth-field">
                     <label className="toggle-label" style={{ flexDirection: 'row', alignItems: 'center', gap: 'var(--space-sm)', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={form.isAdmin}
-                        onChange={e => handleChange('isAdmin', e.target.checked)}
-                        style={{ width: 18, height: 18, accentColor: 'var(--color-primary)' }}
-                      />
+                      <span className="toggle-switch">
+                        <input
+                          type="checkbox"
+                          checked={form.isAdmin}
+                          onChange={e => handleChange('isAdmin', e.target.checked)}
+                        />
+                        <span className="toggle-slider" />
+                      </span>
                       <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>
                         ¿Es administrador?
                       </span>
