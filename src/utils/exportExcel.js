@@ -93,11 +93,43 @@ export async function exportOffersToExcel({ offers, user, semana }) {
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet('Ofertas');
 
-  ws.columns = COLUMNS;
+  // ── Role-based column config ──────────────────────────────
+  const roles = user?.roles || [user?.role].filter(Boolean) || [];
+  const isClient = roles.includes('client');
+  const isStaff = !isClient && roles.length > 0;
+  const priceTier = user?.priceTier || 2;
+
+  const columns = COLUMNS.map(c => ({ ...c }));
+
+  if (!isStaff) {
+    const p1 = columns.find(c => c.key === 'precio1');
+    const p2 = columns.find(c => c.key === 'precio2');
+    const p3 = columns.find(c => c.key === 'precio3');
+
+    p1.header = 'PVP';
+
+    if (roles.length === 0) {
+      // Anonymous: only PVP
+      p2.hidden = true;
+      p3.hidden = true;
+    } else if (isClient) {
+      // Client: PVP + active tier
+      if (priceTier === 2) {
+        p2.header = 'Precio';
+        p3.hidden = true;
+      } else {
+        p3.header = 'Precio';
+        p2.hidden = true;
+      }
+    }
+  }
+  // Staff: keep defaults (PRECIO1, PRECIO2, PRECIO3)
+
+  ws.columns = columns;
   // Freeze title + spacer + both header rows (1–4)
   ws.views = [{ state: 'frozen', ySplit: 4, zoom: 125 }];
 
-  const lastCol = COLUMNS.length; // 26
+  const lastCol = columns.length; // 26
 
   // ── Logo ──────────────────────────────────────────────────
   let logoId = null;
@@ -142,7 +174,7 @@ export async function exportOffersToExcel({ offers, user, semana }) {
   esRow.height = 28;
   esRow.font = { bold: true, size: 11, name: 'Calibri', color: { argb: 'FFFFFFFF' } };
 
-  COLUMNS.forEach((col, i) => {
+  columns.forEach((col, i) => {
     const cell = esRow.getCell(i + 1);
     cell.value = col.header;
     cell.alignment = { vertical: 'middle', horizontal: col.align || 'left' };
@@ -198,7 +230,7 @@ export async function exportOffersToExcel({ offers, user, semana }) {
 
     const isAlt = idx % 2 === 1;
 
-    COLUMNS.forEach((col, ci) => {
+    columns.forEach((col, ci) => {
       const cell = row.getCell(ci + 1);
 
       if (col.key === 'imagen') {
@@ -216,8 +248,8 @@ export async function exportOffersToExcel({ offers, user, semana }) {
         cell.value = 'FICHA';
         cell.font = { color: { argb: 'FF808080' } };
       } else if (col.key === 'precio1' || col.key === 'precio2' || col.key === 'precio3') {
-        cell.value = offer[col.key] || 0;
-        cell.numFmt = '€ #,##0.00';
+        cell.value = col.hidden ? '' : (offer[col.key] || 0);
+        if (!col.hidden) cell.numFmt = '€ #,##0.00';
       } else {
         cell.value = offer[col.key] || '';
       }
