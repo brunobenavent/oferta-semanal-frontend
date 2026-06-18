@@ -1118,6 +1118,7 @@
 }
 
 .th-img { width: 61px; }
+.offer-table thead th.th-img { z-index: 12; }
 
 .th-img-actions {
   display: flex;
