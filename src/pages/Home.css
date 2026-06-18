@@ -1084,7 +1084,7 @@
 
 .offer-table thead th {
   position: sticky;
-  top: 89px;
+  top: 101px;
   z-index: 11;
   padding: 10px 10px;
   text-align: left;
@@ -1145,6 +1145,27 @@
   opacity: 1;
   background: var(--color-surface);
   color: var(--color-text);
+}
+.th-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.th-action-btn:disabled:hover {
+  opacity: 0.4;
+  background: transparent;
+  color: var(--color-text-muted);
+}
+.th-action-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-text-muted);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: th-spin 0.6s linear infinite;
+}
+@keyframes th-spin {
+  to { transform: rotate(360deg); }
 }
 .th-art { width: 180px; }
 .th-ubic { width: 80px; }

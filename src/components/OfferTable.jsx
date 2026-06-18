@@ -34,7 +34,7 @@ function getPriceConfig(roles, priceTier) {
   return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3', isStaff: true, highlightLine: null };
 }
 
-export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading }) {
+export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading, exporting }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const pc = getPriceConfig(user?.roles || [user?.role].filter(Boolean), user?.priceTier);
@@ -52,8 +52,8 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
           <tr>
             <th className="th-img">
               <div className="th-img-actions">
-                <button className="th-action-btn" onClick={onExport} title="Exportar a Excel">
-                  <Download size={14} />
+                <button className="th-action-btn" onClick={onExport} title="Exportar a Excel" disabled={exporting}>
+                  {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
                 </button>
                 <button className="th-action-btn" onClick={onShare} title="Compartir">
                   <Share2 size={14} />

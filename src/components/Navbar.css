@@ -11,10 +11,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 84px;
+  height: 96px;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 10px var(--space-lg);
+  padding: 8px var(--space-lg);
 }
 
 .navbar-logo {
@@ -207,9 +207,22 @@
 /* Desktop navbar */
 .navbar-right {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
   flex-shrink: 0;
+}
+
+.nav-admin-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-sm);
+  min-height: 32px;
+}
+
+.nav-admin-row > :last-child {
+  margin-left: auto;
 }
 
 .nav-login-link {

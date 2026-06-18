@@ -52,29 +52,33 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
             </Link>
           </div>
           <div className="navbar-right">
+            {/* Fila 1: links públicos */}
             <div className="nav-links-row">
               <Link to="/" className={`nav-link nav-link-uppercase${pathname === '/' ? ' nav-link--active' : ''}`}>LISTADO</Link>
               <span className="nav-link-sep">|</span>
               <Link to="/contact" className={`nav-link nav-link-uppercase${pathname.startsWith('/contact') ? ' nav-link--active' : ''}`}>CONTACTO</Link>
-              {(isSuperadminOrAdmin || isEmployee || isCommercial) && (
-                <>
-                  <span className="nav-link-sep">|</span>
-                  <Link to="/users" className={`nav-link nav-link-uppercase${pathname.startsWith('/users') ? ' nav-link--active' : ''}`}>EMPLEADOS</Link>
-                </>
-              )}
-              {(isSuperadminOrAdmin || isCommercial) && (
-                <>
-                  <span className="nav-link-sep">|</span>
-                  <Link to="/clientes" className={`nav-link nav-link-uppercase${pathname.startsWith('/clientes') ? ' nav-link--active' : ''}`}>CLIENTES</Link>
-                </>
-              )}
             </div>
-            {loading ? (
-              <div style={{ width: 120, height: 36 }} />
-            ) : !isAuthenticated ? (
-              <Link to="/login" className="nav-login-link">Acceder</Link>
-            ) : (
-              <div className="nav-user-info">
+            {/* Fila 2: admin links + user */}
+            <div className="nav-admin-row">
+              {(isSuperadminOrAdmin || isEmployee || isCommercial) && (
+                <div className="nav-links-row">
+                  {(isSuperadminOrAdmin || isEmployee || isCommercial) && (
+                    <Link to="/users" className={`nav-link nav-link-uppercase${pathname.startsWith('/users') ? ' nav-link--active' : ''}`}>EMPLEADOS</Link>
+                  )}
+                  {(isSuperadminOrAdmin || isEmployee || isCommercial) && (isSuperadminOrAdmin || isCommercial) && (
+                    <span className="nav-link-sep">|</span>
+                  )}
+                  {(isSuperadminOrAdmin || isCommercial) && (
+                    <Link to="/clientes" className={`nav-link nav-link-uppercase${pathname.startsWith('/clientes') ? ' nav-link--active' : ''}`}>CLIENTES</Link>
+                  )}
+                </div>
+              )}
+              {loading ? (
+                <div style={{ width: 120, height: 36 }} />
+              ) : !isAuthenticated ? (
+                <Link to="/login" className="nav-login-link">Acceder</Link>
+              ) : (
+                <div className="nav-user-info">
                 <Link to="/profile" className="nav-user-avatar">
                   {user.photo ? (
                     <img src={user.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -96,6 +100,7 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
               </div>
             )}
           </div>
+        </div>
         </div>
       </nav>
 

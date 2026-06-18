@@ -25,7 +25,7 @@ import NotFound from './pages/NotFound';
 import Contacto from './pages/Contacto';
 // UserForm deprecated — all CRUD via modal in Users.jsx
 // import UserForm from './pages/UserForm';
-import api from './api/axios';
+
 
 function App() {
   const [semana, setSemana] = useState('');
@@ -35,22 +35,6 @@ function App() {
     setTotalSinFiltros(total);
     setFilteredCount(filtered);
   }, []);
-
-  const handleExport = async () => {
-    try {
-      const { data } = await api.get('/offers/export', { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([data]));
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ofertas-semanales.xlsx';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Error exporting:', err);
-    }
-  };
 
   const handleShare = async () => {
     try {
@@ -77,7 +61,7 @@ function App() {
           <CookieBanner />
           <div className="main-content">
             <Routes>
-              <Route path="/" element={<Home onExport={handleExport} onShare={handleShare} onSemana={setSemana} onCounts={handleCounts} />} />
+              <Route path="/" element={<Home onShare={handleShare} onSemana={setSemana} onCounts={handleCounts} />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify" element={<Verify />} />

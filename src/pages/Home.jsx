@@ -10,9 +10,12 @@ import ViewToggle from '../components/ViewToggle';
 import OfferCard from '../components/OfferCard';
 import OfferTable from '../components/OfferTable';
 import Pagination from '../components/Pagination';
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import { exportOffersToExcel } from '../utils/exportExcel';
 import './Home.css';
 
-export default function Home({ onExport, onShare, onSemana, onCounts }) {
+export default function Home({ onShare, onSemana, onCounts }) {
   const { offers, pagination, totalSinFiltros, semana, semanaAnio, filters, loading, error, updateFilter, clearFilters, changePage } = useOffers();
   const { favorites, replaceFavorites } = useFavorites();
   const [view, setView] = useState('list');
@@ -20,6 +23,7 @@ export default function Home({ onExport, onShare, onSemana, onCounts }) {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [filterBarVisible, setFilterBarVisible] = useState(true);
   const [paginationVisible, setPaginationVisible] = useState(true);
   const filterBarRef = useRef(null);
@@ -148,6 +152,29 @@ export default function Home({ onExport, onShare, onSemana, onCounts }) {
     }
   }, [showFavoritesOnly, offers, favorites, replaceFavorites, filters.codigos, loading]);
 
+  const { user } = useAuth();
+
+  const handleExport = useCallback(async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const params = {};
+      if (filters.search) params.search = filters.search;
+      if (filters.centro) params.centro = filters.centro;
+      if (filters.familia) params.familia = filters.familia;
+      if (filters.maceta) params.maceta = filters.maceta;
+      if (filters.altura) params.altura = filters.altura;
+      if (filters.codigos) params.codigos = filters.codigos;
+
+      const { data } = await api.get('/offers/export', { params: { ...params, format: 'json' } });
+      await exportOffersToExcel({ offers: data.offers, user, semana });
+    } catch (err) {
+      console.error('Error exporting:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [filters, user, semana, isExporting]);
+
   return (
     <div className="dashboard">
       <div className="dashboard-topbar">
@@ -217,13 +244,14 @@ export default function Home({ onExport, onShare, onSemana, onCounts }) {
         <OfferTable
           offers={displayOffers}
           onSelect={openLightbox}
-          onExport={onExport}
+          onExport={handleExport}
           onShare={onShare}
           pagination={displayPagination}
           onPageChange={changePage}
           sortBy={filters.sortBy}
           onSortChange={() => updateFilter('sortBy', filters.sortBy === 'nombre' ? '' : 'nombre')}
           loading={loading}
+          exporting={isExporting}
         />
       ) : (
         <>
