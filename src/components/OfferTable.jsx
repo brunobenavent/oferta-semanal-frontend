@@ -44,8 +44,10 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
 
   const [shareOpen, setShareOpen] = useState(false);
   const shareRef = useRef(null);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef(null);
 
-  // Close dropdown on outside click
+  // Close share dropdown on outside click
   useEffect(() => {
     if (!shareOpen) return;
     const handler = (e) => {
@@ -56,6 +58,18 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [shareOpen]);
+
+  // Close export dropdown on outside click
+  useEffect(() => {
+    if (!exportOpen) return;
+    const handler = (e) => {
+      if (exportRef.current && !exportRef.current.contains(e.target)) {
+        setExportOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [exportOpen]);
 
   const copyLink = async () => {
     try {
@@ -79,9 +93,33 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
           <tr>
             <th className="th-img">
               <div className="th-img-actions">
-                <button className="th-action-btn" onClick={onExport} title="Exportar a Excel" disabled={exporting}>
-                  {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
-                </button>
+                {pc.isStaff ? (
+                  <div className="th-dropdown-wrapper" ref={exportRef}>
+                    <button className="th-action-btn" onClick={() => setExportOpen(prev => !prev)} title="Exportar a Excel" disabled={exporting}>
+                      {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
+                    </button>
+                    {exportOpen && (
+                      <div className="th-dropdown">
+                        <button className="th-dropdown-item" onClick={() => { onExport?.('full'); setExportOpen(false); }}>
+                          T1 + T2 + T3
+                        </button>
+                        <button className="th-dropdown-item" onClick={() => { onExport?.('pvp+pt2'); setExportOpen(false); }}>
+                          PVP + PT2
+                        </button>
+                        <button className="th-dropdown-item" onClick={() => { onExport?.('pvp+pt3'); setExportOpen(false); }}>
+                          PVP + PT3
+                        </button>
+                        <button className="th-dropdown-item" onClick={() => { onExport?.('pvp'); setExportOpen(false); }}>
+                          Solo PVP
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button className="th-action-btn" onClick={() => onExport?.()} title="Exportar a Excel" disabled={exporting}>
+                    {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
+                  </button>
+                )}
                 <div className="th-dropdown-wrapper" ref={shareRef}>
                   <button className="th-action-btn" onClick={() => setShareOpen(prev => !prev)} title="Compartir">
                     <Share2 size={14} />

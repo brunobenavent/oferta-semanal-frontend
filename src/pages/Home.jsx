@@ -168,7 +168,7 @@ export default function Home({ onShare, onSemana, onCounts }) {
 
   const { user } = useAuth();
 
-  const handleExport = useCallback(async () => {
+  const handleExport = useCallback(async (priceMode) => {
     if (isExporting) return;
     setIsExporting(true);
     try {
@@ -181,7 +181,7 @@ export default function Home({ onShare, onSemana, onCounts }) {
       if (filters.codigos) params.codigos = filters.codigos;
 
       const { data } = await api.get('/offers/export', { params: { ...params, format: 'json' } });
-      await exportOffersToExcel({ offers: data.offers, user, semana });
+      await exportOffersToExcel({ offers: data.offers, user, semana, priceMode });
     } catch (err) {
       console.error('Error exporting:', err);
     } finally {

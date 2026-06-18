@@ -89,7 +89,7 @@ const EN_HEADER = {
   17: 'Order',
 };
 
-export async function exportOffersToExcel({ offers, user, semana }) {
+export async function exportOffersToExcel({ offers, user, semana, priceMode }) {
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet('Ofertas');
 
@@ -100,14 +100,33 @@ export async function exportOffersToExcel({ offers, user, semana }) {
   const priceTier = user?.priceTier || 2;
 
   const columns = COLUMNS.map(c => ({ ...c }));
+  const p1 = columns.find(c => c.key === 'precio1');
+  const p2 = columns.find(c => c.key === 'precio2');
+  const p3 = columns.find(c => c.key === 'precio3');
 
-  if (!isStaff) {
-    const p1 = columns.find(c => c.key === 'precio1');
-    const p2 = columns.find(c => c.key === 'precio2');
-    const p3 = columns.find(c => c.key === 'precio3');
-
+  if (isStaff) {
+    // Staff: explicit priceMode (default: full = all 3 prices)
+    switch (priceMode || 'full') {
+      case 'pvp':
+        p1.header = 'PVP';
+        p2.hidden = true;
+        p3.hidden = true;
+        break;
+      case 'pvp+pt2':
+        p1.header = 'PVP';
+        p2.header = 'Precio';
+        p3.hidden = true;
+        break;
+      case 'pvp+pt3':
+        p1.header = 'PVP';
+        p3.header = 'Precio';
+        p2.hidden = true;
+        break;
+      // case 'full': keep defaults (PRECIO1, PRECIO2, PRECIO3)
+    }
+  } else {
+    // Non-staff: role-based rules (priceMode ignored)
     p1.header = 'PVP';
-
     if (roles.length === 0) {
       // Anonymous: only PVP
       p2.hidden = true;
@@ -123,7 +142,6 @@ export async function exportOffersToExcel({ offers, user, semana }) {
       }
     }
   }
-  // Staff: keep defaults (PRECIO1, PRECIO2, PRECIO3)
 
   ws.columns = columns;
   // Freeze title + spacer + both header rows (1–4)
