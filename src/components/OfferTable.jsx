@@ -104,10 +104,10 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           T1 + T2 + T3
                         </button>
                         <button className="th-dropdown-item" onClick={() => { onExport?.('pvp+pt2'); setExportOpen(false); }}>
-                          PVP + PT2
+                          PVP + T2
                         </button>
                         <button className="th-dropdown-item" onClick={() => { onExport?.('pvp+pt3'); setExportOpen(false); }}>
-                          PVP + PT3
+                          PVP + T3
                         </button>
                         <button className="th-dropdown-item" onClick={() => { onExport?.('pvp'); setExportOpen(false); }}>
                           Solo PVP
