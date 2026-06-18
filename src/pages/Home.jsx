@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, Image as ImageIcon, SlidersHorizontal, ChevronsDown } from 'lucide-react';
 import { getCloudinaryUrl } from '../utils/cloudinaryUrl';
 import { useOffers } from '../hooks/useOffers';
@@ -18,7 +18,21 @@ import './Home.css';
 export default function Home({ onShare, onSemana, onCounts }) {
   const { offers, pagination, totalSinFiltros, semana, semanaAnio, filters, loading, error, updateFilter, clearFilters, changePage } = useOffers();
   const { favorites, replaceFavorites } = useFavorites();
-  const [view, setView] = useState('list');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+  const [view, setView] = useState(searchParams.get('view') || 'list');
+
+  const handleViewChange = useCallback((newView) => {
+    setView(newView);
+    const next = new URLSearchParams(searchParamsRef.current);
+    if (newView === 'list') {
+      next.delete('view');
+    } else {
+      next.set('view', newView);
+    }
+    setSearchParams(next);
+  }, [setSearchParams]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
@@ -209,7 +223,7 @@ export default function Home({ onShare, onSemana, onCounts }) {
             )}
           </div>
           <div className="header-actions">
-            <ViewToggle view={view} onChange={setView} />
+            <ViewToggle view={view} onChange={handleViewChange} />
           </div>
         </div>
       </div>

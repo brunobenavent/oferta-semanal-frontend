@@ -1,9 +1,11 @@
-import { Download, Share2, ArrowUpDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Download, Share2, ArrowUpDown, Link2 } from 'lucide-react';
 import HeartIcon from './HeartIcon';
 import Pagination from './Pagination';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import { getCloudinaryUrl } from '../utils/cloudinaryUrl';
+import { useToast } from './Toast';
 
 const OFFER_CENTERS = [
   { key: 'ofertaNuevoEspacio', label: 'Nuevo Espacio', color: 'verde-botella' },
@@ -37,7 +39,32 @@ function getPriceConfig(roles, priceTier) {
 export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading, exporting }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const pc = getPriceConfig(user?.roles || [user?.role].filter(Boolean), user?.priceTier);
+
+  const [shareOpen, setShareOpen] = useState(false);
+  const shareRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!shareOpen) return;
+    const handler = (e) => {
+      if (shareRef.current && !shareRef.current.contains(e.target)) {
+        setShareOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [shareOpen]);
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      addToast('Enlace copiado al portapapeles', 'success');
+    } catch (err) {
+      addToast('No se pudo copiar el enlace', 'error');
+    }
+  };
 
   const handleRowClick = (offer) => {
     if (offer.imagenUrl && onSelect) {
@@ -55,9 +82,21 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                 <button className="th-action-btn" onClick={onExport} title="Exportar a Excel" disabled={exporting}>
                   {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
                 </button>
-                <button className="th-action-btn" onClick={onShare} title="Compartir">
-                  <Share2 size={14} />
-                </button>
+                <div className="th-dropdown-wrapper" ref={shareRef}>
+                  <button className="th-action-btn" onClick={() => setShareOpen(prev => !prev)} title="Compartir">
+                    <Share2 size={14} />
+                  </button>
+                  {shareOpen && (
+                    <div className="th-dropdown">
+                      <button className="th-dropdown-item" onClick={() => { onShare?.(); setShareOpen(false); }}>
+                        <Share2 size={14} /> Compartir
+                      </button>
+                      <button className="th-dropdown-item" onClick={() => { copyLink(); setShareOpen(false); }}>
+                        <Link2 size={14} /> Copiar enlace
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </th>
             <th
