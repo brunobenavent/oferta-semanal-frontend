@@ -387,24 +387,15 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           {/* maceta */}
                           <path d="M7 14 L17 14 L16 22 L8 22 Z" />
                         </svg>
-                        <input
-                          type="number" min="0" max="9999"
-                          className="pedido-input pedido-input--uds"
-                          defaultValue={0}
-                          onBlur={e => {
-                            const val = parseInt(e.target.value);
-                            if (!isNaN(val) && val > 0) {
-                              updateUnidades(offer.codigoArticulo, val, offer);
-                              e.target.value = '';
-                            }
-                          }}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              e.target.blur();
-                            }
-                          }}
-                        />
+                        <button
+                          className="pedido-add-btn"
+                          onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
+                          title="+1 unidad"
+                          type="button"
+                        >+1</button>
+                        <span className="pedido-uds-value">
+                          {draftItems.get(offer.codigoArticulo)?.unidades || 0}
+                        </span>
                       </div>
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
