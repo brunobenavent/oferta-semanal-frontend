@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
 import { useToast } from '../components/Toast';
-import { calcFromUnidades } from '../utils/calcPreorder';
+import { calcFromUnidades, applyUnidades, applyKarrys, applyTablas } from '../utils/calcPreorder';
 
 const PreOrderContext = createContext(null);
 
@@ -111,23 +111,23 @@ export function PreOrderProvider({ children }) {
     }, DEBOUNCE_MS);
   }, [draft, addToast]);
 
-  // ── Update unidades for an item ──
+  // ── Update unidades for an item (with rollover Uds → karrys → tablas) ──
   const updateUnidades = useCallback((codigo, unidades, offerData = {}) => {
     if (draft?.estado !== 'borrador') return;
 
     setDraftItems(prev => {
       const next = new Map(prev);
       const existing = next.get(codigo) || {};
-      const calc = calcFromUnidades(unidades, {
-        undsCarro: offerData.undsCarro || existing.undsCarro || 0,
-        undsTabla: offerData.undsTabla || existing.undsTabla || 0,
-      });
+      const undsCarro = offerData.undsCarro || existing.undsCarro || 0;
+      const undsTabla = offerData.undsTabla || existing.undsTabla || 0;
+
+      const calc = applyUnidades(unidades, existing, { undsCarro, undsTabla });
 
       next.set(codigo, {
         codigoArticulo: codigo,
         descripcionArticulo: offerData.descripcionArticulo || existing.descripcionArticulo || '',
-        undsCarro: offerData.undsCarro || existing.undsCarro || 0,
-        undsTabla: offerData.undsTabla || existing.undsTabla || 0,
+        undsCarro,
+        undsTabla,
         undsCaja: offerData.undsCaja || existing.undsCaja || 0,
         precio1: offerData.precio1 || existing.precio1 || 0,
         precio2: offerData.precio2 || existing.precio2 || 0,
@@ -143,7 +143,7 @@ export function PreOrderProvider({ children }) {
     });
   }, [draft, scheduleSave]);
 
-  // ── Set unidades from karrys (reverse calc) ──
+  // ── Set unidades from karrys (input secundario, reemplaza total) ──
   const setFromKarrys = useCallback((codigo, karrys) => {
     if (draft?.estado !== 'borrador') return;
 
@@ -152,9 +152,7 @@ export function PreOrderProvider({ children }) {
       const existing = next.get(codigo);
       if (!existing) return prev;
 
-      const UCC = existing.undsCarro || 1;
-      const unidades = Math.max(0, karrys) * UCC;
-      const calc = calcFromUnidades(unidades, {
+      const calc = applyKarrys(karrys, {
         undsCarro: existing.undsCarro,
         undsTabla: existing.undsTabla,
       });
@@ -168,7 +166,7 @@ export function PreOrderProvider({ children }) {
     });
   }, [draft, scheduleSave]);
 
-  // ── Set unidades from tablas (reverse calc) ──
+  // ── Set unidades from tablas (input secundario, reemplaza total) ──
   const setFromTablas = useCallback((codigo, tablas) => {
     if (draft?.estado !== 'borrador') return;
 
@@ -177,9 +175,7 @@ export function PreOrderProvider({ children }) {
       const existing = next.get(codigo);
       if (!existing) return prev;
 
-      const UTA = existing.undsTabla || 1;
-      const unidades = Math.max(0, tablas) * UTA;
-      const calc = calcFromUnidades(unidades, {
+      const calc = applyTablas(tablas, {
         undsCarro: existing.undsCarro,
         undsTabla: existing.undsTabla,
       });

@@ -981,8 +981,10 @@
 }
 
 /* ── Pedido column (clients) ── */
+/* Compact column at the end of the table. Fixed width keeps it small
+   so the auto-width .th-art column can grow to fill remaining space. */
 .th-pedido {
-  width: 100%;
+  width: 130px;
   font-size: 0.75rem;
   text-align: center;
 }
@@ -995,14 +997,18 @@
 .pedido-cell-inner {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
   padding: 4px 0;
+  width: 100%;
+  min-width: 0;
 }
 
 .pedido-row {
   display: flex;
   align-items: center;
   gap: 4px;
+  justify-content: flex-start;
 }
 
 .pedido-label {
@@ -1011,15 +1017,17 @@
   color: var(--color-text-muted);
   min-width: 24px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .pedido-icon {
   color: var(--color-text-muted);
   flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .pedido-input {
-  width: 52px;
+  width: 50px;
   padding: 2px 4px;
   font-size: 0.8rem;
   border: 1px solid var(--color-border);
@@ -1028,6 +1036,8 @@
   color: var(--color-text);
   text-align: center;
   -moz-appearance: textfield;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease;
 }
 
 .pedido-input::-webkit-inner-spin-button,
@@ -1043,13 +1053,12 @@
 }
 
 .pedido-progress {
-  flex: 1;
+  width: 36px;
   height: 4px;
-  min-width: 20px;
-  max-width: 36px;
   background: var(--color-border);
   border-radius: 2px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .pedido-progress-fill {
@@ -1196,7 +1205,7 @@
   border-top-right-radius: 12px;
 }
 
-.th-img { width: 61px; }
+.th-img { width: 75px; }
 .offer-table thead th.th-img { z-index: 12; }
 
 .th-img-actions {
@@ -1289,7 +1298,12 @@
 .th-dropdown-item svg {
   flex-shrink: 0;
 }
-.th-art { width: 180px; }
+.th-art {
+  /* no explicit width — auto, fills remaining space.
+     min-width: 200px keeps the column visible on small screens
+     so long article names don't get crushed. */
+  min-width: 200px;
+}
 .th-ubic { width: 80px; }
 .th-mp { width: 130px; }
 .th-ac { width: 130px; }
@@ -1513,14 +1527,18 @@
 }
 
 /* Table — INFO column (visible only on mobile) */
+/* IMPORTANT: display:none + width:0 because some browsers count
+   display:none cells as auto-width columns in table-layout:fixed,
+   stealing remaining space from the pedido column. */
 .th-info { 
-  display: none; 
-  width: auto;
+  display: none;
+  width: 0; 
 }
 
 .cell-info {
   display: none;
   vertical-align: middle;
+  width: 0;
 }
 
 .info-stacked {
@@ -1591,8 +1609,9 @@
   .th-mp, .offer-table td:nth-child(5),
   .th-ac, .offer-table td:nth-child(6),
   .th-uds, .cell-uds,
-  .th-fam, .offer-table td:nth-child(8),
-  .th-precios, .offer-table td:nth-child(9) {
+  .th-fam, .cell-fam,
+  .th-precios, .cell-precios,
+  .th-pedido, .cell-pedido {
     display: none;
   }
 
@@ -1635,6 +1654,14 @@
     transform: scale(1.8);
   }
 
+}
+
+/* Tablet/small laptop: hide non-critical columns so articulo doesn't get crushed */
+@media (max-width: 1100px) and (min-width: 769px) {
+  .th-precios, .cell-precios,
+  .th-fam, .cell-fam {
+    display: none;
+  }
 }
 
 /* Smallest mobile: image fills row height */

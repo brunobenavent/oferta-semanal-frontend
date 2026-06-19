@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Package, Truck, Columns } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePreOrder } from '../context/PreOrderContext';
 import './Navbar.css';
@@ -86,16 +85,34 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
                 {isClient && (
                   <div className="nav-order-indicators">
                     <span className="nav-order-badge" title="Unidades">
-                      <Package size={16} />
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Planta">
+                        <path d="M12 22 L12 13" />
+                        <path d="M12 13 C 12 8, 7 7, 6 4 C 10 4, 12 9, 12 13" />
+                        <path d="M12 13 C 12 8, 17 7, 18 4 C 14 4, 12 9, 12 13" />
+                        <path d="M7 14 L17 14 L16 22 L8 22 Z" />
+                      </svg>
                       <span>{totals.unidades}</span>
                     </span>
-                    <span className="nav-order-badge" title="Karrys">
-                      <Truck size={16} />
-                      <span>{totals.karrys}</span>
-                    </span>
                     <span className="nav-order-badge" title="Tablas">
-                      <Columns size={16} />
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Tabla">
+                        <rect x="3" y="8" width="18" height="8" />
+                        <path d="M1 8 L4 8" />
+                        <path d="M20 8 L23 8" />
+                        <path d="M1 16 L4 16" />
+                        <path d="M20 16 L23 16" />
+                      </svg>
                       <span>{totals.tablas}</span>
+                    </span>
+                    <span className="nav-order-badge" title="Karrys">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Carrito">
+                        <path d="M7 2 L7 15 L17 15 L17 2" />
+                        <path d="M7 6 L17 6" />
+                        <path d="M7 9.5 L17 9.5" />
+                        <path d="M7 13 L17 13" />
+                        <circle cx="9" cy="19" r="1.8" />
+                        <circle cx="15" cy="19" r="1.8" />
+                      </svg>
+                      <span>{totals.karrys}</span>
                     </span>
                   </div>
                 )}

@@ -140,7 +140,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                 {pc.isStaff ? (
                   <div className="th-dropdown-wrapper" ref={exportRef}>
                     <button className="th-action-btn" onClick={() => setExportOpen(prev => !prev)} title="Exportar a Excel" disabled={exporting}>
-                      {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
+                      {exporting ? <span className="th-action-spinner" /> : <Download size={16} strokeWidth={1.5} />}
                     </button>
                     {exportOpen && (
                       <div className="th-dropdown">
@@ -161,20 +161,20 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                   </div>
                 ) : (
                   <button className="th-action-btn" onClick={() => onExport?.()} title="Exportar a Excel" disabled={exporting}>
-                    {exporting ? <span className="th-action-spinner" /> : <Download size={14} />}
+                    {exporting ? <span className="th-action-spinner" /> : <Download size={16} strokeWidth={1.5} />}
                   </button>
                 )}
                 <div className="th-dropdown-wrapper" ref={shareRef}>
                   <button className="th-action-btn" onClick={() => setShareOpen(prev => !prev)} title="Compartir">
-                    <Share2 size={14} />
+                    <Share2 size={16} strokeWidth={1.5} />
                   </button>
                   {shareOpen && (
                     <div className="th-dropdown">
                       <button className="th-dropdown-item" onClick={() => { onShare?.(); setShareOpen(false); }}>
-                        <Share2 size={14} /> Compartir
+                        <Share2 size={16} strokeWidth={1.5} /> Compartir
                       </button>
                       <button className="th-dropdown-item" onClick={() => { copyLink(); setShareOpen(false); }}>
-                        <Link2 size={14} /> Copiar enlace
+                        <Link2 size={16} strokeWidth={1.5} /> Copiar enlace
                       </button>
                     </div>
                   )}
@@ -189,7 +189,8 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                 Artículo
                 <ArrowUpDown
-                  size={14}
+                  size={16}
+                  strokeWidth={1.5}
                   style={{
                     opacity: sortBy === 'nombre' ? 1 : 0.3,
                     color: sortBy === 'nombre' ? 'var(--color-primary)' : undefined,
@@ -377,7 +378,15 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                   <td className="cell-pedido" onClick={e => e.stopPropagation()}>
                     <div className="pedido-cell-inner">
                       <div className="pedido-row">
-                        <span className="pedido-label">Uds</span>
+                        <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Planta">
+                          {/* tallo */}
+                          <path d="M12 22 L12 13" />
+                          {/* hojas izquierda y derecha */}
+                          <path d="M12 13 C 12 8, 7 7, 6 4 C 10 4, 12 9, 12 13" />
+                          <path d="M12 13 C 12 8, 17 7, 18 4 C 14 4, 12 9, 12 13" />
+                          {/* maceta */}
+                          <path d="M7 14 L17 14 L16 22 L8 22 Z" />
+                        </svg>
                         <input
                           type="number" min="0"
                           className="pedido-input"
@@ -385,23 +394,17 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           onChange={e => updateUnidades(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
                         />
                       </div>
-                      {(offer.undsCarro > 0) && (
-                        <div className="pedido-row">
-                          <Truck size={12} className="pedido-icon" />
-                          <input
-                            type="number" min="0"
-                            className="pedido-input"
-                            value={draftItems.get(offer.codigoArticulo)?.karrys || 0}
-                            onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0)}
-                          />
-                          <div className="pedido-progress">
-                            <div className="pedido-progress-fill" style={{width: `${calcKarryProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsCarro)}%`}} />
-                          </div>
-                        </div>
-                      )}
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
-                          <Columns size={12} className="pedido-icon" />
+                          <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Tabla">
+                            {/* rectángulo principal horizontal */}
+                            <rect x="3" y="8" width="18" height="8" />
+                            {/* 4 enganches (segmentos horizontales) en los vértices */}
+                            <path d="M1 8 L4 8" />
+                            <path d="M20 8 L23 8" />
+                            <path d="M1 16 L4 16" />
+                            <path d="M20 16 L23 16" />
+                          </svg>
                           <input
                             type="number" min="0"
                             className="pedido-input"
@@ -410,6 +413,30 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           />
                           <div className="pedido-progress">
                             <div className="pedido-progress-fill" style={{width: `${calcTablaProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsTabla)}%`}} />
+                          </div>
+                        </div>
+                      )}
+                      {(offer.undsCarro > 0) && (
+                        <div className="pedido-row">
+                          <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Carrito">
+                            {/* lados verticales (sin tapa arriba), más vertical/rectangular */}
+                            <path d="M7 2 L7 15 L17 15 L17 2" />
+                            {/* 3 baldas intermedias */}
+                            <path d="M7 6 L17 6" />
+                            <path d="M7 9.5 L17 9.5" />
+                            <path d="M7 13 L17 13" />
+                            {/* 2 ruedas */}
+                            <circle cx="9" cy="19" r="1.8" />
+                            <circle cx="15" cy="19" r="1.8" />
+                          </svg>
+                          <input
+                            type="number" min="0"
+                            className="pedido-input"
+                            value={draftItems.get(offer.codigoArticulo)?.karrys || 0}
+                            onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0)}
+                          />
+                          <div className="pedido-progress">
+                            <div className="pedido-progress-fill" style={{width: `${calcKarryProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsCarro)}%`}} />
                           </div>
                         </div>
                       )}
