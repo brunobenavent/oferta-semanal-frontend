@@ -101,12 +101,13 @@ export function calcFromTablas(tablas, { undsCarro, undsTabla }) {
  * @returns {object} - { unidades, karrys, tablas, karryProgress, tablaProgress }
  */
 export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
+  const MAX = 9999;
   const currentUds = current?.unidades || 0;
   const currentKarrys = current?.karrys || 0;
   const currentTablas = current?.tablas || 0;
 
-  // Sumar el delta al remanente actual
-  let u = currentUds + Math.max(0, Math.floor(Number(delta) || 0));
+  // Sumar el delta al remanente actual (clamped to avoid overflow)
+  let u = currentUds + Math.min(MAX, Math.max(0, Math.floor(Number(delta) || 0)));
   let newTablas = currentTablas;
   let newKarrys = currentKarrys;
 

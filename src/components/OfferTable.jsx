@@ -388,7 +388,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           <path d="M7 14 L17 14 L16 22 L8 22 Z" />
                         </svg>
                         <input
-                          type="number" min="0"
+                          type="number" min="0" max="9999"
                           className="pedido-input"
                           value={draftItems.get(offer.codigoArticulo)?.unidades || 0}
                           onChange={e => updateUnidades(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
@@ -406,7 +406,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             <path d="M20 16 L23 16" />
                           </svg>
                           <input
-                            type="number" min="0"
+                            type="number" min="0" max="9999"
                             className="pedido-input"
                             value={draftItems.get(offer.codigoArticulo)?.tablas || 0}
                             onChange={e => setFromTablas(offer.codigoArticulo, parseInt(e.target.value) || 0)}
@@ -430,7 +430,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             <circle cx="15" cy="19" r="1.8" />
                           </svg>
                           <input
-                            type="number" min="0"
+                            type="number" min="0" max="9999"
                             className="pedido-input"
                             value={draftItems.get(offer.codigoArticulo)?.karrys || 0}
                             onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0)}
