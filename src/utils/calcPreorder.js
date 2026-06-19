@@ -137,71 +137,42 @@ export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
 }
 
 /**
- * Aplica el valor escrito en karrys (input secundario, REEMPLAZA).
- * El valor escrito REEMPLAZA el total de karrys. Las unidades se calculan
- * como karrys * undsCarro (exacto), y las tablas se derivan.
- *
- * Nota: karrys es el contenedor final — no se consolida a nada. Las tablas
- * se derivan de las unidades totales (puede haber carry-over conceptual
- * karry→tabla si UCC es múltiplo de UTA, pero no se consolida
- * inversamente). Las unidades se devuelven como 0 (remanente) porque
- * todas las uds están contabilizadas en karrys/tablas.
+ * Aplica el valor escrito en karrys (input secundario, solo modifica karrys).
+ * NO toca tablas ni unidades. Cada campo es independiente.
+ * El total se calcula como karrys*UCC + tablas*UTA + unidades en el summary.
  *
  * @param {number} newKarrys - El valor escrito en el input karrys
+ * @param {object} existing - Estado actual
  * @param {object} cfg - { undsCarro, undsTabla }
  * @returns {object} - { unidades, karrys, tablas, karryProgress, tablaProgress }
  */
-export function applyKarrys(newKarrys, { undsCarro, undsTabla }) {
+export function applyKarrys(newKarrys, existing, { undsCarro, undsTabla }) {
   const k = Math.max(0, Math.floor(Number(newKarrys) || 0));
-  const UCC = undsCarro > 0 ? undsCarro : 1;
-  const totalUds = k * UCC;
-  // Tablas derivadas
-  const tablas = undsTabla > 0 ? Math.floor(totalUds / undsTabla) : 0;
-  // Unidades sueltas (remanente): lo que no completó una tabla
-  const unidades = undsTabla > 0 ? totalUds % undsTabla : 0;
   return {
-    unidades,
+    unidades: existing?.unidades || 0,
     karrys: k,
-    karryProgress: calcKarryProgress(unidades, undsCarro),
-    tablas,
-    tablaProgress: calcTablaProgress(unidades, undsTabla),
+    karryProgress: calcKarryProgress(existing?.unidades || 0, undsCarro),
+    tablas: existing?.tablas || 0,
+    tablaProgress: calcTablaProgress(existing?.unidades || 0, undsTabla),
   };
 }
 
 /**
- * Aplica el valor escrito en tablas (input secundario, REEMPLAZA).
- * El valor escrito REEMPLAZA el total de tablas. Las unidades se calculan
- * como tablas * undsTabla, después se consolida a karrys si es posible.
- * Las unidades se recalculan después del carry-over para mantener la
- * consistencia (karrys consume uds, no se duplican).
+ * Aplica el valor escrito en tablas (input secundario, solo modifica tablas).
+ * NO toca karrys ni unidades. Cada campo es independiente.
  *
  * @param {number} newTablas - El valor escrito en el input tablas
+ * @param {object} existing - Estado actual
  * @param {object} cfg - { undsCarro, undsTabla }
  * @returns {object} - { unidades, karrys, tablas, karryProgress, tablaProgress }
  */
-export function applyTablas(newTablas, { undsCarro, undsTabla }) {
+export function applyTablas(newTablas, existing, { undsCarro, undsTabla }) {
   const t = Math.max(0, Math.floor(Number(newTablas) || 0));
-  const UTA = undsTabla > 0 ? undsTabla : 1;
-  let karrys = 0;
-  let tablas = t;
-
-  // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
-  if (undsCarro > 0 && undsTabla > 0 && undsCarro % undsTabla === 0) {
-    const tablasPorKarry = undsCarro / undsTabla;
-    karrys = Math.floor(tablas / tablasPorKarry);
-    tablas = tablas % tablasPorKarry;
-  }
-
-  // Unidades sueltas = lo que sobra después de karrys y tablas
-  // (siempre 0 cuando se acaba de calcular desde tablas — todo está
-  // contabilizado en karrys/tablas)
-  const unidades = 0;
-
   return {
-    unidades,
-    karrys,
-    karryProgress: calcKarryProgress(unidades, undsCarro),
-    tablas,
-    tablaProgress: calcTablaProgress(unidades, undsTabla),
+    unidades: existing?.unidades || 0,
+    karrys: existing?.karrys || 0,
+    karryProgress: calcKarryProgress(existing?.unidades || 0, undsCarro),
+    tablas: t,
+    tablaProgress: calcTablaProgress(existing?.unidades || 0, undsTabla),
   };
 }

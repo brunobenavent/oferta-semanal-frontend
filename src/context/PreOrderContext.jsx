@@ -160,7 +160,7 @@ export function PreOrderProvider({ children }) {
     });
   }, [draft, scheduleSave]);
 
-  // ── Set unidades from karrys (input secundario, reemplaza total) ──
+  // ── Set unidades from karrys (input secundario, solo modifica karrys) ──
   const setFromKarrys = useCallback((codigo, karrys) => {
     if (draft?.estado !== 'borrador') return;
 
@@ -169,7 +169,7 @@ export function PreOrderProvider({ children }) {
       const existing = next.get(codigo);
       if (!existing) return prev;
 
-      const calc = applyKarrys(karrys, {
+      const calc = applyKarrys(karrys, existing, {
         undsCarro: existing.undsCarro,
         undsTabla: existing.undsTabla,
       });
@@ -183,7 +183,7 @@ export function PreOrderProvider({ children }) {
     });
   }, [draft, scheduleSave]);
 
-  // ── Set unidades from tablas (input secundario, reemplaza total) ──
+  // ── Set unidades from tablas (input secundario, solo modifica tablas) ──
   const setFromTablas = useCallback((codigo, tablas) => {
     if (draft?.estado !== 'borrador') return;
 
@@ -192,7 +192,7 @@ export function PreOrderProvider({ children }) {
       const existing = next.get(codigo);
       if (!existing) return prev;
 
-      const calc = applyTablas(tablas, {
+      const calc = applyTablas(tablas, existing, {
         undsCarro: existing.undsCarro,
         undsTabla: existing.undsTabla,
       });
