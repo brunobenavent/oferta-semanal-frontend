@@ -177,12 +177,13 @@ export function applyTablas(newTablas, existing, { undsCarro, undsTabla }) {
   let tablas = t;
 
   // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
-  // Solo aumenta karrys si el carry-over lo requiere; nunca lo disminuye
+  // Convertir karrys existentes a "tablas equivalentes" para el cálculo
   if (undsCarro > 0 && undsTabla > 0 && undsCarro % undsTabla === 0) {
     const tablasPorKarry = undsCarro / undsTabla;
-    const karrysFromTablas = Math.floor(t / tablasPorKarry);
-    karrys = Math.max(currentKarrys, karrysFromTablas);
-    tablas = t % tablasPorKarry;
+    const existingEquivalentTablas = currentKarrys * tablasPorKarry;
+    const totalEquivalentTablas = existingEquivalentTablas + t;
+    karrys = Math.floor(totalEquivalentTablas / tablasPorKarry);
+    tablas = totalEquivalentTablas % tablasPorKarry;
   }
 
   return {
