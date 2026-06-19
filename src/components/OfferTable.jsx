@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 import { usePreOrder } from '../context/PreOrderContext';
 import { getCloudinaryUrl } from '../utils/cloudinaryUrl';
 import { useToast } from './Toast';
-import { calcKarryProgress, calcTablaProgress } from '../utils/calcPreorder';
 
 const OFFER_CENTERS = [
   { key: 'ofertaNuevoEspacio', label: 'Nuevo Espacio', color: 'verde-botella' },
@@ -446,7 +445,11 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             onChange={e => setFromTablas(offer.codigoArticulo, parseInt(e.target.value) || 0)}
                           />
                           <div className="pedido-progress">
-                            <div className="pedido-progress-fill" style={{width: `${calcTablaProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsTabla)}%`}} />
+                            <div className="pedido-progress-fill" style={{width: `${(() => {
+                              const item = draftItems.get(offer.codigoArticulo);
+                              const totalUds = (item?.karrys || 0) * (offer.undsCarro || 0) + (item?.tablas || 0) * (offer.undsTabla || 0) + (item?.unidades || 0);
+                              return offer.undsTabla > 0 ? ((totalUds % offer.undsTabla) / offer.undsTabla) * 100 : 0;
+                            })()}%`}} />
                           </div>
                         </div>
                       )}
@@ -470,7 +473,11 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0)}
                           />
                           <div className="pedido-progress">
-                            <div className="pedido-progress-fill" style={{width: `${calcKarryProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsCarro)}%`}} />
+                            <div className="pedido-progress-fill" style={{width: `${(() => {
+                              const item = draftItems.get(offer.codigoArticulo);
+                              const totalUds = (item?.karrys || 0) * (offer.undsCarro || 0) + (item?.tablas || 0) * (offer.undsTabla || 0) + (item?.unidades || 0);
+                              return offer.undsCarro > 0 ? ((totalUds % offer.undsCarro) / offer.undsCarro) * 100 : 0;
+                            })()}%`}} />
                           </div>
                         </div>
                       )}
