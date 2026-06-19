@@ -50,6 +50,24 @@ export function useOffers() {
     }
   }, []);
 
+  // Re-fetch without setting loading (avoids skeleton flash)
+  const refresh = useCallback(async () => {
+    const params = { ...filters };
+    const cleanParams = Object.fromEntries(
+      Object.entries(params).filter(([_, v]) => v !== '' && v !== undefined)
+    );
+    try {
+      const { data } = await api.get('/offers', { params: cleanParams });
+      setOffers(data.offers);
+      setPagination(data.pagination);
+      setTotalSinFiltros(data.totalSinFiltros);
+      setSemana(data.semana);
+      setSemanaAnio(data.semanaAnio);
+    } catch (err) {
+      // Silent — show nothing, keep stale data
+    }
+  }, [filters]);
+
   useEffect(() => {
     fetchOffers(filters);
   }, [filters, fetchOffers]);
@@ -85,6 +103,6 @@ export function useOffers() {
 
   return {
     offers, pagination, totalSinFiltros, semana, semanaAnio, filters, loading, error,
-    updateFilter, clearFilters, changePage, refetch: () => fetchOffers(filters),
+    updateFilter, clearFilters, changePage, refresh,
   };
 }

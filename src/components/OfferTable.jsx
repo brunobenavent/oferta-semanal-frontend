@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Download, Share2, ArrowUpDown, Link2 } from 'lucide-react';
+import { Download, Share2, ArrowUpDown, Link2, Camera, Trash2 } from 'lucide-react';
+import api from '../api/axios'; // Instancia con auth interceptor
 import HeartIcon from './HeartIcon';
 import Pagination from './Pagination';
 import { useFavorites } from '../context/FavoritesContext';
@@ -36,10 +37,14 @@ function getPriceConfig(roles, priceTier) {
   return { p1: true, l1: 'T1', p2: true, l2: 'T2', p3: true, l3: 'T3', isStaff: true, highlightLine: null };
 }
 
-export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading, exporting }) {
+export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading, exporting, onRefresh }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const fileInputRef = useRef(null);
+  const [uploadingCodigo, setUploadingCodigo] = useState(null);
+  const [deletingCodigo, setDeletingCodigo] = useState(null);
+  const [confirmDeleteCodigo, setConfirmDeleteCodigo] = useState(null);
   const pc = getPriceConfig(user?.roles || [user?.role].filter(Boolean), user?.priceTier);
 
   const [shareOpen, setShareOpen] = useState(false);
@@ -77,6 +82,42 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
       addToast('Enlace copiado al portapapeles', 'success');
     } catch (err) {
       addToast('No se pudo copiar el enlace', 'error');
+    }
+  };
+
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    const codigo = uploadingCodigo;
+    if (!file || !codigo) return;
+    
+    const formData = new FormData();
+    formData.append('imagen', file);
+    
+    try {
+      await api.post(`/offers/${codigo}/imagen`, formData);
+      addToast('Imagen subida correctamente', 'success');
+      await onRefresh?.();
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message || 'Error desconocido';
+      addToast(`Error al subir imagen: ${msg}`, 'error');
+    } finally {
+      setUploadingCodigo(null);
+      e.target.value = null; // reset input
+    }
+  };
+
+  const handleDeleteImagen = async (codigo) => {
+    setDeletingCodigo(codigo);
+    setConfirmDeleteCodigo(null);
+    try {
+      await api.delete(`/offers/${codigo}/imagen`);
+      addToast('Imagen restaurada — el ciclo automático la repondrá', 'success');
+      await onRefresh?.();
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message || 'Error desconocido';
+      addToast(`Error al restaurar imagen: ${msg}`, 'error');
+    } finally {
+      setDeletingCodigo(null);
     }
   };
 
@@ -201,6 +242,29 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                         <span className="img-placeholder-code">{offer.codigoArticulo}</span>
                       </div>
                     )}
+                    {(uploadingCodigo === offer.codigoArticulo || deletingCodigo === offer.codigoArticulo) && (
+                      <div className="img-loading-overlay">
+                        <span className="th-action-spinner" />
+                      </div>
+                    )}
+                    {pc.isStaff && offer.imagenUrl && (
+                      <button
+                        className="btn-delete-table"
+                        onClick={(e) => { e.stopPropagation(); setConfirmDeleteCodigo(offer.codigoArticulo); }}
+                        title="Restaurar imagen original"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                    {pc.isStaff && (
+                      <button
+                        className="btn-upload-table"
+                        onClick={(e) => { e.stopPropagation(); setUploadingCodigo(offer.codigoArticulo); fileInputRef.current?.click(); }}
+                        title="Cambiar imagen"
+                      >
+                        <Camera size={16} />
+                      </button>
+                    )}
                     <button
                       className="btn-fav-table"
                       onClick={(e) => { e.stopPropagation(); toggleFavorite(offer.codigoArticulo); }}
@@ -312,6 +376,57 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
       <div className="offer-table-footer">
         <Pagination pagination={pagination} onPageChange={onPageChange} />
       </div>
+
+      {confirmDeleteCodigo && (
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: 'var(--space-md)'
+        }}
+          onClick={() => setConfirmDeleteCodigo(null)}
+        >
+          <div style={{
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'var(--space-lg)',
+            maxWidth: 400,
+            width: '100%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+          }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 style={{ margin: '0 0 var(--space-sm)', fontSize: '1.125rem' }}>Restaurar imagen original</h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', margin: '0 0 var(--space-lg)' }}>
+              ¿Seguro que querés restaurar la imagen original de <strong>{confirmDeleteCodigo}</strong>?
+              Se va a perder la imagen que subiste manualmente.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'flex-end' }}>
+              <button
+                className="btn btn-ghost"
+                onClick={() => setConfirmDeleteCodigo(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn"
+                style={{
+                  background: '#dc2626',
+                  color: '#fff',
+                  opacity: deletingCodigo === confirmDeleteCodigo ? 0.6 : 1,
+                  width: 'auto', padding: '8px 16px', fontSize: '0.8125rem'
+                }}
+                onClick={() => handleDeleteImagen(confirmDeleteCodigo)}
+                disabled={deletingCodigo === confirmDeleteCodigo}
+              >
+                {deletingCodigo === confirmDeleteCodigo ? 'Restaurando...' : 'Sí, restaurar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <input type="file" ref={fileInputRef} onChange={handleUpload} style={{display: 'none'}} />
     </div>
   );
 }

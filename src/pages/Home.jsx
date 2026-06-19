@@ -16,7 +16,7 @@ import { exportOffersToExcel } from '../utils/exportExcel';
 import './Home.css';
 
 export default function Home({ onShare, onSemana, onCounts }) {
-  const { offers, pagination, totalSinFiltros, semana, semanaAnio, filters, loading, error, updateFilter, clearFilters, changePage } = useOffers();
+  const { offers, pagination, totalSinFiltros, semana, semanaAnio, filters, loading, error, updateFilter, clearFilters, changePage, refresh } = useOffers();
   const { favorites, replaceFavorites } = useFavorites();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParamsRef = useRef(searchParams);
@@ -266,6 +266,7 @@ export default function Home({ onShare, onSemana, onCounts }) {
           onSortChange={() => updateFilter('sortBy', filters.sortBy === 'nombre' ? '' : 'nombre')}
           loading={loading}
           exporting={isExporting}
+          onRefresh={refresh}
         />
       ) : (
         <>

@@ -16,9 +16,11 @@ export function AuthProvider({ children }) {
       setToken(savedToken);
       api.get('/auth/me')
         .then(res => setUser(res.data.user))
-        .catch(() => {
-          localStorage.removeItem('token');
-          delete api.defaults.headers.common['Authorization'];
+        .catch(err => {
+          if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+            localStorage.removeItem('token');
+            delete api.defaults.headers.common['Authorization'];
+          }
         })
         .finally(() => setLoading(false));
     } else {
