@@ -989,6 +989,8 @@
 .cell-pedido {
   vertical-align: top;
   padding: 8px 10px !important;
+  border-left: 1px solid var(--color-border-light);
+  background: rgba(43, 107, 75, 0.02);
 }
 
 .pedido-cell-inner {
@@ -996,12 +998,14 @@
   flex-direction: column;
   gap: 4px;
   padding: 4px 0;
+  width: 100%;
 }
 
 .pedido-row {
   display: flex;
   align-items: center;
   gap: 4px;
+  width: 100%;
 }
 
 .pedido-label {
@@ -1512,14 +1516,26 @@
 }
 
 /* Table — INFO column (visible only on mobile) */
+/* IMPORTANT: width: 0 + overflow: hidden instead of display: none because
+   table-layout: fixed counts ALL first-row cells for column allocation.
+   A hidden cell steals auto-width space from pedido. By giving it width: 0
+   explicitly, it takes zero column width and pedido gets ALL remaining space. */
 .th-info { 
-  display: none; 
-  width: auto;
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+  padding: 0 !important;
+  border: none;
+  font-size: 0;
 }
 
 .cell-info {
-  display: none;
-  vertical-align: middle;
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+  padding: 0 !important;
+  border: none;
+  font-size: 0;
 }
 
 .info-stacked {
@@ -1579,10 +1595,23 @@
 
   /* Mostrar columna INFO */
   .th-info { 
-    display: table-cell; 
+    display: table-cell;
+    width: auto !important;
+    min-width: auto !important;
+    overflow: visible;
+    padding: 10px 10px !important;
+    border: none;
+    font-size: 0.7rem;
   }
   .cell-info { 
-    display: table-cell; 
+    display: table-cell;
+    width: auto !important;
+    min-width: auto !important;
+    overflow: visible;
+    padding: 6px 4px !important;
+    border: none;
+    font-size: 0.8rem;
+    vertical-align: middle;
   }
 
   /* Ocultar columnas individuales reemplazadas por INFO */
