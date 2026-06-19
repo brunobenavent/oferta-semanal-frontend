@@ -1108,6 +1108,18 @@
   transform: translateY(-1px);
 }
 
+/* Button stack container */
+.pedido-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pedido-btn-row {
+  display: flex;
+  gap: 2px;
+}
+
 /* Uds input when placed between +/- buttons */
 .pedido-input--uds {
   width: 44px;

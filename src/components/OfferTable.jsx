@@ -387,43 +387,47 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           {/* maceta */}
                           <path d="M7 14 L17 14 L16 22 L8 22 Z" />
                         </svg>
-                        <button
-                          className="pedido-add-btn pedido-add-btn--minus"
-                          onClick={() => {
-                            const item = draftItems.get(offer.codigoArticulo);
-                            if ((item?.unidades || 0) > 0) {
-                              updateUnidades(offer.codigoArticulo, -1, offer);
-                            }
-                          }}
-                          title="-1 unidad"
-                          type="button"
-                        >−</button>
-                        <button
-                          className="pedido-add-btn"
-                          onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
-                          title="+1 unidad"
-                          type="button"
-                        >+</button>
-                      </div>
-                      {offer.undsTabla === 0 && offer.undsCarro === 0 && (
-                        <div className="pedido-row">
-                          <button
-                            className="pedido-add-btn pedido-add-btn--x10"
-                            onClick={() => updateUnidades(offer.codigoArticulo, 10, offer)}
-                            type="button"
-                          >+10</button>
-                          <button
-                            className="pedido-add-btn pedido-add-btn--x10 pedido-add-btn--minus"
-                            onClick={() => {
-                              const item = draftItems.get(offer.codigoArticulo);
-                              if ((item?.unidades || 0) >= 10) {
-                                updateUnidades(offer.codigoArticulo, -10, offer);
-                              }
-                            }}
-                            type="button"
-                          >−10</button>
+                        <div className="pedido-btn-stack">
+                          <div className="pedido-btn-row">
+                            <button
+                              className="pedido-add-btn pedido-add-btn--minus"
+                              onClick={() => {
+                                const item = draftItems.get(offer.codigoArticulo);
+                                if ((item?.unidades || 0) > 0) {
+                                  updateUnidades(offer.codigoArticulo, -1, offer);
+                                }
+                              }}
+                              title="-1 unidad"
+                              type="button"
+                            >−</button>
+                            <button
+                              className="pedido-add-btn"
+                              onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
+                              title="+1 unidad"
+                              type="button"
+                            >+</button>
+                          </div>
+                          {offer.undsTabla === 0 && offer.undsCarro === 0 && (
+                            <div className="pedido-btn-row">
+                              <button
+                                className="pedido-add-btn pedido-add-btn--x10 pedido-add-btn--minus"
+                                onClick={() => {
+                                  const item = draftItems.get(offer.codigoArticulo);
+                                  if ((item?.unidades || 0) >= 10) {
+                                    updateUnidades(offer.codigoArticulo, -10, offer);
+                                  }
+                                }}
+                                type="button"
+                              >−10</button>
+                              <button
+                                className="pedido-add-btn pedido-add-btn--x10"
+                                onClick={() => updateUnidades(offer.codigoArticulo, 10, offer)}
+                                type="button"
+                              >+10</button>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
                           <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Tabla">
