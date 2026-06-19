@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { UserPlus, Building2, Save, ArrowLeft, Camera, Crop } from 'lucide-react';
+import { UserPlus, Building2, Save, ArrowLeft, Camera, Crop, UserCheck } from 'lucide-react';
 import PhotoCropOverlay from './PhotoCropOverlay';
 
 const LANGUAGE_NAMES = {
@@ -18,9 +18,10 @@ const buildEmptyForm = (pageMode) => ({
   phone: '', position: '', languages: '', isActive: true,
   cif: '', taxAddress: '', authorizedName: '', authorizedPosition: '', authorizedEmail: '',
   isAdmin: false,
+  assignedCommercials: [],
 });
 
-export default function UserFormModal({ pageMode = 'empleados', mode, user, onClose, onSaved }) {
+export default function UserFormModal({ pageMode = 'empleados', mode, user, onClose, onSaved, commercials = [] }) {
   const { createUser, updateUserById, fetchUsers } = useAuth();
   const isEdit = mode === 'edit';
 
@@ -61,6 +62,9 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
         authorizedName: user.authorizedName || '',
         authorizedPosition: user.authorizedPosition || '',
         authorizedEmail: user.authorizedEmail || '',
+        assignedCommercials: user.assignedCommercials
+          ? user.assignedCommercials.map(c => typeof c === 'object' ? c._id : c)
+          : [],
       });
       if (user.photo) {
         setPreviewUrl(user.photo);
@@ -73,6 +77,15 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
 
   const handleChange = (field, value) => {
     setForm(f => ({ ...f, [field]: value }));
+  };
+
+  const handleToggleCommercial = (commercialId) => {
+    setForm(f => ({
+      ...f,
+      assignedCommercials: f.assignedCommercials.includes(commercialId)
+        ? f.assignedCommercials.filter(id => id !== commercialId)
+        : [...f.assignedCommercials, commercialId],
+    }));
   };
 
   const handleFileSelect = (e) => {
@@ -188,6 +201,9 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
         authorizedName: baseRole === 'client' ? (form.authorizedName || undefined) : undefined,
         authorizedPosition: baseRole === 'client' ? (form.authorizedPosition || undefined) : undefined,
         authorizedEmail: baseRole === 'client' ? (form.authorizedEmail || undefined) : undefined,
+        assignedCommercials: baseRole === 'client' && form.assignedCommercials?.length
+          ? form.assignedCommercials
+          : undefined,
         isActive: isEdit ? form.isActive : undefined,
       };
 
@@ -586,6 +602,64 @@ export default function UserFormModal({ pageMode = 'empleados', mode, user, onCl
                         placeholder="autorizado@ejemplo.com"
                       />
                     </div>
+
+                    {/* ── Commercial selector for clients ── */}
+                    {commercials.length > 0 && (
+                      <div className="auth-field">
+                        <label>
+                          <UserCheck size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                          Comerciales asignados
+                        </label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                          {commercials.map(com => {
+                            const isSelected = form.assignedCommercials.includes(com._id);
+                            return (
+                              <label
+                                key={com._id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 8,
+                                  padding: '8px 12px',
+                                  borderRadius: 'var(--radius-md)',
+                                  background: isSelected ? 'rgba(59,130,246,0.08)' : 'var(--color-surface)',
+                                  border: `1px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  fontSize: '0.875rem',
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => handleToggleCommercial(com._id)}
+                                  style={{ accentColor: 'var(--color-primary)' }}
+                                />
+                                <UserCheck
+                                  size={14}
+                                  style={{ color: isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)' }}
+                                />
+                                <span>{com.nombre || com.name || 'Sin nombre'}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                        {form.assignedCommercials.length === 0 && (
+                          <span className="field-hint">Selecciona uno o más comerciales para asignar a este cliente</span>
+                        )}
+                      </div>
+                    )}
+                    {commercials.length === 0 && (
+                      <div className="auth-field">
+                        <label>
+                          <UserCheck size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                          Comerciales asignados
+                        </label>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
+                          No hay comerciales disponibles. Crea comerciales primero.
+                        </p>
+                      </div>
+                    )}
                   </>
                 )}
               </>

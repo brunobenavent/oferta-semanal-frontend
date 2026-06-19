@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { Download, Share2, ArrowUpDown, Link2, Camera, Trash2 } from 'lucide-react';
-import api from '../api/axios'; // Instancia con auth interceptor
+import { Download, Share2, ArrowUpDown, Link2, Camera, Trash2, Package, Truck, Columns } from 'lucide-react';
+import api from '../api/axios';
 import HeartIcon from './HeartIcon';
 import Pagination from './Pagination';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
+import { usePreOrder } from '../context/PreOrderContext';
 import { getCloudinaryUrl } from '../utils/cloudinaryUrl';
 import { useToast } from './Toast';
+import { calcKarryProgress, calcTablaProgress } from '../utils/calcPreorder';
 
 const OFFER_CENTERS = [
   { key: 'ofertaNuevoEspacio', label: 'Nuevo Espacio', color: 'verde-botella' },
@@ -39,7 +41,8 @@ function getPriceConfig(roles, priceTier) {
 
 export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading, exporting, onRefresh }) {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { user } = useAuth();
+  const { user, isClient } = useAuth();
+  const { draftItems, updateUnidades, setFromKarrys, setFromTablas } = usePreOrder();
   const { addToast } = useToast();
   const fileInputRef = useRef(null);
   const [uploadingCodigo, setUploadingCodigo] = useState(null);
@@ -202,6 +205,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
             <th className="th-uds">Uds</th>
             <th className="th-fam">Familia</th>
             <th className="th-precios">€€€</th>
+            {isClient && <th className="th-pedido">Pedido</th>}
           </tr>
         </thead>
         <tbody>
@@ -217,11 +221,12 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                 <td><div className="skeleton-cell" style={{ width: '25%' }} /></td>
                 <td><div className="skeleton-cell" style={{ width: '50%' }} /></td>
                 <td><div className="skeleton-cell" style={{ width: '40%' }} /></td>
+                {isClient && <td><div className="skeleton-cell" style={{ width: '30%' }} /></td>}
               </tr>
             ))
           ) : !offers || offers.length === 0 ? (
             <tr>
-              <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
+              <td colSpan={isClient ? 10 : 9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
                 No se encontraron resultados
               </td>
             </tr>
@@ -368,6 +373,49 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                     )}
                   </div>
                 </td>
+                {isClient && (
+                  <td className="cell-pedido" onClick={e => e.stopPropagation()}>
+                    <div className="pedido-cell-inner">
+                      <div className="pedido-row">
+                        <span className="pedido-label">Uds</span>
+                        <input
+                          type="number" min="0"
+                          className="pedido-input"
+                          value={draftItems.get(offer.codigoArticulo)?.unidades || 0}
+                          onChange={e => updateUnidades(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
+                        />
+                      </div>
+                      {(offer.undsCarro > 0) && (
+                        <div className="pedido-row">
+                          <Truck size={12} className="pedido-icon" />
+                          <input
+                            type="number" min="0"
+                            className="pedido-input"
+                            value={draftItems.get(offer.codigoArticulo)?.karrys || 0}
+                            onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0)}
+                          />
+                          <div className="pedido-progress">
+                            <div className="pedido-progress-fill" style={{width: `${calcKarryProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsCarro)}%`}} />
+                          </div>
+                        </div>
+                      )}
+                      {(offer.undsTabla > 0) && (
+                        <div className="pedido-row">
+                          <Columns size={12} className="pedido-icon" />
+                          <input
+                            type="number" min="0"
+                            className="pedido-input"
+                            value={draftItems.get(offer.codigoArticulo)?.tablas || 0}
+                            onChange={e => setFromTablas(offer.codigoArticulo, parseInt(e.target.value) || 0)}
+                          />
+                          <div className="pedido-progress">
+                            <div className="pedido-progress-fill" style={{width: `${calcTablaProgress(draftItems.get(offer.codigoArticulo)?.unidades || 0, offer.undsTabla)}%`}} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))
           )}

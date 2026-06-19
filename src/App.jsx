@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
+import { PreOrderProvider } from './context/PreOrderContext';
 import { ToastProvider } from './components/Toast';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -23,6 +24,7 @@ import Users from './pages/Users';
 import Clients from './pages/Clients';
 import NotFound from './pages/NotFound';
 import Contacto from './pages/Contacto';
+import PreOrders from './pages/PreOrders';
 // UserForm deprecated — all CRUD via modal in Users.jsx
 // import UserForm from './pages/UserForm';
 
@@ -57,30 +59,33 @@ function App() {
         <AuthProvider>
         <Goodbye />
         <FavoritesProvider>
-          <Navbar semana={semana} totalSinFiltros={totalSinFiltros} filteredCount={filteredCount} />
-          <CookieBanner />
-          <div className="main-content">
-            <Routes>
-              <Route path="/" element={<Home onShare={handleShare} onSemana={setSemana} onCounts={handleCounts} />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/verify" element={<Verify />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/contact" element={<Contacto />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/users/new" element={<Navigate to="/users" replace />} />
-              <Route path="/users/:id/edit" element={<Navigate to="/users" replace />} />
-              <Route path="/clientes" element={<Clients />} />
-              <Route path="*" element={<NotFound />} />
-              <Route path="/aviso-legal" element={<AvisoLegal />} />
-              <Route path="/condiciones-generales" element={<CondicionesGenerales />} />
-              <Route path="/privacidad" element={<Privacidad />} />
-              <Route path="/cookies" element={<Cookies />} />
-            </Routes>
-          </div>
-          <Footer />
+          <PreOrderProvider>
+            <Navbar semana={semana} totalSinFiltros={totalSinFiltros} filteredCount={filteredCount} />
+            <CookieBanner />
+            <div className="main-content">
+              <Routes>
+                <Route path="/" element={<Home onShare={handleShare} onSemana={setSemana} onCounts={handleCounts} />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/verify" element={<Verify />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/contact" element={<Contacto />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/users/new" element={<Navigate to="/users" replace />} />
+                <Route path="/users/:id/edit" element={<Navigate to="/users" replace />} />
+                <Route path="/clientes" element={<Clients />} />
+                <Route path="/pedidos" element={<PreOrders />} />
+                <Route path="*" element={<NotFound />} />
+                <Route path="/aviso-legal" element={<AvisoLegal />} />
+                <Route path="/condiciones-generales" element={<CondicionesGenerales />} />
+                <Route path="/privacidad" element={<Privacidad />} />
+                <Route path="/cookies" element={<Cookies />} />
+              </Routes>
+            </div>
+            <Footer />
+          </PreOrderProvider>
         </FavoritesProvider>
         </AuthProvider>
       </ToastProvider>

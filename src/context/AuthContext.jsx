@@ -110,6 +110,7 @@ export function AuthProvider({ children }) {
   const isAdmin = roles.includes('admin');
   const isEmployee = roles.includes('employee');
   const isCommercial = roles.includes('commercial');
+  const isClient = roles.includes('client');
   const isSuperadminOrAdmin = isSuperadmin || isAdmin;
 
   const value = {
@@ -121,6 +122,7 @@ export function AuthProvider({ children }) {
     isAdmin,
     isEmployee,
     isCommercial,
+    isClient,
     isSuperadminOrAdmin,
     login,
     register,

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Package, Truck, Columns } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePreOrder } from '../context/PreOrderContext';
 import './Navbar.css';
 import '../pages/AuthPages.css';
 
@@ -9,7 +11,7 @@ function formatCount(n) {
 }
 
 export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
-  const { user, isAuthenticated, isSuperadminOrAdmin, isCommercial, isEmployee, logout, loading } = useAuth();
+  const { user, isAuthenticated, isSuperadminOrAdmin, isCommercial, isEmployee, isClient, logout, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
@@ -21,6 +23,8 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
       ? `${formatCount(filteredCount)} de ${formatCount(totalSinFiltros)} artículos encontrados`
       : `${formatCount(totalSinFiltros)} artículos`
     : '';
+
+  const { totals } = usePreOrder();
 
   const handleLogout = () => {
     setShowLogoutConfirm(false);
@@ -78,6 +82,23 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
               ) : !isAuthenticated ? (
                 <Link to="/login" className="nav-login-link">Acceder</Link>
               ) : (
+                <div className="nav-user-section">
+                {isClient && (
+                  <div className="nav-order-indicators">
+                    <span className="nav-order-badge" title="Unidades">
+                      <Package size={16} />
+                      <span>{totals.unidades}</span>
+                    </span>
+                    <span className="nav-order-badge" title="Karrys">
+                      <Truck size={16} />
+                      <span>{totals.karrys}</span>
+                    </span>
+                    <span className="nav-order-badge" title="Tablas">
+                      <Columns size={16} />
+                      <span>{totals.tablas}</span>
+                    </span>
+                  </div>
+                )}
                 <div className="nav-user-info">
                 <Link to="/profile" className="nav-user-avatar">
                   {user.photo ? (
@@ -97,6 +118,7 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
                 <button onClick={() => setShowLogoutConfirm(true)} className="nav-logout-btn">
                   Salir
                 </button>
+              </div>
               </div>
             )}
           </div>

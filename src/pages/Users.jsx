@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 import { Users as UsersIcon, Search, X, RefreshCw, Trash, Pencil, UserCheck, Power, PowerOff, Plus } from 'lucide-react';
 import UserFormModal from '../components/UserFormModal';
 import './AuthPages.css';
@@ -12,6 +13,7 @@ export default function UsersPage({ mode = 'empleados' }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [commercials, setCommercials] = useState([]);
 
   // ── Unified form modal: null | 'add' | user object ──
   const [formModal, setFormModal] = useState(null);
@@ -46,6 +48,21 @@ export default function UsersPage({ mode = 'empleados' }) {
       setLoading(false);
     }
   };
+
+  // ── Load commercials list for the multi-select in the form ──
+  const loadCommercials = async () => {
+    try {
+      const { data } = await api.get('/users', { params: { rol: 'commercial' } });
+      const list = data.users || data || [];
+      setCommercials(list);
+    } catch (err) {
+      console.error('Error loading commercials:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadCommercials();
+  }, []);
 
   const handleToggleActive = async (user) => {
     try {
@@ -139,6 +156,27 @@ export default function UsersPage({ mode = 'empleados' }) {
       case 'commercial': return 'Comercial';
       default: return role;
     }
+  };
+
+  const renderAssignedCommercials = (user) => {
+    if (!user.assignedCommercials || !Array.isArray(user.assignedCommercials) || user.assignedCommercials.length === 0) {
+      return <span style={{ color: 'var(--color-text-muted)' }}>—</span>;
+    }
+    const names = user.assignedCommercials.map(c => {
+      if (typeof c === 'object' && c.nombre) return c.nombre;
+      const found = commercials.find(com => com._id === c);
+      return found ? (found.nombre || found.name) : null;
+    }).filter(Boolean);
+    if (names.length === 0) return <span style={{ color: 'var(--color-text-muted)' }}>—</span>;
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+        {names.map((name, i) => (
+          <span key={i} className="role-badge role-badge--commercial" style={{ fontSize: '0.75rem' }}>
+            {name}
+          </span>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -275,6 +313,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                   {mode === 'empleados' && <col className="col-idiomas" />}
                   {mode === 'clientes' && <col className="col-cif" />}
                   {mode === 'clientes' && <col className="col-autorizado" />}
+                  {mode === 'clientes' && <col className="col-comerciales" />}
                   {mode === 'clientes' && <col className="col-tarifa" />}
                   <col className="col-estado" />
                   <col className="col-acciones" />
@@ -290,6 +329,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                     {mode === 'empleados' && <th>Idiomas</th>}
                     {mode === 'clientes' && <th>CIF</th>}
                     {mode === 'clientes' && <th>Autorizado</th>}
+                    {mode === 'clientes' && <th>Comerciales</th>}
                     {mode === 'clientes' && <th>Tarifa</th>}
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -307,6 +347,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                       {mode === 'empleados' && <td><div className="skeleton" style={{ width: 60, height: 16, borderRadius: 4 }} /></td>}
                       {mode === 'clientes' && <td><div className="skeleton" style={{ width: 80, height: 16, borderRadius: 4 }} /></td>}
                       {mode === 'clientes' && <td><div className="skeleton" style={{ width: 110, height: 16, borderRadius: 4 }} /></td>}
+                      {mode === 'clientes' && <td><div className="skeleton" style={{ width: 100, height: 16, borderRadius: 4 }} /></td>}
                       {mode === 'clientes' && <td><div className="skeleton" style={{ width: 50, height: 16, borderRadius: 4 }} /></td>}
                       <td><div className="skeleton" style={{ width: 60, height: 16, borderRadius: 4 }} /></td>
                       <td><div className="skeleton" style={{ width: 130, height: 32, borderRadius: 6 }} /></td>
@@ -354,6 +395,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                   {mode === 'empleados' && <col className="col-idiomas" />}
                   {mode === 'clientes' && <col className="col-cif" />}
                   {mode === 'clientes' && <col className="col-autorizado" />}
+                  {mode === 'clientes' && <col className="col-comerciales" />}
                   {mode === 'clientes' && <col className="col-tarifa" />}
                   <col className="col-estado" />
                   <col className="col-acciones" />
@@ -369,6 +411,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                     {mode === 'empleados' && <th>Idiomas</th>}
                     {mode === 'clientes' && <th>CIF</th>}
                     {mode === 'clientes' && <th>Autorizado</th>}
+                    {mode === 'clientes' && <th>Comerciales</th>}
                     {mode === 'clientes' && <th>Tarifa</th>}
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -377,7 +420,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                 <tbody>
                   {filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={9} style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--color-text-muted)' }}>
+                      <td colSpan={mode === 'clientes' ? 10 : 9} style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--color-text-muted)' }}>
                         {search ? 'No se encontraron usuarios con ese criterio' : 'No hay usuarios registrados'}
                       </td>
                     </tr>
@@ -462,6 +505,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                         {mode === 'clientes' && (
                           <td>{u.authorizedName ? u.authorizedName : '—'}</td>
                         )}
+                        {mode === 'clientes' && <td>{renderAssignedCommercials(u)}</td>}
                         {mode === 'clientes' && <td><strong>T{u.priceTier || 2}</strong></td>}
                         <td>
                           <span style={{
@@ -586,6 +630,16 @@ export default function UsersPage({ mode = 'empleados' }) {
                       {(u.roles || [u.role]).includes('client') && u.cif && <p>CIF: {u.cif}</p>}
                       {(u.roles || [u.role]).includes('client') && u.taxAddress && <p>Dir. Fiscal: {u.taxAddress}</p>}
                       {(u.roles || [u.role]).includes('client') && u.authorizedName && <p>Autorizado: {u.authorizedName}</p>}
+                      {(u.roles || [u.role]).includes('client') && u.assignedCommercials && Array.isArray(u.assignedCommercials) && u.assignedCommercials.length > 0 && (
+                        <p>
+                          Comerciales:{' '}
+                          {u.assignedCommercials.map(c => {
+                            if (typeof c === 'object' && c.nombre) return c.nombre;
+                            const found = commercials.find(com => com._id === c);
+                            return found ? (found.nombre || found.name) : null;
+                          }).filter(Boolean).join(', ')}
+                        </p>
+                      )}
                       {u.languages && u.languages.length > 0 && !(u.roles || [u.role]).includes('client') && (
                         <p>Idiomas: {u.languages.map(l => l.name).join(', ')}</p>
                       )}
@@ -662,6 +716,7 @@ export default function UsersPage({ mode = 'empleados' }) {
           user={formModal === 'add' ? null : formModal}
           onClose={() => setFormModal(null)}
           onSaved={handleFormSaved}
+          commercials={commercials}
         />
       )}
 
