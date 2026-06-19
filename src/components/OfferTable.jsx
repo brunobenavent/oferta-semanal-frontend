@@ -398,18 +398,15 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           title="-1 unidad"
                           type="button"
                         >−</button>
-                        <input
-                          type="number" min="0" max="9999"
-                          className="pedido-input pedido-input--uds"
-                          value={draftItems.get(offer.codigoArticulo)?.unidades || 0}
-                          onChange={e => updateUnidades(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
-                        />
                         <button
                           className="pedido-add-btn"
                           onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
                           title="+1 unidad"
                           type="button"
                         >+</button>
+                        <span className="pedido-uds-value">
+                          {draftItems.get(offer.codigoArticulo)?.unidades || 0}
+                        </span>
                       </div>
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
