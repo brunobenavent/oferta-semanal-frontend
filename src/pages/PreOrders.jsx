@@ -93,6 +93,10 @@ export default function PreOrders() {
   const modalRef = useRef(null);
 
   // ── Load orders ──
+  // ── Client: watch for preorder sent events ──
+  const preOrderCtx = useContext(PreOrderContext);
+  const preorderSentVersion = preOrderCtx?.preorderSentVersion || 0;
+
   const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
@@ -258,11 +262,9 @@ export default function PreOrders() {
   const canDelete = isSuperadminOrAdmin && displayOrder;
 
   // ── Client: current draft from PreOrderContext ──
-  const preOrderCtx = useContext(PreOrderContext);
   const draftItems = preOrderCtx?.draftItems || new Map();
   const isDraftEmpty = !isClient || draftItems.size === 0;
   const sendPreorder = preOrderCtx?.sendPreorder || (() => {});
-  const preorderSentVersion = preOrderCtx?.preorderSentVersion || 0;
 
   // ── Render ──
   return (
