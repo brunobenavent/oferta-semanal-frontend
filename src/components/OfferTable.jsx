@@ -48,6 +48,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
   const [uploadingCodigo, setUploadingCodigo] = useState(null);
   const [deletingCodigo, setDeletingCodigo] = useState(null);
   const [confirmDeleteCodigo, setConfirmDeleteCodigo] = useState(null);
+  const [udsInputCounters, setUdsInputCounters] = useState({}); // per-article counter to force input reset
   const pc = getPriceConfig(user?.roles || [user?.role].filter(Boolean), user?.priceTier);
 
   const [shareOpen, setShareOpen] = useState(false);
@@ -390,8 +391,17 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                         <input
                           type="number" min="0"
                           className="pedido-input"
-                          value={draftItems.get(offer.codigoArticulo)?.unidades || 0}
-                          onChange={e => updateUnidades(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
+                          placeholder="0"
+                          key={`uds-${offer.codigoArticulo}-${udsInputCounters[offer.codigoArticulo] || 0}`}
+                          defaultValue=""
+                          onChange={e => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val) && val > 0) {
+                              updateUnidades(offer.codigoArticulo, val, offer);
+                            }
+                            // Force input re-mount on next render (resets to empty)
+                            setUdsInputCounters(prev => ({ ...prev, [offer.codigoArticulo]: (prev[offer.codigoArticulo] || 0) + 1 }));
+                          }}
                         />
                       </div>
                       {(offer.undsTabla > 0) && (
