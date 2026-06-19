@@ -103,7 +103,7 @@ export default function PreOrders() {
       setError(null);
       const { data } = await api.get('/preorders');
       // Handle various response shapes — ensure array
-      const list = data?.data || data?.orders || data;
+      const list = data?.preorders || data?.data || data?.orders || data;
       setOrders(Array.isArray(list) ? list : []);
     } catch (err) {
       const msg = err?.response?.data?.error || err?.response?.data?.message || 'Error al cargar pedidos';
