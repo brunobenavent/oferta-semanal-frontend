@@ -222,7 +222,7 @@ export function PreOrderProvider({ children }) {
     });
   }, [draft, scheduleSave]);
 
-  // ── Send preorder (borrador → enviado) ──
+  // ── Send preorder (borrador → pendiente) ──
   const sendPreorder = useCallback(async () => {
     if (!draft?._id || draft.estado !== 'borrador') return;
     if (draftItems.size === 0) {
@@ -256,10 +256,10 @@ export function PreOrderProvider({ children }) {
       });
 
       const { data } = await api.patch(`/preorders/${draft._id}/estado`, {
-        estado: 'enviado',
+        estado: 'pendiente',
       });
 
-      addToast('Prepedido enviado correctamente', 'success');
+      addToast('Pedido enviado al comercial', 'success');
 
       // Clear and create new draft
       localStorage.removeItem(`${LS_PREFIX}${userId}`);

@@ -208,7 +208,7 @@ export default function PreOrders() {
   // ── Filter orders locally ──
   const filteredOrders = Array.isArray(orders) ? orders.filter(order => {
     const cliente = order.cliente || {};
-    const comercial = order.comercial || {};
+    const comercial = order.comerciales?.[0] || {};
     const searchLower = search.toLowerCase();
 
     if (search) {
@@ -397,7 +397,7 @@ export default function PreOrders() {
             <tbody>
               {filteredOrders.map(order => {
                 const cliente = order.cliente || {};
-                const comercial = order.comercial || {};
+                const comercial = order.comerciales?.[0] || {};
                 const actions = getStatusActions(order.estado, roles);
 
                 return (
@@ -420,7 +420,7 @@ export default function PreOrders() {
                     </td>
                     <td className="td-date">
                       <Calendar size={13} />
-                      {formatFecha(order.fecha || order.createdAt)}
+                      {formatFecha(order.createdAt)}
                     </td>
                     <td className="td-items">{getItemsCount(order)}</td>
                     <td className="td-total">{getTotalUnidades(order)}</td>
@@ -542,16 +542,16 @@ export default function PreOrders() {
                     </div>
                     <div className="preorders-info-item">
                       <span className="preorders-info-label"><User size={14} /> Comercial</span>
-                      <span className="preorders-info-value">{displayOrder.comercial?.nombre || '—'}</span>
+                      <span className="preorders-info-value">{displayOrder.comerciales?.[0]?.nombre || '—'}</span>
                     </div>
                     <div className="preorders-info-item">
                       <span className="preorders-info-label"><Calendar size={14} /> Fecha</span>
-                      <span className="preorders-info-value">{formatFecha(displayOrder.fecha || displayOrder.createdAt)}</span>
+                      <span className="preorders-info-value">{formatFecha(displayOrder.createdAt)}</span>
                     </div>
-                    {displayOrder.observaciones && (
+                    {displayOrder.notas && (
                       <div className="preorders-info-item preorders-info-item--full">
                         <span className="preorders-info-label"><Activity size={14} /> Observaciones</span>
-                        <span className="preorders-info-value">{displayOrder.observaciones}</span>
+                        <span className="preorders-info-value">{displayOrder.notas}</span>
                       </div>
                     )}
                   </div>
@@ -608,7 +608,7 @@ export default function PreOrders() {
                     <h4><Activity size={16} /> Historial de cambios</h4>
                     <div className="preorders-timeline">
                       {displayOrder.historial.map((entry, idx) => {
-                        const cfg = STATUS_CONFIG[entry.estado] || STATUS_CONFIG[entry.estadoNuevo] || {};
+                        const cfg = STATUS_CONFIG[entry.estado] || {};
                         const Icon = cfg.icon || Activity;
                         return (
                           <div key={idx} className="preorders-timeline-item">
@@ -617,14 +617,14 @@ export default function PreOrders() {
                             </div>
                             <div className="preorders-timeline-content">
                               <span className="preorders-timeline-state" style={{ color: cfg.color || '#9CA3AF' }}>
-                                {cfg.label || entry.estado || entry.estadoNuevo}
+                                {cfg.label || entry.estado}
                               </span>
                               <span className="preorders-timeline-date">
-                                {formatFecha(entry.fecha || entry.createdAt)}
+                                {formatFecha(entry.at)}
                               </span>
-                              {entry.usuario?.nombre && (
+                              {entry.by?.nombre && (
                                 <span className="preorders-timeline-user">
-                                  por {entry.usuario.nombre}
+                                  por {entry.by.nombre}
                                 </span>
                               )}
                             </div>
