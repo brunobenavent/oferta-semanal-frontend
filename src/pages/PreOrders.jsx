@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import {
   Search, X, RefreshCw, Loader2, AlertCircle,
   FileEdit, Clock, SearchCheck, CheckCircle,
@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { usePreOrder } from '../context/PreOrderContext';
+import { PreOrderContext } from '../context/PreOrderContext';
 import { useToast } from '../components/Toast';
 import './PreOrders.css';
 
@@ -98,8 +98,9 @@ export default function PreOrders() {
       setLoading(true);
       setError(null);
       const { data } = await api.get('/preorders');
-      // Handle various response shapes
-      setOrders(data?.data || data?.orders || data || []);
+      // Handle various response shapes — ensure array
+      const list = data?.data || data?.orders || data;
+      setOrders(Array.isArray(list) ? list : []);
     } catch (err) {
       const msg = err?.response?.data?.error || err?.response?.data?.message || 'Error al cargar pedidos';
       setError(msg);
@@ -205,7 +206,7 @@ export default function PreOrders() {
   }, [actionLoading, addToast, closeModal]);
 
   // ── Filter orders locally ──
-  const filteredOrders = (orders || []).filter(order => {
+  const filteredOrders = Array.isArray(orders) ? orders.filter(order => {
     const cliente = order.cliente || {};
     const comercial = order.comercial || {};
     const searchLower = search.toLowerCase();
@@ -221,7 +222,7 @@ export default function PreOrders() {
     if (statusFilter && order.estado !== statusFilter) return false;
 
     return true;
-  });
+  }) : [];
 
   // ── Compute table totals ──
   const getItemsCount = (order) => {
@@ -257,7 +258,7 @@ export default function PreOrders() {
   const canDelete = isSuperadminOrAdmin && displayOrder;
 
   // ── Client: current draft from PreOrderContext ──
-  const preOrderCtx = (() => { try { return usePreOrder(); } catch { return null; } })();
+  const preOrderCtx = useContext(PreOrderContext);
   const draftItems = preOrderCtx?.draftItems || new Map();
   const isDraftEmpty = !isClient || draftItems.size === 0;
   const sendPreorder = preOrderCtx?.sendPreorder || (() => {});

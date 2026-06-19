@@ -6,6 +6,8 @@ import { calcFromUnidades, applyUnidades, applyKarrys, applyTablas } from '../ut
 
 const PreOrderContext = createContext(null);
 
+export { PreOrderContext };
+
 const DEBOUNCE_MS = 1500;
 const LS_PREFIX = 'preorder-draft-';
 
