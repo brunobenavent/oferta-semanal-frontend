@@ -70,7 +70,7 @@ export function PreOrderProvider({ children }) {
   }, [authLoading, isAuthenticated, isClient, userId]);
 
   // ── Auto-save with debounce ──
-  const scheduleSave = useCallback((items, updatedAt) => {
+  const scheduleSave = useCallback((items) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(async () => {
@@ -93,7 +93,7 @@ export function PreOrderProvider({ children }) {
 
         const { data } = await api.patch(`/preorders/${draft._id}/items`, {
           items: itemsArray,
-          updatedAt,
+          updatedAt: lastSavedRef.current,
         });
         setDraft(data);
         lastSavedRef.current = data.updatedAt;
@@ -105,8 +105,7 @@ export function PreOrderProvider({ children }) {
         }])));
       } catch (err) {
         if (err.response?.status === 409) {
-          addToast('El prepedido fue modificado en otro lugar. Recargando...', 'error');
-          // Reload draft
+          // Silently reload — our version was stale
           try {
             const { data } = await api.get(`/preorders/${draft._id}`);
             setDraft(data);
