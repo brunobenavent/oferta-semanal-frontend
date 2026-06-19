@@ -1085,6 +1085,11 @@
   background: var(--color-text-secondary);
 }
 
+/* Uds input when placed between +/- buttons */
+.pedido-input--uds {
+  width: 44px;
+}
+
 /* current Uds value display */
 .pedido-uds-value {
   font-size: 0.85rem;
