@@ -405,6 +405,25 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           type="button"
                         >+</button>
                       </div>
+                      {offer.undsTabla === 0 && offer.undsCarro === 0 && (
+                        <div className="pedido-row">
+                          <button
+                            className="pedido-add-btn pedido-add-btn--x10"
+                            onClick={() => updateUnidades(offer.codigoArticulo, 10, offer)}
+                            type="button"
+                          >+10</button>
+                          <button
+                            className="pedido-add-btn pedido-add-btn--x10 pedido-add-btn--minus"
+                            onClick={() => {
+                              const item = draftItems.get(offer.codigoArticulo);
+                              if ((item?.unidades || 0) >= 10) {
+                                updateUnidades(offer.codigoArticulo, -10, offer);
+                              }
+                            }}
+                            type="button"
+                          >−10</button>
+                        </div>
+                      )}
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
                           <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Tabla">
