@@ -111,7 +111,7 @@ export default function PreOrders() {
     }
   }, [addToast]);
 
-  useEffect(() => { loadOrders(); }, [loadOrders]);
+  useEffect(() => { loadOrders(); }, [loadOrders, preorderSentVersion]);
 
   // ── Load order detail ──
   const loadDetail = useCallback(async (orderId) => {
@@ -262,6 +262,7 @@ export default function PreOrders() {
   const draftItems = preOrderCtx?.draftItems || new Map();
   const isDraftEmpty = !isClient || draftItems.size === 0;
   const sendPreorder = preOrderCtx?.sendPreorder || (() => {});
+  const preorderSentVersion = preOrderCtx?.preorderSentVersion || 0;
 
   // ── Render ──
   return (

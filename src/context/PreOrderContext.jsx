@@ -20,6 +20,7 @@ export function PreOrderProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [preorderSentVersion, setPreorderSentVersion] = useState(0);
 
   const debounceRef = useRef(null);
   const lastSavedRef = useRef(null); // updatedAt for staleness check
@@ -260,6 +261,7 @@ export function PreOrderProvider({ children }) {
       });
 
       addToast('Pedido enviado al comercial', 'success');
+      setPreorderSentVersion(v => v + 1);
 
       // Clear and create new draft
       localStorage.removeItem(`${LS_PREFIX}${userId}`);
@@ -298,6 +300,7 @@ export function PreOrderProvider({ children }) {
     loading,
     saving,
     error,
+    preorderSentVersion,
     isDirty: draftItems.size > 0,
     totals,
     updateUnidades,
