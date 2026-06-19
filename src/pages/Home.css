@@ -1077,6 +1077,14 @@
   transform: scale(0.95);
 }
 
+.pedido-add-btn--minus {
+  background: var(--color-text-muted);
+}
+
+.pedido-add-btn--minus:hover {
+  background: var(--color-text-secondary);
+}
+
 /* current Uds value display */
 .pedido-uds-value {
   font-size: 0.85rem;

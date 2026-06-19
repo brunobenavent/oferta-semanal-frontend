@@ -106,8 +106,9 @@ export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
   const currentKarrys = current?.karrys || 0;
   const currentTablas = current?.tablas || 0;
 
-  // Sumar el delta al remanente actual (clamped to avoid overflow)
-  let u = currentUds + Math.min(MAX, Math.max(0, Math.floor(Number(delta) || 0)));
+  // Sumar el delta al remanente actual (permite negativo para restar)
+  const rawDelta = Math.floor(Number(delta) || 0);
+  let u = Math.max(0, Math.min(MAX, currentUds + rawDelta));
   let newTablas = currentTablas;
   let newKarrys = currentKarrys;
 
