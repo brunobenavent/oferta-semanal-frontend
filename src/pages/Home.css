@@ -982,14 +982,13 @@
 
 /* ── Pedido column (clients) ── */
 .th-pedido {
-  min-width: 120px;
   font-size: 0.75rem;
   text-align: center;
 }
 
 .cell-pedido {
-  min-width: 120px;
   vertical-align: top;
+  padding: 8px 10px !important;
 }
 
 .pedido-cell-inner {
@@ -1192,7 +1191,7 @@
 .offer-table thead th:first-child {
   border-top-left-radius: 12px;
 }
-.offer-table thead th:nth-child(9) {
+.offer-table thead th:last-child {
   border-top-right-radius: 12px;
 }
 
@@ -1467,20 +1466,6 @@
   font-weight: 600;
 }
 
-.precio-line.precio-destacado {
-  display: inline-flex;
-  align-self: flex-start;
-  background: var(--color-primary);
-  border-radius: 6px;
-  padding: 2px 8px;
-  margin: 0 -6px;
-}
-
-.precio-line.precio-destacado .precio-label,
-.precio-line.precio-destacado .precio-valor {
-  color: white;
-}
-
 .precio-line.precio-pvp {
   background: rgba(43, 107, 75, 0.05);
   border-radius: 4px;
@@ -1509,6 +1494,21 @@
   font-size: 0.82rem;
   color: var(--color-text);
   font-weight: 600;
+}
+
+/* ── Highlighted price — must come AFTER :not(.precio-pvp) to win specificity ── */
+.precio-line.precio-destacado {
+  display: inline-flex;
+  align-self: flex-start;
+  background: var(--color-primary);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 0 -6px;
+}
+
+.precio-line.precio-destacado .precio-label,
+.precio-line.precio-destacado .precio-valor {
+  color: white;
 }
 
 /* Table — INFO column (visible only on mobile) */
