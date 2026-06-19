@@ -389,9 +389,21 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                         </svg>
                         <input
                           type="number" min="0" max="9999"
-                          className="pedido-input"
-                          value={draftItems.get(offer.codigoArticulo)?.unidades || 0}
-                          onChange={e => updateUnidades(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
+                          className="pedido-input pedido-input--uds"
+                          defaultValue={0}
+                          onBlur={e => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val) && val > 0) {
+                              updateUnidades(offer.codigoArticulo, val, offer);
+                              e.target.value = '';
+                            }
+                          }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              e.target.blur();
+                            }
+                          }}
                         />
                       </div>
                       {(offer.undsTabla > 0) && (
