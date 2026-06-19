@@ -39,7 +39,12 @@ export function PreOrderProvider({ children }) {
           if (data && data.estado === 'borrador') {
             setDraft(data);
             lastSavedRef.current = data.updatedAt;
-            setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, i])));
+            setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, {
+              ...i,
+              karrys: i.karrys || 0,
+              tablas: i.tablas || 0,
+              unidades: i.unidades || 0,
+            }])));
             return;
           }
           // Draft was sent or deleted — clear localStorage
@@ -79,6 +84,8 @@ export function PreOrderProvider({ children }) {
           undsTabla: i.undsTabla || 0,
           undsCaja: i.undsCaja || 0,
           unidades: i.unidades || 0,
+          karrys: i.karrys || 0,
+          tablas: i.tablas || 0,
           precio1: i.precio1 || 0,
           precio2: i.precio2 || 0,
           precio3: i.precio3 || 0,
@@ -90,7 +97,12 @@ export function PreOrderProvider({ children }) {
         });
         setDraft(data);
         lastSavedRef.current = data.updatedAt;
-        setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, i])));
+        setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, {
+          ...i,
+          karrys: i.karrys || 0,
+          tablas: i.tablas || 0,
+          unidades: i.unidades || 0,
+        }])));
       } catch (err) {
         if (err.response?.status === 409) {
           addToast('El prepedido fue modificado en otro lugar. Recargando...', 'error');
@@ -99,7 +111,12 @@ export function PreOrderProvider({ children }) {
             const { data } = await api.get(`/preorders/${draft._id}`);
             setDraft(data);
             lastSavedRef.current = data.updatedAt;
-            setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, i])));
+            setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, {
+              ...i,
+              karrys: i.karrys || 0,
+              tablas: i.tablas || 0,
+              unidades: i.unidades || 0,
+            }])));
           } catch {}
         } else {
           const msg = err.response?.data?.message || err.message;
@@ -228,6 +245,8 @@ export function PreOrderProvider({ children }) {
           undsTabla: i.undsTabla || 0,
           undsCaja: i.undsCaja || 0,
           unidades: i.unidades || 0,
+          karrys: i.karrys || 0,
+          tablas: i.tablas || 0,
           precio1: i.precio1 || 0,
           precio2: i.precio2 || 0,
           precio3: i.precio3 || 0,
