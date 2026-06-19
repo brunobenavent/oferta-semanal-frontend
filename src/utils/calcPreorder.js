@@ -170,11 +170,26 @@ export function applyKarrys(newKarrys, existing, { undsCarro, undsTabla }) {
  */
 export function applyTablas(newTablas, existing, { undsCarro, undsTabla }) {
   const t = Math.max(0, Math.floor(Number(newTablas) || 0));
+  const currentKarrys = existing?.karrys || 0;
+  const currentUds = existing?.unidades || 0;
+
+  let karrys = currentKarrys;
+  let tablas = t;
+
+  // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
+  // Solo aumenta karrys si el carry-over lo requiere; nunca lo disminuye
+  if (undsCarro > 0 && undsTabla > 0 && undsCarro % undsTabla === 0) {
+    const tablasPorKarry = undsCarro / undsTabla;
+    const karrysFromTablas = Math.floor(t / tablasPorKarry);
+    karrys = Math.max(currentKarrys, karrysFromTablas);
+    tablas = t % tablasPorKarry;
+  }
+
   return {
-    unidades: existing?.unidades || 0,
-    karrys: existing?.karrys || 0,
-    karryProgress: calcKarryProgress(existing?.unidades || 0, undsCarro),
-    tablas: t,
-    tablaProgress: calcTablaProgress(existing?.unidades || 0, undsTabla),
+    unidades: currentUds,
+    karrys,
+    karryProgress: calcKarryProgress(currentUds, undsCarro),
+    tablas,
+    tablaProgress: calcTablaProgress(currentUds, undsTabla),
   };
 }
