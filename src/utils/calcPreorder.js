@@ -2,19 +2,19 @@
  * Cálculos bidireccionales para el sistema de prepedidos.
  *
  * Modelo de rollover (Uds → karrys → tablas):
- *   - El input principal es Uds.
- *   - Al escribir N en Uds, se intenta llenar karrys primero (si undsCarro > 0),
- *     lo que sobra se reparte a tablas (si undsTabla > 0), y el remanente queda en Uds.
+ *   - El input principal es Uds. El valor escrito se SUMA al remanente actual.
+ *   - El TOTAL (remanente + delta) se reparte: karrys primero (si undsCarro > 0),
+ *     lo que sobra a tablas (si undsTabla > 0), el resto queda en Uds.
  *   - Al escribir N en karrys, las unidades pasan a N * undsCarro (exacto, sin rollover
  *     hacia tablas, porque karrys es un input secundario y no se completa a sí mismo).
  *   - Igual para tablas.
  *
- * Ejemplos (undsCarro=50, undsTabla=8):
- *   - Uds=58  → karrys=1, tablas=1, Uds=0   (1×50 + 1×8 + 0 = 58)
- *   - Uds=20  → karrys=0, tablas=2, Uds=4   (0×50 + 2×8 + 4 = 20)
- *   - Uds=1   → karrys=0, tablas=0, Uds=1   (no completa nada)
- *   - karrys=1 → Uds=0 (50 unidades exactas)
- *   - tablas=2 → Uds=0 (16 unidades exactas)
+ * Ejemplos (undsCarro=6, undsTabla=3, current={karrys:0, tablas:1, unidades:2}):
+ *   - Uds=4  → total=6  → karrys=0+1=1, tablas=1+0=1, Uds=0
+ *   - Uds=8  → total=10 → karrys=0+1=1, tablas=1+1=2, Uds=1
+ *   - Uds=3  → total=5  → karrys=0+0=0, tablas=1+1=2, Uds=2  (no completa karry porque 5<6)
+ *   - karrys=1 → Uds=6 (1×6=6 → Uds=0, karrys=1, tablas=2)
+ *   - tablas=2 → Uds=6 (2×3=6 → Uds=0, tablas=2, karrys=1)
  */
 
 /**
@@ -82,20 +82,27 @@ export function calcFromTablas(tablas, { undsCarro, undsTabla }) {
 /**
  * Aplica el valor escrito en Uds con rollover cascade Uds → karrys → tablas.
  *
- * El valor escrito en Uds REEMPLAZA el `current.unidades`, pero los karrys
- * y tablas que se "completan" se SUMAN a los valores actuales (current.karrys,
- * current.tablas). Esto preserva el caso de que el usuario ya tenía 2 karrys
- * y agrega 8 unidades → karrys=3, no karrys=1.
+ * El valor escrito en Uds se SUMA al remanente actual (current.unidades) y el
+ * TOTAL se reparte: karrys primero, después tablas, el resto queda como
+ * remanente. Los karrys/tablas que se "completan" se SUMAN a current.karrys /
+ * current.tablas (no se sobrescriben).
  *
- * @param {number} newUnidades - El valor escrito en el input Uds
- * @param {object} current - Estado actual: { karrys, tablas }
+ * Ejemplo (UCC=6, UTA=3, current={karrys:0, tablas:1, unidades:2}):
+ *   - Uds=4 → total=6 → karrys=0+1=1, tablas=1+0=1, unidades=0
+ *   - Uds=8 → total=10 → karrys=0+1=1, tablas=1+1=2, unidades=1
+ *
+ * @param {number} delta - El valor escrito en el input Uds (se suma al remanente)
+ * @param {object} current - Estado actual: { karrys, tablas, unidades }
  * @param {object} cfg - { undsCarro, undsTabla }
  * @returns {object} - { unidades, karrys, tablas, karryProgress, tablaProgress }
  */
-export function applyUnidades(newUnidades, current, { undsCarro, undsTabla }) {
-  let u = Math.max(0, Math.floor(Number(newUnidades) || 0));
+export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
+  const currentUds = current?.unidades || 0;
   const currentKarrys = current?.karrys || 0;
   const currentTablas = current?.tablas || 0;
+
+  // Sumar el delta al remanente actual
+  let u = currentUds + Math.max(0, Math.floor(Number(delta) || 0));
 
   // Cascade: Uds → karrys
   let extraKarrys = 0;

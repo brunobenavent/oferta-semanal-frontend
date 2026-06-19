@@ -440,6 +440,28 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           </div>
                         </div>
                       )}
+                      {/* Resumen de unidades totales (karrys×UCC + tablas×UTA + uds sueltas) */}
+                      {(() => {
+                        const item = draftItems.get(offer.codigoArticulo);
+                        if (!item) return null;
+                        const k = item.karrys || 0;
+                        const t = item.tablas || 0;
+                        const u = item.unidades || 0;
+                        const UCC = offer.undsCarro || 0;
+                        const UTA = offer.undsTabla || 0;
+                        const total = k * UCC + t * UTA + u;
+                        if (total === 0) return null;
+                        const parts = [];
+                        if (k > 0) parts.push(`${k} karry${k > 1 ? 's' : ''}`);
+                        if (t > 0) parts.push(`${t} tabla${t > 1 ? 's' : ''}`);
+                        if (u > 0) parts.push(`${u} ud${u > 1 ? 's' : ''}`);
+                        return (
+                          <div className="pedido-summary" title={`${k}×${UCC} + ${t}×${UTA} + ${u} = ${total}`}>
+                            <span className="pedido-summary-total">{total} ud{total > 1 ? 's' : ''}</span>
+                            <span className="pedido-summary-breakdown">{parts.join(' + ')}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </td>
                 )}
