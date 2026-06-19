@@ -109,31 +109,58 @@ export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
   // Sumar el delta al remanente actual (permite negativo para restar)
   const rawDelta = Math.floor(Number(delta) || 0);
   let u = Math.max(0, Math.min(MAX, currentUds + rawDelta));
-  let newTablas = currentTablas;
-  let newKarrys = currentKarrys;
 
+  // Cascade general: Uds → tablas → karrys (funciona con cualquier UCC/UTA)
   if (undsTabla > 0) {
-    // Cascade: Uds → tablas
-    newTablas += Math.floor(u / undsTabla);
-    u = u % undsTabla;
+    const extraTablas = Math.floor(u / undsTabla);
+    const tempUds = u % undsTabla;
+    const totalTablas = currentTablas + extraTablas;
+    const totalTablasUds = totalTablas * undsTabla + tempUds;
 
-    // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
-    if (undsCarro > 0 && undsCarro % undsTabla === 0) {
-      const tablasPorKarry = undsCarro / undsTabla;
-      newKarrys += Math.floor(newTablas / tablasPorKarry);
-      newTablas = newTablas % tablasPorKarry;
+    if (undsCarro > 0) {
+      const totalKarrys = currentKarrys + Math.floor(totalTablasUds / undsCarro);
+      const remaining = totalTablasUds % undsCarro;
+      const finalTablas = Math.floor(remaining / undsTabla);
+      u = remaining % undsTabla;
+
+      return {
+        unidades: u,
+        karrys: totalKarrys,
+        karryProgress: calcKarryProgress(u, undsCarro),
+        tablas: finalTablas,
+        tablaProgress: calcTablaProgress(u, undsTabla),
+      };
     }
-  } else if (undsCarro > 0) {
-    // Sin tablas, cascade directo: Uds → karrys
-    newKarrys += Math.floor(u / undsCarro);
-    u = u % undsCarro;
+
+    // Sin karrys: solo tablas + uds
+    return {
+      unidades: tempUds,
+      karrys: currentKarrys,
+      karryProgress: calcKarryProgress(tempUds, undsCarro),
+      tablas: totalTablas,
+      tablaProgress: calcTablaProgress(tempUds, undsTabla),
+    };
   }
 
+  if (undsCarro > 0) {
+    // Sin tablas, cascade directo: Uds → karrys
+    const extraKarrys = Math.floor(u / undsCarro);
+    u = u % undsCarro;
+    return {
+      unidades: u,
+      karrys: currentKarrys + extraKarrys,
+      karryProgress: calcKarryProgress(u, undsCarro),
+      tablas: currentTablas,
+      tablaProgress: calcTablaProgress(u, undsTabla),
+    };
+  }
+
+  // Sin tablas ni karrys: solo unidades
   return {
     unidades: u,
-    karrys: newKarrys,
+    karrys: currentKarrys,
     karryProgress: calcKarryProgress(u, undsCarro),
-    tablas: newTablas,
+    tablas: currentTablas,
     tablaProgress: calcTablaProgress(u, undsTabla),
   };
 }
@@ -173,24 +200,31 @@ export function applyTablas(newTablas, existing, { undsCarro, undsTabla }) {
   const currentKarrys = existing?.karrys || 0;
   const currentUds = existing?.unidades || 0;
 
-  let karrys = currentKarrys;
-  let tablas = t;
+  if (undsCarro > 0 && undsTabla > 0) {
+    // Convertir karrys existentes + nuevas tablas a unidades totales
+    const existingKarrysUds = currentKarrys * undsCarro;
+    const totalTablasUds = t * undsTabla;
+    const totalUds = existingKarrysUds + totalTablasUds;
 
-  // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
-  // Convertir karrys existentes a "tablas equivalentes" para el cálculo
-  if (undsCarro > 0 && undsTabla > 0 && undsCarro % undsTabla === 0) {
-    const tablasPorKarry = undsCarro / undsTabla;
-    const existingEquivalentTablas = currentKarrys * tablasPorKarry;
-    const totalEquivalentTablas = existingEquivalentTablas + t;
-    karrys = Math.floor(totalEquivalentTablas / tablasPorKarry);
-    tablas = totalEquivalentTablas % tablasPorKarry;
+    const finalKarrys = Math.floor(totalUds / undsCarro);
+    const remaining = totalUds % undsCarro;
+    const finalTablas = Math.floor(remaining / undsTabla);
+    const finalUds = remaining % undsTabla;
+
+    return {
+      unidades: finalUds,
+      karrys: finalKarrys,
+      karryProgress: calcKarryProgress(finalUds, undsCarro),
+      tablas: finalTablas,
+      tablaProgress: calcTablaProgress(finalUds, undsTabla),
+    };
   }
 
   return {
     unidades: currentUds,
-    karrys,
+    karrys: currentKarrys,
     karryProgress: calcKarryProgress(currentUds, undsCarro),
-    tablas,
+    tablas: t,
     tablaProgress: calcTablaProgress(currentUds, undsTabla),
   };
 }
