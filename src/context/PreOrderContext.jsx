@@ -163,13 +163,29 @@ export function PreOrderProvider({ children }) {
   }, [draft, scheduleSave]);
 
   // ── Set unidades from karrys (input secundario, solo modifica karrys) ──
-  const setFromKarrys = useCallback((codigo, karrys) => {
+  const setFromKarrys = useCallback((codigo, karrys, fallback = {}) => {
     if (draft?.estado !== 'borrador') return;
 
     setDraftItems(prev => {
       const next = new Map(prev);
-      const existing = next.get(codigo);
-      if (!existing) return prev;
+      let existing = next.get(codigo);
+      if (!existing) {
+        // Race condition: draft hasn't loaded yet or item not in draft.
+        // Create it from fallback offer data (like updateUnidades does).
+        existing = {
+          codigoArticulo: codigo,
+          descripcionArticulo: fallback.descripcionArticulo || '',
+          undsCarro: fallback.undsCarro || 0,
+          undsTabla: fallback.undsTabla || 0,
+          undsCaja: fallback.undsCaja || 0,
+          unidades: 0,
+          karrys: 0,
+          tablas: 0,
+          precio1: fallback.precio1 || 0,
+          precio2: fallback.precio2 || 0,
+          precio3: fallback.precio3 || 0,
+        };
+      }
 
       const calc = applyKarrys(karrys, existing, {
         undsCarro: existing.undsCarro,
@@ -186,13 +202,29 @@ export function PreOrderProvider({ children }) {
   }, [draft, scheduleSave]);
 
   // ── Set unidades from tablas (input secundario, solo modifica tablas) ──
-  const setFromTablas = useCallback((codigo, tablas) => {
+  const setFromTablas = useCallback((codigo, tablas, fallback = {}) => {
     if (draft?.estado !== 'borrador') return;
 
     setDraftItems(prev => {
       const next = new Map(prev);
-      const existing = next.get(codigo);
-      if (!existing) return prev;
+      let existing = next.get(codigo);
+      if (!existing) {
+        // Race condition: draft hasn't loaded yet or item not in draft.
+        // Create it from fallback offer data (like updateUnidades does).
+        existing = {
+          codigoArticulo: codigo,
+          descripcionArticulo: fallback.descripcionArticulo || '',
+          undsCarro: fallback.undsCarro || 0,
+          undsTabla: fallback.undsTabla || 0,
+          undsCaja: fallback.undsCaja || 0,
+          unidades: 0,
+          karrys: 0,
+          tablas: 0,
+          precio1: fallback.precio1 || 0,
+          precio2: fallback.precio2 || 0,
+          precio3: fallback.precio3 || 0,
+        };
+      }
 
       const calc = applyTablas(tablas, existing, {
         undsCarro: existing.undsCarro,

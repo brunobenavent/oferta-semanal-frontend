@@ -445,7 +445,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             type="number" min="0" max="9999"
                             className="pedido-input"
                             value={draftItems.get(offer.codigoArticulo)?.tablas || 0}
-                            onChange={e => setFromTablas(offer.codigoArticulo, parseInt(e.target.value) || 0)}
+                            onChange={e => setFromTablas(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
                           />
                           <div className="pedido-progress">
                             <div className="pedido-progress-fill" style={{width: `${(() => {
@@ -473,7 +473,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             type="number" min="0" max="9999"
                             className="pedido-input"
                             value={draftItems.get(offer.codigoArticulo)?.karrys || 0}
-                            onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0)}
+                            onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
                           />
                           <div className="pedido-progress">
                             <div className="pedido-progress-fill" style={{width: `${(() => {
