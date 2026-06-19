@@ -926,3 +926,90 @@
     justify-content: center;
   }
 }
+
+
+/* ═══════════════════════════════════════════════════
+   Client Draft Section
+   ═══════════════════════════════════════════════════ */
+
+.preorders-client-draft {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.preorders-client-draft h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: var(--color-primary-dark);
+}
+
+.preorders-draft-items {
+  overflow-x: auto;
+}
+
+.preorders-draft-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.preorders-draft-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.preorders-draft-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.preorders-draft-name {
+  color: var(--color-text);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preorders-draft-code {
+  font-family: monospace;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.preorders-draft-total {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.preorders-draft-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.preorders-draft-grand-total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.preorders-send-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}

@@ -60,6 +60,12 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
               <Link to="/" className={`nav-link nav-link-uppercase${pathname === '/' ? ' nav-link--active' : ''}`}>LISTADO</Link>
               <span className="nav-link-sep">|</span>
               <Link to="/contact" className={`nav-link nav-link-uppercase${pathname.startsWith('/contact') ? ' nav-link--active' : ''}`}>CONTACTO</Link>
+              {isClient && (
+                <>
+                  <span className="nav-link-sep">|</span>
+                  <Link to="/pedidos" className={`nav-link nav-link-uppercase${pathname.startsWith('/pedidos') ? ' nav-link--active' : ''}`}>MI PEDIDO</Link>
+                </>
+              )}
             </div>
             {/* Fila 2: admin links + user */}
             <div className="nav-admin-row">

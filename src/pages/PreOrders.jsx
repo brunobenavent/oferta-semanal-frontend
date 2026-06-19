@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { usePreOrder } from '../context/PreOrderContext';
 import { useToast } from '../components/Toast';
 import './PreOrders.css';
 
@@ -255,6 +256,9 @@ export default function PreOrders() {
   const orderActions = displayOrder ? getStatusActions(displayOrder.estado, roles) : [];
   const canDelete = isSuperadminOrAdmin && displayOrder;
 
+  // ── Client: current draft from PreOrderContext ──
+  const { draftItems, totals, sendPreorder } = usePreOrder();
+
   // ── Render ──
   return (
     <div className="preorders-page">
@@ -297,6 +301,55 @@ export default function PreOrders() {
           </button>
         </div>
       </div>
+
+      {/* ── Client: Mi Pedido Actual ── */}
+      {isClient && draftItems.size > 0 && (
+        <div className="preorders-client-draft">
+          <h2>Mi Pedido Actual</h2>
+          <div className="preorders-draft-items">
+            <table className="preorders-draft-table">
+              <thead>
+                <tr>
+                  <th>Artículo</th>
+                  <th>Código</th>
+                  <th>Karrys</th>
+                  <th>Tablas</th>
+                  <th>Uds</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from(draftItems.values()).map(item => {
+                  const total = (item.karrys || 0) * (item.undsCarro || 0) + (item.tablas || 0) * (item.undsTabla || 0) + (item.unidades || 0);
+                  if (total === 0) return null;
+                  return (
+                    <tr key={item.codigoArticulo}>
+                      <td className="preorders-draft-name">{item.descripcionArticulo}</td>
+                      <td className="preorders-draft-code">{item.codigoArticulo}</td>
+                      <td>{item.karrys || 0}</td>
+                      <td>{item.tablas || 0}</td>
+                      <td>{item.unidades || 0}</td>
+                      <td className="preorders-draft-total">{total} uds</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="preorders-draft-footer">
+            <div className="preorders-draft-grand-total">
+              {Array.from(draftItems.values()).reduce((sum, item) => sum + (item.karrys || 0) * (item.undsCarro || 0) + (item.tablas || 0) * (item.undsTabla || 0) + (item.unidades || 0), 0)} uds totales
+            </div>
+            <button
+              className="btn btn-primary preorders-send-btn"
+              onClick={() => sendPreorder()}
+            >
+              <Send size={18} />
+              ENVIAR PEDIDO
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Content ── */}
       {loading ? (
