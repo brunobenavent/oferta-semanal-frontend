@@ -497,7 +497,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                         if (total === 0) return null;
                         return (
                           <div className="pedido-summary" title={`${k}×${UCC} + ${t}×${UTA} + ${u} = ${total} uds`}>
-                            <span className="pedido-summary-total">{total} ud{total > 1 ? 's' : ''}</span>
+                            <span className="pedido-summary-total">{total} uds totales</span>
                           </div>
                         );
                       })()}
