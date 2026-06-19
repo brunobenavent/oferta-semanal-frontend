@@ -205,7 +205,7 @@ export default function PreOrders() {
   }, [actionLoading, addToast, closeModal]);
 
   // ── Filter orders locally ──
-  const filteredOrders = orders.filter(order => {
+  const filteredOrders = (orders || []).filter(order => {
     const cliente = order.cliente || {};
     const comercial = order.comercial || {};
     const searchLower = search.toLowerCase();
@@ -257,7 +257,10 @@ export default function PreOrders() {
   const canDelete = isSuperadminOrAdmin && displayOrder;
 
   // ── Client: current draft from PreOrderContext ──
-  const { draftItems, totals, sendPreorder } = usePreOrder();
+  const preOrderCtx = (() => { try { return usePreOrder(); } catch { return null; } })();
+  const draftItems = preOrderCtx?.draftItems || new Map();
+  const isDraftEmpty = !isClient || draftItems.size === 0;
+  const sendPreorder = preOrderCtx?.sendPreorder || (() => {});
 
   // ── Render ──
   return (
@@ -303,7 +306,7 @@ export default function PreOrders() {
       </div>
 
       {/* ── Client: Mi Pedido Actual ── */}
-      {isClient && draftItems.size > 0 && (
+      {isClient && !isDraftEmpty && (
         <div className="preorders-client-draft">
           <h2>Mi Pedido Actual</h2>
           <div className="preorders-draft-items">
