@@ -22,9 +22,10 @@ const STATUS_CONFIG = {
 };
 
 function getStatusActions(estado, roles) {
-  const isClient = roles.includes('client');
-  const isCommercial = roles.includes('commercial');
-  const isAdmin = roles.includes('superadmin') || roles.includes('admin');
+  const safeRoles = Array.isArray(roles) ? roles : [];
+  const isClient = safeRoles.includes('client');
+  const isCommercial = safeRoles.includes('commercial');
+  const isAdmin = safeRoles.includes('superadmin') || safeRoles.includes('admin');
 
   if (isClient) {
     if (estado === 'borrador') return [{ label: 'Enviar',        action: 'pendiente', icon: Send }];
