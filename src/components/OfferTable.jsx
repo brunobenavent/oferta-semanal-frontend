@@ -451,14 +451,9 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                         const UTA = offer.undsTabla || 0;
                         const total = k * UCC + t * UTA + u;
                         if (total === 0) return null;
-                        const parts = [];
-                        if (k > 0) parts.push(`${k} karry${k > 1 ? 's' : ''}`);
-                        if (t > 0) parts.push(`${t} tabla${t > 1 ? 's' : ''}`);
-                        if (u > 0) parts.push(`${u} ud${u > 1 ? 's' : ''}`);
                         return (
-                          <div className="pedido-summary" title={`${k}×${UCC} + ${t}×${UTA} + ${u} = ${total}`}>
+                          <div className="pedido-summary" title={`${k}×${UCC} + ${t}×${UTA} + ${u} = ${total} uds`}>
                             <span className="pedido-summary-total">{total} ud{total > 1 ? 's' : ''}</span>
-                            <span className="pedido-summary-breakdown">{parts.join(' + ')}</span>
                           </div>
                         );
                       })()}

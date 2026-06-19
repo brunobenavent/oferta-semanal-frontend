@@ -1070,11 +1070,9 @@
 
 .pedido-summary {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1px;
+  align-items: center;
   width: 100%;
-  padding: 4px 0 2px;
+  padding: 3px 0 1px;
   margin-top: 2px;
   border-top: 1px dashed var(--color-border);
 }
@@ -1084,13 +1082,6 @@
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.2;
-}
-
-.pedido-summary-breakdown {
-  font-size: 0.625rem;
-  color: var(--color-text-muted);
-  line-height: 1.2;
-  font-style: italic;
 }
 
 .list-code {

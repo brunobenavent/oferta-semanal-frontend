@@ -1,20 +1,29 @@
 /**
  * Cálculos bidireccionales para el sistema de prepedidos.
  *
- * Modelo de rollover (Uds → karrys → tablas):
+ * Modelo de rollover con carry-over entre contenedores:
  *   - El input principal es Uds. El valor escrito se SUMA al remanente actual.
- *   - El TOTAL (remanente + delta) se reparte: karrys primero (si undsCarro > 0),
- *     lo que sobra a tablas (si undsTabla > 0), el resto queda en Uds.
- *   - Al escribir N en karrys, las unidades pasan a N * undsCarro (exacto, sin rollover
- *     hacia tablas, porque karrys es un input secundario y no se completa a sí mismo).
- *   - Igual para tablas.
+ *   - El TOTAL (remanente + delta) llena TABLAS primero (si undsTabla > 0).
+ *   - El residuo de uds (después de llenar tablas) queda en Uds.
+ *   - Si las tablas acumuladas equivalen a un karry entero (UCC es múltiplo
+ *     de UTA), se CONSOLIDAN: tablas -= tablasPorKarry, karrys += 1.
+ *   - Al escribir N en karrys, las unidades pasan a N * undsCarro (reemplazo).
+ *   - Al escribir N en tablas, las unidades pasan a N * undsTabla, después
+ *     se consolida a karrys si es posible.
  *
- * Ejemplos (undsCarro=6, undsTabla=3, current={karrys:0, tablas:1, unidades:2}):
- *   - Uds=4  → total=6  → karrys=0+1=1, tablas=1+0=1, Uds=0
- *   - Uds=8  → total=10 → karrys=0+1=1, tablas=1+1=2, Uds=1
- *   - Uds=3  → total=5  → karrys=0+0=0, tablas=1+1=2, Uds=2  (no completa karry porque 5<6)
- *   - karrys=1 → Uds=6 (1×6=6 → Uds=0, karrys=1, tablas=2)
- *   - tablas=2 → Uds=6 (2×3=6 → Uds=0, tablas=2, karrys=1)
+ * Ejemplos (undsCarro=6, undsTabla=3, tablasPorKarry=2):
+ *   - Estado inicial: {karrys:0, tablas:0, unidades:0}
+ *   - Uds=3  → tablas=1, karrys=0, Uds=0  (3 = 1 tabla, 0%3=0)
+ *   - Uds=3  → tablas=2→consolida: karrys=1, tablas=0, Uds=0
+ *   - Uds=3  → tablas=1, karrys=1, Uds=0
+ *   - Uds=7  → tablas=2→consolida: karrys=2, tablas=0, Uds=1
+ *   - Uds=4 sobre {karrys:1, tablas:1, Uds:0} → total=4 → tablas=2→consolida:
+ *     karrys=2, tablas=0, Uds=1
+ *   - karrys=2 → Uds=12 (2×6), karrys=2, tablas=4→consolida: tablas=0, Uds=0
+ *   - tablas=3 → Uds=9, tablas=3→consolida: karrys=1, tablas=1
+ *
+ * Si UCC NO es múltiplo de UTA (ej. UCC=50, UTA=8), no se consolida:
+ *   - Uds=50 → tablas=6, karrys=0, Uds=2
  */
 
 /**
@@ -80,16 +89,11 @@ export function calcFromTablas(tablas, { undsCarro, undsTabla }) {
 }
 
 /**
- * Aplica el valor escrito en Uds con rollover cascade Uds → karrys → tablas.
+ * Aplica el valor escrito en Uds con cascade y carry-over tablas→karrys.
  *
- * El valor escrito en Uds se SUMA al remanente actual (current.unidades) y el
- * TOTAL se reparte: karrys primero, después tablas, el resto queda como
- * remanente. Los karrys/tablas que se "completan" se SUMAN a current.karrys /
- * current.tablas (no se sobrescriben).
- *
- * Ejemplo (UCC=6, UTA=3, current={karrys:0, tablas:1, unidades:2}):
- *   - Uds=4 → total=6 → karrys=0+1=1, tablas=1+0=1, unidades=0
- *   - Uds=8 → total=10 → karrys=0+1=1, tablas=1+1=2, unidades=1
+ * El valor escrito en Uds se SUMA al remanente actual. El TOTAL llena tablas
+ * (si undsTabla > 0). Si las tablas acumuladas equivalen a un karry entero
+ * (UCC múltiplo de UTA), se consolidan automáticamente.
  *
  * @param {number} delta - El valor escrito en el input Uds (se suma al remanente)
  * @param {object} current - Estado actual: { karrys, tablas, unidades }
@@ -103,34 +107,45 @@ export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
 
   // Sumar el delta al remanente actual
   let u = currentUds + Math.max(0, Math.floor(Number(delta) || 0));
+  let newTablas = currentTablas;
+  let newKarrys = currentKarrys;
 
-  // Cascade: Uds → karrys
-  let extraKarrys = 0;
-  if (undsCarro > 0) {
-    extraKarrys = Math.floor(u / undsCarro);
-    u = u % undsCarro;
-  }
-
-  // Cascade: residuo → tablas
-  let extraTablas = 0;
   if (undsTabla > 0) {
-    extraTablas = Math.floor(u / undsTabla);
+    // Cascade: Uds → tablas
+    newTablas += Math.floor(u / undsTabla);
     u = u % undsTabla;
+
+    // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
+    if (undsCarro > 0 && undsCarro % undsTabla === 0) {
+      const tablasPorKarry = undsCarro / undsTabla;
+      newKarrys += Math.floor(newTablas / tablasPorKarry);
+      newTablas = newTablas % tablasPorKarry;
+    }
+  } else if (undsCarro > 0) {
+    // Sin tablas, cascade directo: Uds → karrys
+    newKarrys += Math.floor(u / undsCarro);
+    u = u % undsCarro;
   }
 
   return {
     unidades: u,
-    karrys: currentKarrys + extraKarrys,
+    karrys: newKarrys,
     karryProgress: calcKarryProgress(u, undsCarro),
-    tablas: currentTablas + extraTablas,
+    tablas: newTablas,
     tablaProgress: calcTablaProgress(u, undsTabla),
   };
 }
 
 /**
- * Aplica el valor escrito en karrys (input secundario, sin cascade).
+ * Aplica el valor escrito en karrys (input secundario, REEMPLAZA).
  * El valor escrito REEMPLAZA el total de karrys. Las unidades se calculan
- * como karrys * undsCarro (exacto), y las tablas se derivan de esas unidades.
+ * como karrys * undsCarro (exacto), y las tablas se derivan.
+ *
+ * Nota: karrys es el contenedor final — no se consolida a nada. Las tablas
+ * se derivan de las unidades totales (puede haber carry-over conceptual
+ * karry→tabla si UCC es múltiplo de UTA, pero no se consolida
+ * inversamente). Las unidades se devuelven como 0 (remanente) porque
+ * todas las uds están contabilizadas en karrys/tablas.
  *
  * @param {number} newKarrys - El valor escrito en el input karrys
  * @param {object} cfg - { undsCarro, undsTabla }
@@ -139,14 +154,26 @@ export function applyUnidades(delta, current, { undsCarro, undsTabla }) {
 export function applyKarrys(newKarrys, { undsCarro, undsTabla }) {
   const k = Math.max(0, Math.floor(Number(newKarrys) || 0));
   const UCC = undsCarro > 0 ? undsCarro : 1;
-  const unidades = k * UCC;
-  return calcFromUnidades(unidades, { undsCarro, undsTabla });
+  const totalUds = k * UCC;
+  // Tablas derivadas
+  const tablas = undsTabla > 0 ? Math.floor(totalUds / undsTabla) : 0;
+  // Unidades sueltas (remanente): lo que no completó una tabla
+  const unidades = undsTabla > 0 ? totalUds % undsTabla : 0;
+  return {
+    unidades,
+    karrys: k,
+    karryProgress: calcKarryProgress(unidades, undsCarro),
+    tablas,
+    tablaProgress: calcTablaProgress(unidades, undsTabla),
+  };
 }
 
 /**
- * Aplica el valor escrito en tablas (input secundario, sin cascade).
+ * Aplica el valor escrito en tablas (input secundario, REEMPLAZA).
  * El valor escrito REEMPLAZA el total de tablas. Las unidades se calculan
- * como tablas * undsTabla (exacto), y los karrys se derivan de esas unidades.
+ * como tablas * undsTabla, después se consolida a karrys si es posible.
+ * Las unidades se recalculan después del carry-over para mantener la
+ * consistencia (karrys consume uds, no se duplican).
  *
  * @param {number} newTablas - El valor escrito en el input tablas
  * @param {object} cfg - { undsCarro, undsTabla }
@@ -155,6 +182,26 @@ export function applyKarrys(newKarrys, { undsCarro, undsTabla }) {
 export function applyTablas(newTablas, { undsCarro, undsTabla }) {
   const t = Math.max(0, Math.floor(Number(newTablas) || 0));
   const UTA = undsTabla > 0 ? undsTabla : 1;
-  const unidades = t * UTA;
-  return calcFromUnidades(unidades, { undsCarro, undsTabla });
+  let karrys = 0;
+  let tablas = t;
+
+  // Carry-over: tablas → karrys (solo si UCC es múltiplo de UTA)
+  if (undsCarro > 0 && undsTabla > 0 && undsCarro % undsTabla === 0) {
+    const tablasPorKarry = undsCarro / undsTabla;
+    karrys = Math.floor(tablas / tablasPorKarry);
+    tablas = tablas % tablasPorKarry;
+  }
+
+  // Unidades sueltas = lo que sobra después de karrys y tablas
+  // (siempre 0 cuando se acaba de calcular desde tablas — todo está
+  // contabilizado en karrys/tablas)
+  const unidades = 0;
+
+  return {
+    unidades,
+    karrys,
+    karryProgress: calcKarryProgress(unidades, undsCarro),
+    tablas,
+    tablaProgress: calcTablaProgress(unidades, undsTabla),
+  };
 }
