@@ -404,9 +404,6 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                           title="+1 unidad"
                           type="button"
                         >+</button>
-                        <span className="pedido-uds-value">
-                          {draftItems.get(offer.codigoArticulo)?.unidades || 0}
-                        </span>
                       </div>
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
