@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { UserPlus, Building2, Save, ArrowLeft, Camera, Crop, UserCheck } from 'lucide-react';
+import { UserPlus, Building2, Save, ArrowLeft, Camera, Crop, UserCheck, CheckCircle } from 'lucide-react';
 import PhotoCropOverlay from './PhotoCropOverlay';
 
 const LANGUAGE_NAMES = {
@@ -467,17 +467,21 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
                         {commercials.map(com => {
                           const isSelected = (form.assignedCommercials || []).includes(com._id);
                           return (
-                            <label key={com._id} className="send-commercial-row">
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => handleToggleCommercial(com._id)}
-                              />
+                            <div
+                              key={com._id}
+                              className={`send-commercial-row${isSelected ? ' selected' : ''}`}
+                              onClick={() => handleToggleCommercial(com._id)}
+                              role="button"
+                              tabIndex={0}
+                            >
                               <div className="send-commercial-info">
                                 <span className="send-commercial-name">{com.name || com.nombre || 'Sin nombre'}</span>
                                 <span className="send-commercial-email">{com.email}</span>
                               </div>
-                            </label>
+                              {isSelected && (
+                                <CheckCircle size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
+                              )}
+                            </div>
                           );
                         })}
                       </div>

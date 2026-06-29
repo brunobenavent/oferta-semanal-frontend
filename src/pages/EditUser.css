@@ -139,12 +139,20 @@
 
 .send-commercial-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
-  padding: 8px 10px;
+  padding: 10px 12px;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: all 0.15s;
   border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+  user-select: none;
+}
+
+.send-commercial-row.selected {
+  background: rgba(59, 130, 246, 0.06);
+  border-left: 3px solid var(--color-primary);
+  padding-left: 9px;
 }
 
 .send-commercial-row:last-child {
