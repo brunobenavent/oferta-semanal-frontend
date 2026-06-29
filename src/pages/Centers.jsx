@@ -75,7 +75,7 @@ export default function Centers() {
 
   useEffect(() => {
     if (!mapInstanceRef.current && mapRef.current && L) {
-      const map = L.map(mapRef.current).setView([36.65, -4.56], 10);
+      const map = L.map(mapRef.current).setView([36.661, -4.563], 12);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://www.openstreetmap.org/">OSM</a>',
       }).addTo(map);
