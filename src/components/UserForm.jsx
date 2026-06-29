@@ -220,6 +220,372 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
 
   // ── Render ─────────────────────────────────────────────────────
 
+  if (gridLayout) {
+    return (
+      <>
+        {showCrop && cropImageUrl && (
+          <PhotoCropOverlay
+            imageUrl={cropImageUrl}
+            initialZoom={cropInitialZoom}
+            onCancel={handleCropCancel}
+            onCropComplete={handleCropComplete}
+          />
+        )}
+
+        <div className="auth-card">
+          {/* ── Photo (centered at top) ── */}
+          <div className="auth-photo-section">
+            <div className="photo-preview">
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" />
+              ) : (
+                <Camera size={28} style={{ color: 'var(--color-text-muted)', opacity: 0.5 }} />
+              )}
+            </div>
+
+            <div className="auth-photo-actions">
+              <label style={{ background: 'var(--color-primary)', color: '#fff', border: 'none' }}>
+                <Camera size={16} />
+                {previewUrl ? 'Cambiar foto' : 'Seleccionar imagen'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  style={{ display: 'none' }}
+                />
+              </label>
+
+              {isEdit && previewUrl && originalPhotoUrl && (
+                <button onClick={handleAdjustPhoto}>
+                  <Crop size={16} />
+                  Ajustar
+                </button>
+              )}
+
+              {isEdit && originalPhotoUrl && (cropFile !== null || previewUrl === null) && (
+                <button onClick={handleRestoreOriginal}>
+                  <Crop size={16} />
+                  Restaurar original
+                </button>
+              )}
+
+              {previewUrl && (
+                <button
+                  onClick={() => {
+                    if (previewUrl.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+                    setPreviewUrl(null);
+                    setCropFile(null);
+                  }}
+                  style={{ color: 'var(--color-error)' }}
+                >
+                  Quitar foto
+                </button>
+              )}
+            </div>
+
+            <p style={{ margin: '6px 0 0', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+              {isEdit && originalPhotoUrl
+                ? (cropFile
+                  ? 'Usa "Restaurar original" para deshacer el recorte, o "Ajustar" para reajustarlo'
+                  : 'Usa "Ajustar" para recortar la foto actual, o "Cambiar foto" para subir una nueva')
+                : 'JPG, PNG o WebP · Se abrirá un editor para recortar'}
+            </p>
+          </div>
+
+          {/* ── Error ── */}
+          {error && (
+            <div className="auth-error" style={{ marginBottom: 'var(--space-md)' }}>
+              {error}
+            </div>
+          )}
+
+          {/* ── Two-column form ── */}
+          <div className="auth-form auth-form-grid">
+            {/* Row 1: Email | Nombre */}
+            <div className="auth-field">
+              <label>Email *</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={e => handleChange('email', e.target.value)}
+                disabled={isEdit}
+                placeholder="usuario@ejemplo.com"
+              />
+              {isEdit && (
+                <span className="field-hint">El email no se puede modificar</span>
+              )}
+            </div>
+            <div className="auth-field">
+              <label>Nombre *</label>
+              <input
+                type="text"
+                value={form.nombre}
+                onChange={e => handleChange('nombre', e.target.value)}
+                placeholder="Nombre completo"
+              />
+            </div>
+
+            {/* Row 2: Role | Active (edit mode) */}
+            <div className="auth-field">
+              <label>Rol</label>
+              <select
+                value={form.role}
+                onChange={e => handleChange('role', e.target.value)}
+                className="auth-select"
+              >
+                <option value="admin">Admin</option>
+                <option value="employee">Empleado</option>
+                <option value="client">Cliente</option>
+                <option value="commercial">Comercial</option>
+              </select>
+            </div>
+            {isEdit && (
+              <div className="auth-field">
+                <label>Estado</label>
+                <label className="toggle-label" style={{ cursor: 'pointer' }}>
+                  <span className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={form.isActive}
+                      onChange={e => handleChange('isActive', e.target.checked)}
+                    />
+                    <span className="toggle-slider" />
+                  </span>
+                  <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>
+                    {form.isActive ? 'Activo' : 'Inactivo'}
+                  </span>
+                </label>
+              </div>
+            )}
+
+            {/* Admin toggle */}
+            {form.role !== 'admin' && (
+              <div className="auth-field auth-field-full">
+                <label className="toggle-label" style={{ cursor: 'pointer' }}>
+                  <span className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={form.isAdmin}
+                      onChange={e => handleChange('isAdmin', e.target.checked)}
+                    />
+                    <span className="toggle-slider" />
+                  </span>
+                  <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>
+                    ¿Es administrador?
+                  </span>
+                </label>
+              </div>
+            )}
+
+            {/* ── Client fields ── */}
+            {form.role === 'client' && (
+              <>
+                <div className="auth-field">
+                  <label>T2/T3</label>
+                  <select
+                    value={form.priceTier}
+                    onChange={e => handleChange('priceTier', parseInt(e.target.value))}
+                    className="auth-select"
+                  >
+                    <option value={2}>T2</option>
+                    <option value={3}>T3</option>
+                  </select>
+                </div>
+                <div className="auth-field">
+                  <label>Nombre del Cliente (Empresa)</label>
+                  <input
+                    type="text"
+                    value={form.clientName}
+                    onChange={e => handleChange('clientName', e.target.value)}
+                    placeholder="Viveros Ejemplo S.L."
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>CIF / NIF</label>
+                  <input
+                    type="text"
+                    value={form.cif}
+                    onChange={e => handleChange('cif', e.target.value)}
+                    placeholder="B12345678"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>Dirección Fiscal</label>
+                  <input
+                    type="text"
+                    value={form.taxAddress}
+                    onChange={e => handleChange('taxAddress', e.target.value)}
+                    placeholder="Calle Ejemplo 123, 41001 Sevilla"
+                  />
+                </div>
+
+                <div className="auth-field auth-field-full" style={{ marginBottom: 0, paddingBottom: 0 }}>
+                  <h4 style={{ margin: 'var(--space-md) 0 var(--space-sm)', fontFamily: "'Archivo Narrow', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text)' }}>Persona Autorizada</h4>
+                </div>
+
+                <div className="auth-field">
+                  <label>Nombre del Autorizado</label>
+                  <input
+                    type="text"
+                    value={form.authorizedName}
+                    onChange={e => handleChange('authorizedName', e.target.value)}
+                    placeholder="Nombre y apellidos"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>Puesto del Autorizado</label>
+                  <input
+                    type="text"
+                    value={form.authorizedPosition}
+                    onChange={e => handleChange('authorizedPosition', e.target.value)}
+                    placeholder="Ej: Director de compras"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>Email del Autorizado</label>
+                  <input
+                    type="email"
+                    value={form.authorizedEmail}
+                    onChange={e => handleChange('authorizedEmail', e.target.value)}
+                    placeholder="autorizado@ejemplo.com"
+                  />
+                </div>
+
+                {/* Commercials — full width */}
+                <div className="auth-field auth-field-full">
+                  {commercials.length > 0 ? (
+                    <>
+                      <label>
+                        <UserCheck size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                        Comerciales asignados
+                      </label>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                        {commercials.map(com => {
+                          const isSelected = form.assignedCommercials.includes(com._id);
+                          return (
+                            <label
+                              key={com._id}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                                padding: '8px 12px',
+                                borderRadius: 'var(--radius-md)',
+                                background: isSelected ? 'rgba(59,130,246,0.08)' : 'var(--color-surface)',
+                                border: `1px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease',
+                                fontSize: '0.875rem',
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleToggleCommercial(com._id)}
+                                style={{ accentColor: 'var(--color-primary)' }}
+                              />
+                              <UserCheck
+                                size={14}
+                                style={{ color: isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)' }}
+                              />
+                              <span>{com.nombre || com.name || 'Sin nombre'}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      {form.assignedCommercials.length === 0 && (
+                        <span className="field-hint">Selecciona uno o más comerciales para asignar a este cliente</span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <label>
+                        <UserCheck size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                        Comerciales asignados
+                      </label>
+                      <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
+                        No hay comerciales disponibles. Crea comerciales primero.
+                      </p>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Employee fields ── */}
+            {form.role !== 'client' && (
+              <>
+                <div className="auth-field">
+                  <label>Teléfono</label>
+                  <input
+                    type="text"
+                    value={form.phone}
+                    onChange={e => handleChange('phone', e.target.value)}
+                    placeholder="+34 649 893 050"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>Puesto</label>
+                  <input
+                    type="text"
+                    value={form.position}
+                    onChange={e => handleChange('position', e.target.value)}
+                    placeholder="Ej: Production manager"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>Idiomas (separados por coma)</label>
+                  <input
+                    type="text"
+                    value={form.languages}
+                    onChange={e => handleChange('languages', e.target.value)}
+                    placeholder="Español, Inglés, Alemán"
+                  />
+                  <span className="field-hint">Ej: Español, Inglés, Alemán, Francés</span>
+                </div>
+              </>
+            )}
+
+            {/* ── Creation info (add only) ── */}
+            {!isEdit && (
+              <div className="auth-info auth-field-full" style={{ fontSize: '0.8125rem' }}>
+                <Save size={16} />
+                <span>
+                  {formType === 'commercial'
+                    ? 'El comercial se creará sin necesidad de verificar email'
+                    : 'Se enviará un email de verificación al nuevo usuario'}
+                </span>
+              </div>
+            )}
+
+            {/* ── Action buttons ── */}
+            <div className="auth-form-actions">
+              <button onClick={onCancel} className="auth-btn-secondary">
+                <ArrowLeft size={16} />
+                Cancelar
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving || !form.nombre}
+                className="auth-btn"
+                style={{ marginTop: 0, opacity: (saving || !form.nombre) ? 0.6 : 1 }}
+              >
+                {saving ? 'Guardando...' : isEdit ? 'Guardar' : 'Crear'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ── Original layout (modal / gridLayout=false) ──
   return (
     <>
       {showCrop && cropImageUrl && (
@@ -231,13 +597,11 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
         />
       )}
 
-      {/* Header */}
       <div className="auth-header" style={{ marginBottom: 'var(--space-lg)' }}>
         <UserPlus size={32} />
         <h1>{isEdit ? 'Editar Usuario' : 'Nuevo Usuario'}</h1>
       </div>
 
-      {/* Type selector (only in add mode) */}
       {!isEdit && (
         <div style={{
           display: 'flex',
@@ -292,67 +656,35 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
         </div>
       )}
 
-      {/* Error */}
       {error && (
         <div className="auth-error" style={{ marginBottom: 'var(--space-md)' }}>
           {error}
         </div>
       )}
 
-      {/* Form fields */}
-      <div className={gridLayout ? "auth-form auth-form-grid" : "auth-form"}>
-        {/* Shared: Email + Nombre (row in grid mode) */}
-        {gridLayout ? (
-          <div className="auth-form-row">
-            <div className="auth-field">
-              <label>Email *</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={e => handleChange('email', e.target.value)}
-                disabled={isEdit}
-                placeholder="usuario@ejemplo.com"
-              />
-              {isEdit && (
-                <span className="field-hint">El email no se puede modificar</span>
-              )}
-            </div>
-            <div className="auth-field">
-              <label>Nombre *</label>
-              <input
-                type="text"
-                value={form.nombre}
-                onChange={e => handleChange('nombre', e.target.value)}
-                placeholder="Nombre completo"
-              />
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="auth-field">
-              <label>Email *</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={e => handleChange('email', e.target.value)}
-                disabled={isEdit}
-                placeholder="usuario@ejemplo.com"
-              />
-              {isEdit && (
-                <span className="field-hint">El email no se puede modificar</span>
-              )}
-            </div>
-            <div className="auth-field">
-              <label>Nombre *</label>
-              <input
-                type="text"
-                value={form.nombre}
-                onChange={e => handleChange('nombre', e.target.value)}
-                placeholder="Nombre completo"
-              />
-            </div>
-          </>
-        )}
+      <div className="auth-form">
+        <div className="auth-field">
+          <label>Email *</label>
+          <input
+            type="email"
+            value={form.email}
+            onChange={e => handleChange('email', e.target.value)}
+            disabled={isEdit}
+            placeholder="usuario@ejemplo.com"
+          />
+          {isEdit && (
+            <span className="field-hint">El email no se puede modificar</span>
+          )}
+        </div>
+        <div className="auth-field">
+          <label>Nombre *</label>
+          <input
+            type="text"
+            value={form.nombre}
+            onChange={e => handleChange('nombre', e.target.value)}
+            placeholder="Nombre completo"
+          />
+        </div>
 
         {/* ── Photo ── */}
         <div className="auth-field">
@@ -491,7 +823,6 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
           </div>
         </div>
 
-        {/* ── Role selector (always in edit, only for 'user' tab in add) ── */}
         {(formType === 'user' || isEdit) && (
           <>
             <div className="auth-field">
@@ -601,7 +932,6 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
                   />
                 </div>
 
-                {/* ── Commercial selector for clients ── */}
                 {commercials.length > 0 && (
                   <div className="auth-field">
                     <label>
@@ -663,7 +993,6 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
           </>
         )}
 
-        {/* ── Employee fields (teléfono, puesto, idiomas) ── */}
         {form.role !== 'client' && (
           <>
             <div className="auth-field">
@@ -699,7 +1028,6 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
           </>
         )}
 
-        {/* ── Active toggle (edit only) ── */}
         {isEdit && (
           <div className="auth-field">
             <label className="toggle-label" style={{ flexDirection: 'row', alignItems: 'center', gap: 'var(--space-sm)', cursor: 'pointer' }}>
@@ -718,27 +1046,20 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
           </div>
         )}
 
-        {/* ── Creation info ── */}
         {!isEdit && (
           <div className="auth-info" style={{ fontSize: '0.8125rem' }}>
             <Save size={16} />
             <span>
               {formType === 'commercial'
                 ? 'El comercial se creará sin necesidad de verificar email'
-                : 'Se enviará un email de verificación al nuevo usuario'
-              }
+                : 'Se enviará un email de verificación al nuevo usuario'}
             </span>
           </div>
         )}
       </div>
 
-      {/* ── Action buttons ── */}
       <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-xl)' }}>
-        <button
-          onClick={onCancel}
-          className="auth-btn-secondary"
-          style={{ flex: 1 }}
-        >
+        <button onClick={onCancel} className="auth-btn-secondary" style={{ flex: 1 }}>
           <ArrowLeft size={16} />
           Cancelar
         </button>
@@ -746,11 +1067,7 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
           onClick={handleSave}
           disabled={saving || !form.nombre}
           className="auth-btn"
-          style={{
-            flex: 1,
-            marginTop: 0,
-            opacity: (saving || !form.nombre) ? 0.6 : 1,
-          }}
+          style={{ flex: 1, marginTop: 0, opacity: (saving || !form.nombre) ? 0.6 : 1 }}
         >
           {saving ? 'Guardando...' : isEdit ? 'Actualizar' : 'Crear'}
         </button>
