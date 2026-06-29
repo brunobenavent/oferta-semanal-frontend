@@ -1006,9 +1006,9 @@
 
 .pedido-row {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .pedido-label {
@@ -1052,50 +1052,48 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
-/* +1 button for Uds */
+/* pedido buttons — matching DraftCart style */
 .pedido-add-btn {
-  width: 28px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   font-size: 0.75rem;
   font-weight: 600;
-  color: white;
-  background: var(--color-primary);
-  border: none;
-  border-radius: 6px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
   cursor: pointer;
   flex-shrink: 0;
   line-height: 1;
-  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.1s;
 }
 
 .pedido-add-btn:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
+  background: var(--color-bg-hover, #f0f0f0);
 }
 
-.pedido-add-btn:active {
-  transform: scale(0.92);
+.pedido-add-btn--plus {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.pedido-add-btn--plus:hover {
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .pedido-add-btn--minus {
-  background: #e8e8e8;
-  color: #666;
-}
-
-.pedido-add-btn--minus:hover {
-  background: #d4d4d4;
-  color: #333;
+  color: var(--color-text-muted);
 }
 
 /* +10 and -10 buttons (for articles without tabla/karry) */
 .pedido-add-btn--x10 {
   width: auto;
-  padding: 0 5px;
-  font-size: 0.65rem;
+  padding: 0 4px;
+  font-size: 0.6rem;
   font-weight: 600;
   background: transparent;
   color: var(--color-text-muted);
@@ -1103,40 +1101,28 @@
 }
 
 .pedido-add-btn--x10:hover {
-  background: var(--color-surface-hover);
+  background: var(--color-bg-hover, #f0f0f0);
   color: var(--color-text);
-  transform: translateY(-1px);
-}
-
-/* Button stack container */
-.pedido-btn-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
 .pedido-btn-row {
   display: flex;
-  gap: 2px;
+  align-items: center;
+  gap: 3px;
 }
 
-/* Uds input when placed between +/- buttons */
-.pedido-input--uds {
-  width: 44px;
-}
-
-/* current Uds value display */
-.pedido-uds-value {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text);
-  min-width: 18px;
+.pedido-val {
+  display: inline-block;
+  min-width: 28px;
   text-align: center;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
 .pedido-progress {
-  width: 36px;
+  width: 80px;
   height: 4px;
+  margin-top: 2px;
   background: var(--color-border);
   border-radius: 2px;
   overflow: hidden;
@@ -1612,7 +1598,8 @@
 .precio-line.precio-destacado {
   display: inline-flex;
   align-self: flex-start;
-  background: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-primary);
   border-radius: 6px;
   padding: 2px 8px;
   margin: 0 -6px;
@@ -1620,7 +1607,7 @@
 
 .precio-line.precio-destacado .precio-label,
 .precio-line.precio-destacado .precio-valor {
-  color: white;
+  color: var(--color-primary);
 }
 
 /* Table — INFO column (visible only on mobile) */

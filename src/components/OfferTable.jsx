@@ -377,76 +377,75 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                   <td className="cell-pedido" onClick={e => e.stopPropagation()}>
                     <div className="pedido-cell-inner">
                       <div className="pedido-row">
-                        <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Planta">
-                          {/* tallo */}
-                          <path d="M12 22 L12 13" />
-                          {/* hojas izquierda y derecha */}
-                          <path d="M12 13 C 12 8, 7 7, 6 4 C 10 4, 12 9, 12 13" />
-                          <path d="M12 13 C 12 8, 17 7, 18 4 C 14 4, 12 9, 12 13" />
-                          {/* maceta */}
-                          <path d="M7 14 L17 14 L16 22 L8 22 Z" />
-                        </svg>
-                        <div className="pedido-btn-stack">
+                        <div className="pedido-btn-row">
+                          <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Planta">
+                            {/* tallo */}
+                            <path d="M12 22 L12 13" />
+                            {/* hojas izquierda y derecha */}
+                            <path d="M12 13 C 12 8, 7 7, 6 4 C 10 4, 12 9, 12 13" />
+                            <path d="M12 13 C 12 8, 17 7, 18 4 C 14 4, 12 9, 12 13" />
+                            {/* maceta */}
+                            <path d="M7 14 L17 14 L16 22 L8 22 Z" />
+                          </svg>
+                          <button
+                            className="pedido-add-btn pedido-add-btn--minus"
+                            onClick={() => {
+                              const item = draftItems.get(offer.codigoArticulo);
+                              if ((item?.unidades || 0) > 0) {
+                                updateUnidades(offer.codigoArticulo, -1, offer);
+                              }
+                            }}
+                            title="-1 unidad"
+                            type="button"
+                          >−</button>
+                          <span className="pedido-val">
+                            {draftItems.get(offer.codigoArticulo)?.unidades || 0}
+                          </span>
+                          <button
+                            className="pedido-add-btn pedido-add-btn--plus"
+                            onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
+                            title="+1 unidad"
+                            type="button"
+                          >+</button>
+                        </div>
+                        {offer.undsTabla === 0 && offer.undsCarro === 0 && (
                           <div className="pedido-btn-row">
                             <button
-                              className="pedido-add-btn pedido-add-btn--minus"
+                              className="pedido-add-btn pedido-add-btn--x10 pedido-add-btn--minus"
                               onClick={() => {
                                 const item = draftItems.get(offer.codigoArticulo);
-                                if ((item?.unidades || 0) > 0) {
-                                  updateUnidades(offer.codigoArticulo, -1, offer);
+                                if ((item?.unidades || 0) >= 10) {
+                                  updateUnidades(offer.codigoArticulo, -10, offer);
                                 }
                               }}
-                              title="-1 unidad"
                               type="button"
-                            >−</button>
+                            >−10</button>
                             <button
-                              className="pedido-add-btn"
-                              onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
-                              title="+1 unidad"
+                              className="pedido-add-btn pedido-add-btn--x10"
+                              onClick={() => updateUnidades(offer.codigoArticulo, 10, offer)}
                               type="button"
-                            >+</button>
-                            <span className="pedido-uds-value">
-                              {draftItems.get(offer.codigoArticulo)?.unidades || 0}
-                            </span>
+                            >+10</button>
                           </div>
-                          {offer.undsTabla === 0 && offer.undsCarro === 0 && (
-                            <div className="pedido-btn-row">
-                              <button
-                                className="pedido-add-btn pedido-add-btn--x10 pedido-add-btn--minus"
-                                onClick={() => {
-                                  const item = draftItems.get(offer.codigoArticulo);
-                                  if ((item?.unidades || 0) >= 10) {
-                                    updateUnidades(offer.codigoArticulo, -10, offer);
-                                  }
-                                }}
-                                type="button"
-                              >−10</button>
-                              <button
-                                className="pedido-add-btn pedido-add-btn--x10"
-                                onClick={() => updateUnidades(offer.codigoArticulo, 10, offer)}
-                                type="button"
-                              >+10</button>
-                            </div>
-                          )}
-                        </div>
+                        )}
                       </div>
                       {(offer.undsTabla > 0) && (
                         <div className="pedido-row">
-                          <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Tabla">
-                            {/* rectángulo principal horizontal */}
-                            <rect x="3" y="8" width="18" height="8" />
-                            {/* 4 enganches (segmentos horizontales) en los vértices */}
-                            <path d="M1 8 L4 8" />
-                            <path d="M20 8 L23 8" />
-                            <path d="M1 16 L4 16" />
-                            <path d="M20 16 L23 16" />
-                          </svg>
-                          <input
-                            type="number" min="0" max="9999"
-                            className="pedido-input"
-                            value={draftItems.get(offer.codigoArticulo)?.tablas || 0}
-                            onChange={e => setFromTablas(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
-                          />
+                          <div className="pedido-btn-row">
+                            <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Tabla">
+                              {/* rectángulo principal horizontal */}
+                              <rect x="3" y="8" width="18" height="8" />
+                              {/* 4 enganches (segmentos horizontales) en los vértices */}
+                              <path d="M1 8 L4 8" />
+                              <path d="M20 8 L23 8" />
+                              <path d="M1 16 L4 16" />
+                              <path d="M20 16 L23 16" />
+                            </svg>
+                            <button className="pedido-add-btn pedido-add-btn--minus"
+                              onClick={() => setFromTablas(offer.codigoArticulo, Math.max(0, (draftItems.get(offer.codigoArticulo)?.tablas || 0) - 1), offer)}>−</button>
+                            <span className="pedido-val">{draftItems.get(offer.codigoArticulo)?.tablas || 0}</span>
+                            <button className="pedido-add-btn pedido-add-btn--plus"
+                              onClick={() => setFromTablas(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.tablas || 0) + 1, offer)}>+</button>
+                          </div>
                           <div className="pedido-progress">
                             <div className="pedido-progress-fill" style={{width: `${(() => {
                               const item = draftItems.get(offer.codigoArticulo);
@@ -458,23 +457,24 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                       )}
                       {(offer.undsCarro > 0) && (
                         <div className="pedido-row">
-                          <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Carrito">
-                            {/* lados verticales (sin tapa arriba), más vertical/rectangular */}
-                            <path d="M7 2 L7 15 L17 15 L17 2" />
-                            {/* 3 baldas intermedias */}
-                            <path d="M7 6 L17 6" />
-                            <path d="M7 9.5 L17 9.5" />
-                            <path d="M7 13 L17 13" />
-                            {/* 2 ruedas */}
-                            <circle cx="9" cy="19" r="1.8" />
-                            <circle cx="15" cy="19" r="1.8" />
-                          </svg>
-                          <input
-                            type="number" min="0" max="9999"
-                            className="pedido-input"
-                            value={draftItems.get(offer.codigoArticulo)?.karrys || 0}
-                            onChange={e => setFromKarrys(offer.codigoArticulo, parseInt(e.target.value) || 0, offer)}
-                          />
+                          <div className="pedido-btn-row">
+                            <svg className="pedido-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Carrito">
+                              {/* lados verticales (sin tapa arriba), más vertical/rectangular */}
+                              <path d="M7 2 L7 15 L17 15 L17 2" />
+                              {/* 3 baldas intermedias */}
+                              <path d="M7 6 L17 6" />
+                              <path d="M7 9.5 L17 9.5" />
+                              <path d="M7 13 L17 13" />
+                              {/* 2 ruedas */}
+                              <circle cx="9" cy="19" r="1.8" />
+                              <circle cx="15" cy="19" r="1.8" />
+                            </svg>
+                            <button className="pedido-add-btn pedido-add-btn--minus"
+                              onClick={() => setFromKarrys(offer.codigoArticulo, Math.max(0, (draftItems.get(offer.codigoArticulo)?.karrys || 0) - 1), offer)}>−</button>
+                            <span className="pedido-val">{draftItems.get(offer.codigoArticulo)?.karrys || 0}</span>
+                            <button className="pedido-add-btn pedido-add-btn--plus"
+                              onClick={() => setFromKarrys(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.karrys || 0) + 1, offer)}>+</button>
+                          </div>
                           <div className="pedido-progress">
                             <div className="pedido-progress-fill" style={{width: `${(() => {
                               const item = draftItems.get(offer.codigoArticulo);
