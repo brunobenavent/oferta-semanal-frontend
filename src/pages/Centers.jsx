@@ -130,6 +130,7 @@ export default function Centers() {
             </div>
           ))}
         </div>
+        <hr className="centers-divider" />
         <h2 className="centers-legend-prod"><img src="/corazon-verde.svg" alt="" style={{width: 28, height: 25, verticalAlign: 'middle', marginRight: 8}} /> Centros de Producción <span className="legend-count">{PRODUCTION_CENTERS.length} centros</span></h2>
         <div className="centers-grid">
           {PRODUCTION_CENTERS.map(c => (
