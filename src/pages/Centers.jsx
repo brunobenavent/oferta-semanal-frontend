@@ -54,7 +54,7 @@ const L = window.L;
 
 const createGardenIcon = () => L.divIcon({
   className: 'custom-marker',
-  html: `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="-100 0 120 95">
+  html: `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="72" viewBox="-100 0 120 95">
       <style>.garden{fill:#d9000d}</style>
       <g class="garden">
         <path d="M-39.7,43.3c-2-1.3-2,0-1.5-2,.2-1,0-.4.5-.6,1.4-.7-3.9-9-3.6-5.1-2.6,1.1-3.9,2.9-3.1,6.1.4,1.5-1.4,0-1.5,2,0,1.1,1.5-1.7,9.1.3,0-.8,0-.7,0-.8ZM-42.4,42.4h-3.6c-.3-1.1-.3-2.3,0-3.3.4.2.8.3,1.2.2,1,0,1.8-1,1.9-2.5l1.2,2.6-.8,2.9Z"/>
@@ -65,14 +65,14 @@ const createGardenIcon = () => L.divIcon({
         <path d="M-31.5,50c-.3.8.7,1.1.9.4,1-2.2,2.4-4.1,4.2-5.8.7.6.3,2.6-.4,3.7-.4.6.4,1,.7.4.7-1.3,1.3-3.4.4-4.6-.4-.4,1.9-1.4,1.7-1.8-.5-.8-5.8,2.2-7.5,7.6Z"/>
       </g>
     </svg>`,
-  iconSize: [60, 60],
-  iconAnchor: [30, 60],
-  popupAnchor: [0, -55],
+  iconSize: [120, 120],
+  iconAnchor: [60, 120],
+  popupAnchor: [0, -110],
 });
 
 const createProdIcon = () => L.divIcon({
   className: 'custom-marker',
-  html: `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="-10 0 90 95">
+  html: `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="72" viewBox="-10 0 90 95">
       <style>.prod{fill:#34812a}</style>
       <g class="prod">
         <path d="M52.2,43.3c-2-1.3-2,0-1.5-2,.2-1,0-.4.5-.6,1.4-.7-3.9-9-3.6-5.1-2.6,1.1-3.9,2.9-3.1,6.1.4,1.5-1.4,0-1.5,2,0,1.1,1.5-1.7,9.1.3,0-.8,0-.7,0-.8ZM49.4,42.4h-3.6c-.3-1.1-.3-2.3,0-3.3.4.2.8.3,1.2.2,1,0,1.8-1,1.9-2.5l1.2,2.6-.8,2.9Z"/>
@@ -83,9 +83,9 @@ const createProdIcon = () => L.divIcon({
         <path d="M60.3,50c-.3.8.7,1.1.9.4,1-2.2,2.4-4.1,4.2-5.8.7.6.3,2.6-.4,3.7-.4.6.4,1,.7.4.7-1.3,1.3-3.4.4-4.6-.4-.4,1.9-1.4,1.7-1.8-.5-.8-5.8,2.2-7.5,7.6Z"/>
       </g>
     </svg>`,
-  iconSize: [60, 60],
-  iconAnchor: [30, 60],
-  popupAnchor: [0, -55],
+  iconSize: [120, 120],
+  iconAnchor: [60, 120],
+  popupAnchor: [0, -110],
 });
 
 export default function Centers() {
