@@ -92,7 +92,6 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
                 <div className="nav-user-section">
                 {isClient && (
                   <Link to="/pedido" className="nav-cart-wrapper">
-                    <span className="nav-cart-label">Carrito</span>
                     <div className="nav-cart-pill">
                       <span className="nav-cart-item">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
