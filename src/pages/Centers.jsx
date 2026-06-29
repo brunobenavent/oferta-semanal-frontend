@@ -71,6 +71,7 @@ const createProdIcon = () => L.divIcon({
 export default function Centers() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const markersRef = useRef({});
 
   useEffect(() => {
     if (!mapInstanceRef.current && mapRef.current && L) {
@@ -84,10 +85,12 @@ export default function Centers() {
 
       [...GARDEN_CENTERS, ...PRODUCTION_CENTERS].forEach(center => {
         const icon = center.type === 'garden' ? gardenIcon : prodIcon;
-        L.marker([center.lat, center.lng], { icon })
+        const marker = L.marker([center.lat, center.lng], { icon })
           .addTo(map)
           .bindPopup(`<strong>${center.name}</strong><br>${center.location}<br><a href="${center.mapsUrl}" target="_blank">Ver en Google Maps</a>`);
+        markersRef.current[center.name] = marker;
       });
+
 
       const observer = new IntersectionObserver(() => map.invalidateSize());
       observer.observe(mapRef.current);
@@ -96,8 +99,14 @@ export default function Centers() {
     }
   }, []);
 
-  const flyTo = (lat, lng) => {
-    mapInstanceRef.current?.flyTo([lat, lng], 15);
+  const flyTo = (name, lat, lng) => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.flyTo([lat, lng], 15);
+    const marker = markersRef.current[name];
+    if (marker) {
+      setTimeout(() => marker.openPopup(), 800);
+    }
   };
 
   return (
@@ -113,7 +122,7 @@ export default function Centers() {
         <h2><img src="/vigu-rojo.svg" alt="" style={{width: 36, height: 44, verticalAlign: 'middle', marginRight: 8}} /> Garden Centers</h2>
         <div className="centers-grid">
           {GARDEN_CENTERS.map(c => (
-            <div key={c.name} className="center-card" onClick={() => flyTo(c.lat, c.lng)}>
+            <div key={c.name} className="center-card" onClick={() => flyTo(c.name, c.lat, c.lng)}>
               <h3>{c.name}</h3>
               <p className="center-location"><MapPin size={14} /> {c.location}</p>
               <p className="center-desc">{c.desc}</p>
@@ -124,7 +133,7 @@ export default function Centers() {
         <h2><img src="/corazon-verde.svg" alt="" style={{width: 36, height: 32, verticalAlign: 'middle', marginRight: 8}} /> Centros de Producción</h2>
         <div className="centers-grid">
           {PRODUCTION_CENTERS.map(c => (
-            <div key={c.name} className="center-card" onClick={() => flyTo(c.lat, c.lng)}>
+            <div key={c.name} className="center-card" onClick={() => flyTo(c.name, c.lat, c.lng)}>
               <h3>{c.name}</h3>
               <p className="center-location"><MapPin size={14} /> {c.location}</p>
               <p className="center-desc">{c.desc}</p>
