@@ -63,8 +63,9 @@ function getStatusActions(estado, roles) {
     return [];
   }
   if (isClient) {
-    if (estado === 'borrador')  return [{ label: 'Enviar',          action: 'pendiente', icon: Send }];
-    if (estado === 'pendiente') return [{ label: 'Volver a borrador', action: 'borrador', icon: RotateCcw }];
+    if (estado === 'borrador')  return [
+      { label: 'Enviar',          action: 'pendiente', icon: Send },
+    ];
     return [];
   }
   return [];
@@ -421,7 +422,7 @@ export default function PreOrders() {
                             </button>
                           );
                         })}
-                        {isSuperadminOrAdmin && (
+                        {((isSuperadminOrAdmin) || (isClient && order.estado === 'borrador')) && (
                           <button
                             className="preorders-action-btn preorders-action-btn--danger"
                             title="Eliminar"
