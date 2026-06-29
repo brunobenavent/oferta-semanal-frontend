@@ -29,7 +29,11 @@ function getStatusActions(estado, roles) {
   const isClient = safeRoles.includes('client');
 
   if (isAdmin) {
-    if (estado === 'borrador')   return [{ label: 'Enviar',          action: 'pendiente', icon: Send }];
+    if (estado === 'borrador')   return [
+      { label: 'Enviar',          action: 'pendiente',  icon: Send },
+      { label: 'Revisar',         action: 'revisado',   icon: Eye },
+      { label: 'Rechazar',        action: 'rechazado',  icon: Ban },
+    ];
     if (estado === 'pendiente')  return [
       { label: 'Revisar',        action: 'revisado',  icon: Eye },
       { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
