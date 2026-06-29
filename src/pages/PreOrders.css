@@ -22,18 +22,15 @@
 
 .preorders-title-section h1 {
   font-family: 'Archivo Narrow', sans-serif;
+  font-size: 1.5rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: -0.03em;
   color: var(--color-text);
   margin-bottom: var(--space-xs);
-  font-size: 2.2em;
 }
 
 .preorders-count {
   font-size: 0.8125rem;
   color: var(--color-text-muted);
-  font-style: italic;
 }
 
 .preorders-toolbar {
@@ -798,7 +795,7 @@
   }
 
   .preorders-title-section h1 {
-    font-size: 1.6em;
+    font-size: 1.3rem;
   }
 
   .preorders-toolbar {
