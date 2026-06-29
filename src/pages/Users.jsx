@@ -52,8 +52,8 @@ export default function UsersPage({ mode = 'empleados' }) {
   // ── Load commercials list for the multi-select in the form ──
   const loadCommercials = async () => {
     try {
-      const { data } = await api.get('/users', { params: { rol: 'commercial' } });
-      const list = data.users || data || [];
+      const { data } = await api.get('/commercials');
+      const list = data.commercials || data || [];
       setCommercials(list);
     } catch (err) {
       console.error('Error loading commercials:', err);
