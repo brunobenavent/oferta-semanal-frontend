@@ -119,7 +119,7 @@ export default function Centers() {
         <div ref={mapRef} className="centers-map" />
       </div>
       <div className="centers-list">
-        <h2><img src="/vigu-rojo.svg" alt="" style={{width: 36, height: 44, verticalAlign: 'middle', marginRight: 8}} /> Garden Centers</h2>
+        <h2><img src="/vigu-rojo.svg" alt="" style={{width: 36, height: 44, verticalAlign: 'middle', marginRight: 8}} /> Garden Centers <span className="legend-count">{GARDEN_CENTERS.length} centros</span></h2>
         <div className="centers-grid">
           {GARDEN_CENTERS.map(c => (
             <div key={c.name} className="center-card" onClick={() => flyTo(c.name, c.lat, c.lng)}>
@@ -130,7 +130,7 @@ export default function Centers() {
             </div>
           ))}
         </div>
-        <h2><img src="/corazon-verde.svg" alt="" style={{width: 36, height: 32, verticalAlign: 'middle', marginRight: 8}} /> Centros de Producción</h2>
+        <h2><img src="/corazon-verde.svg" alt="" style={{width: 36, height: 32, verticalAlign: 'middle', marginRight: 8}} /> Centros de Producción <span className="legend-count">{PRODUCTION_CENTERS.length} centros</span></h2>
         <div className="centers-grid">
           {PRODUCTION_CENTERS.map(c => (
             <div key={c.name} className="center-card" onClick={() => flyTo(c.name, c.lat, c.lng)}>
