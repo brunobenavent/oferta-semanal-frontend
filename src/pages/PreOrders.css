@@ -938,7 +938,6 @@
   padding: 24px;
   margin-bottom: 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  max-width: 680px;
 }
 
 .preorders-client-draft h2 {
@@ -968,13 +967,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.preorders-draft-table th:nth-child(1) { width: auto; }
-.preorders-draft-table th:nth-child(2) { width: 58px; }
-.preorders-draft-table th:nth-child(3) { width: 70px; text-align: center; }
-.preorders-draft-table th:nth-child(4) { width: 70px; text-align: center; }
-.preorders-draft-table th:nth-child(5) { width: 110px; text-align: center; }
-.preorders-draft-table th:nth-child(6) { width: 56px; }
-.preorders-draft-table th:nth-child(7) { width: 36px; }
+.preorders-draft-table th:nth-child(1) { width: 45%; }
+.preorders-draft-table th:nth-child(2) { width: 8%; }
+.preorders-draft-table th:nth-child(3) { width: 11%; text-align: center; }
+.preorders-draft-table th:nth-child(4) { width: 11%; text-align: center; }
+.preorders-draft-table th:nth-child(5) { width: 15%; text-align: center; }
+.preorders-draft-table th:nth-child(6) { width: 6%; }
+.preorders-draft-table th:nth-child(7) { width: 4%; }
 
 .preorders-draft-table td {
   padding: 8px 10px;
