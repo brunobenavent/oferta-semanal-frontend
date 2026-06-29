@@ -38,19 +38,24 @@ export function PreOrderProvider({ children }) {
         const savedId = localStorage.getItem(`${LS_PREFIX}${userId}`);
 
         if (savedId) {
-          const { data } = await api.get(`/preorders/${savedId}`);
-          if (data && data.estado === 'borrador') {
-            setDraft(data);
-            lastSavedRef.current = data.updatedAt;
-            setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, {
-              ...i,
-              karrys: i.karrys || 0,
-              tablas: i.tablas || 0,
-              unidades: i.unidades || 0,
-            }])));
-            return;
+          try {
+            const { data } = await api.get(`/preorders/${savedId}`);
+            if (data && data.estado === 'borrador') {
+              setDraft(data);
+              lastSavedRef.current = data.updatedAt;
+              setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, {
+                ...i,
+                karrys: i.karrys || 0,
+                tablas: i.tablas || 0,
+                unidades: i.unidades || 0,
+              }])));
+              return;
+            }
+            // Draft was sent or deleted — clear localStorage
+          } catch (getErr) {
+            // 404 = draft doesn't exist anymore — silently continue to create new
+            if (getErr.response?.status !== 404) throw getErr;
           }
-          // Draft was sent or deleted — clear localStorage
           localStorage.removeItem(`${LS_PREFIX}${userId}`);
         }
 
