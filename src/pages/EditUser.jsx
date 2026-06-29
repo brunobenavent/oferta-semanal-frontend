@@ -18,6 +18,11 @@ export default function EditUser() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const source = location.state?.source;
+  const backUrl = source === 'clientes' ? '/clientes' : '/users';
+  const backLabel = source === 'clientes' ? 'Volver a clientes' : 'Volver a usuarios';
+  const pageMode = source || (user?.roles?.includes('client') || user?.role === 'client' ? 'clientes' : 'empleados');
+
   useEffect(() => {
     if (!user) {
       // State was lost (page refresh) — redirect back
@@ -31,14 +36,12 @@ export default function EditUser() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const pageMode = user?.roles?.includes('client') || user?.role === 'client' ? 'clientes' : 'empleados';
-
   if (loading) return <div className="edit-user-page"><p className="edit-user-loading">Cargando...</p></div>;
   if (error || !user) return (
     <div className="edit-user-page">
       <div className="edit-user-error">
         <h2>{error || 'Usuario no encontrado'}</h2>
-        <Link to="/users" className="auth-btn-secondary" style={{ width: 'auto', padding: '8px 16px', textDecoration: 'none' }}>Volver a usuarios</Link>
+        <Link to={backUrl} className="auth-btn-secondary" style={{ width: 'auto', padding: '8px 16px', textDecoration: 'none' }}>{backLabel}</Link>
       </div>
     </div>
   );
@@ -46,8 +49,8 @@ export default function EditUser() {
   return (
     <div className="edit-user-page">
       <div className="edit-user-header">
-        <Link to="/users" className="edit-user-back">
-          <ArrowLeft size={16} /> Volver a usuarios
+        <Link to={backUrl} className="edit-user-back">
+          <ArrowLeft size={16} /> {backLabel}
         </Link>
         <h2>Editar Usuario</h2>
         <div />
@@ -59,7 +62,7 @@ export default function EditUser() {
         commercials={commercials}
         onSaved={() => {
           addToast('Usuario actualizado', 'success');
-          navigate('/users');
+          navigate(backUrl);
         }}
         onCancel={() => navigate('/users')}
       />
