@@ -741,24 +741,43 @@ export default function PreOrders() {
               ) : (
                 <>
                   {assignedCommercials.length > 0 && (
-                    <p className="send-modal-hint">Los comerciales asignados ya están marcados.</p>
+                    <p className="send-modal-hint">Los asignados ya están marcados.</p>
                   )}
-                  {allCommercials.map(c => (
-                    <label key={c._id} className="send-modal-checkbox">
+                  <div className="send-modal-commercials">
+                    <label className="send-modal-select-all">
                       <input
                         type="checkbox"
-                        checked={sendCommercials.includes(c._id)}
+                        checked={sendCommercials.length === allCommercials.length && allCommercials.length > 0}
                         onChange={e => {
                           if (e.target.checked) {
-                            setSendCommercials(prev => [...prev, c._id]);
+                            setSendCommercials(allCommercials.map(c => c._id));
                           } else {
-                            setSendCommercials(prev => prev.filter(id => id !== c._id));
+                            setSendCommercials([]);
                           }
                         }}
                       />
-                      <span>{c.name || c.nombre} ({c.email})</span>
+                      Seleccionar todos
                     </label>
-                  ))}
+                    {allCommercials.map(c => (
+                      <label key={c._id} className="send-modal-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={sendCommercials.includes(c._id)}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSendCommercials(prev => [...prev, c._id]);
+                            } else {
+                              setSendCommercials(prev => prev.filter(id => id !== c._id));
+                            }
+                          }}
+                        />
+                        <div>
+                          <span className="send-modal-commercial-name">{c.name || c.nombre}</span>
+                          <span className="send-modal-commercial-email">{c.email}</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
                 </>
               )}
             </div>
