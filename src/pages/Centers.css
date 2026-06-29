@@ -97,18 +97,35 @@
 }
 
 /* Custom Leaflet markers */
+.custom-marker-circle {
+  width: 110px;
+  height: 110px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.custom-marker--garden {
+  border-color: #d9000d;
+}
+
+.custom-marker--prod {
+  border-color: #34812a;
+}
+
+.custom-marker-circle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
 .custom-marker {
   background: transparent !important;
   border: none !important;
-}
-
-.custom-marker svg {
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
-  transition: transform 0.15s;
-}
-
-.custom-marker:hover svg {
-  transform: scale(1.15);
 }
 
 .leaflet-popup-content-wrapper {
