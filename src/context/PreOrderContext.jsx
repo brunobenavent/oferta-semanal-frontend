@@ -323,6 +323,23 @@ export function PreOrderProvider({ children }) {
     tablas: Array.from(draftItems.values()).reduce((sum, i) => sum + (i.tablas || 0), 0),
   };
 
+  // ── Reset draft (called when client deletes their borrador) ──
+  const resetDraft = useCallback(async () => {
+    if (!userId) return;
+    localStorage.removeItem(`${LS_PREFIX}${userId}`);
+    setDraft(null);
+    setDraftItems(new Map());
+    lastSavedRef.current = null;
+    try {
+      const { data } = await api.post('/preorders');
+      setDraft(data);
+      lastSavedRef.current = data.updatedAt;
+      localStorage.setItem(`${LS_PREFIX}${userId}`, data._id);
+    } catch (err) {
+      console.error('[PreOrderContext] Error creating new draft after reset:', err.message);
+    }
+  }, [userId]);
+
   // ── Cleanup ──
   useEffect(() => {
     return () => {
@@ -344,6 +361,7 @@ export function PreOrderProvider({ children }) {
     setFromTablas,
     removeItem,
     sendPreorder,
+    resetDraft,
   };
 
   return (

@@ -230,12 +230,9 @@ export default function PreOrders() {
       addToast('Pedido eliminado', 'success');
       closeModal();
       
-      // If the deleted order is the current client draft, clear it
-      if (isClient && preOrderCtx?.draft?._id === orderId) {
-        const userId = preOrderCtx?.draft?.cliente?._id || preOrderCtx?.draft?.cliente;
-        if (userId) localStorage.removeItem(`preorder-draft-${userId}`);
-        // Also reload orders to pick up the auto-created new draft
-        loadOrders();
+      // If the deleted order is the current client draft, reset it
+      if (isClient && preOrderCtx?.draft?._id === orderId && preOrderCtx?.resetDraft) {
+        await preOrderCtx.resetDraft();
       }
     } catch (err) {
       const msg = err?.response?.data?.error || err?.response?.data?.message || 'Error al eliminar pedido';
@@ -244,7 +241,7 @@ export default function PreOrders() {
     } finally {
       setActionLoading(null);
     }
-  }, [actionLoading, addToast, closeModal, isClient, preOrderCtx, loadOrders]);
+  }, [actionLoading, addToast, closeModal, isClient, preOrderCtx]);
 
   // ── Filter orders locally ──
   const filteredOrders = Array.isArray(orders) ? orders.filter(order => {
