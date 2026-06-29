@@ -96,7 +96,14 @@
   text-decoration: underline;
 }
 
-/* Custom Leaflet markers — no custom CSS needed, all inline via data URI SVG */
+/* Custom Leaflet markers */
+.custom-icon {
+  background: transparent !important;
+  border: none !important;
+}
+.leaflet-marker-icon.custom-icon {
+  background: transparent !important;
+}
 
 .leaflet-popup-content-wrapper {
   border-radius: 8px;
