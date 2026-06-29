@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Search, X, RefreshCw, Loader2, AlertCircle,
   FileEdit, Clock, SearchCheck, CheckCircle,
@@ -73,19 +74,7 @@ export default function PreOrders() {
   const { addToast } = useToast();
   const assignedCommercials = user?.assignedCommercials || [];
 
-  const [allCommercials, setAllCommercials] = useState([]);
-
-  useEffect(() => {
-    api.get('/commercials')
-      .then(res => setAllCommercials(res.data?.commercials || []))
-      .catch(() => setAllCommercials([]));
-  }, []);
-
   const [orders, setOrders] = useState([]);
-  const [showSendModal, setShowSendModal] = useState(false);
-  const [sendCommercials, setSendCommercials] = useState([]);
-  const [sendMedio, setSendMedio] = useState('email');
-  const [sendObservaciones, setSendObservaciones] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -223,15 +212,6 @@ export default function PreOrders() {
     }
   }, [actionLoading, addToast, closeModal]);
 
-  const handleConfirmSend = async () => {
-    setShowSendModal(false);
-    await sendPreorder({
-      comerciales: sendCommercials,
-      medio: sendMedio,
-      observaciones: sendObservaciones,
-    });
-  };
-
   // ── Filter orders locally ──
   const filteredOrders = Array.isArray(orders) ? orders.filter(order => {
     const cliente = order.cliente || {};
@@ -287,9 +267,6 @@ export default function PreOrders() {
   // ── Client: current draft from PreOrderContext ──
   const draftItems = preOrderCtx?.draftItems || new Map();
   const isDraftEmpty = !isClient || draftItems.size === 0;
-  const sendPreorder = preOrderCtx?.sendPreorder || (() => {});
-
-  const assignedIds = new Set(assignedCommercials.map(c => c._id));
 
   // ── Render ──
   return (
@@ -372,16 +349,10 @@ export default function PreOrders() {
             <div className="preorders-draft-grand-total">
               {Array.from(draftItems.values()).reduce((sum, item) => sum + (item.karrys || 0) * (item.undsCarro || 0) + (item.tablas || 0) * (item.undsTabla || 0) + (item.unidades || 0), 0)} uds totales
             </div>
-            <button
-              className="btn btn-primary preorders-send-btn"
-              onClick={() => {
-                setSendCommercials(assignedCommercials.map(c => c._id));
-                setShowSendModal(true);
-              }}
-            >
+            <Link to="/pedidos/enviar" className="btn btn-primary preorders-send-btn">
               <Send size={18} />
               ENVIAR PEDIDO
-            </button>
+            </Link>
           </div>
         </div>
       )}
@@ -726,91 +697,6 @@ export default function PreOrders() {
                 )}
               </div>
             ) : null}
-          </div>
-        </div>
-      )}
-      {showSendModal && (
-        <div className="send-modal-overlay" onClick={() => setShowSendModal(false)}>
-          <div className="send-modal" onClick={e => e.stopPropagation()}>
-            <h3>Enviar pedido</h3>
-            
-            <div className="send-modal-section">
-              <label>Comercial asignado</label>
-              {allCommercials.length === 0 ? (
-                <p className="send-modal-hint">No hay comerciales disponibles.</p>
-              ) : (
-                <>
-                  {assignedCommercials.length > 0 && (
-                    <p className="send-modal-hint">Los asignados ya están marcados.</p>
-                  )}
-                  <div className="send-modal-commercials">
-                    <label className="send-modal-select-all">
-                      <input
-                        type="checkbox"
-                        checked={sendCommercials.length === allCommercials.length && allCommercials.length > 0}
-                        onChange={e => {
-                          if (e.target.checked) {
-                            setSendCommercials(allCommercials.map(c => c._id));
-                          } else {
-                            setSendCommercials([]);
-                          }
-                        }}
-                      />
-                      Seleccionar todos
-                    </label>
-                    {allCommercials.map(c => (
-                      <label key={c._id} className="send-modal-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={sendCommercials.includes(c._id)}
-                          onChange={e => {
-                            if (e.target.checked) {
-                              setSendCommercials(prev => [...prev, c._id]);
-                            } else {
-                              setSendCommercials(prev => prev.filter(id => id !== c._id));
-                            }
-                          }}
-                        />
-                        <div>
-                          <span className="send-modal-commercial-name">{c.name || c.nombre}</span>
-                          <span className="send-modal-commercial-email">{c.email}</span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-            
-            <div className="send-modal-section">
-              <label>Medio de notificación</label>
-              <select value={sendMedio} onChange={e => setSendMedio(e.target.value)}>
-                <option value="email">Email</option>
-              </select>
-            </div>
-            
-            <div className="send-modal-section">
-              <label>Observaciones (opcional)</label>
-              <textarea
-                value={sendObservaciones}
-                onChange={e => setSendObservaciones(e.target.value)}
-                placeholder="Notas para el comercial..."
-                rows={3}
-              />
-            </div>
-            
-            <div className="send-modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowSendModal(false)}>
-                Cancelar
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={handleConfirmSend}
-                disabled={sendCommercials.length === 0 && assignedCommercials.length > 0}
-              >
-                <Send size={16} /> Enviar pedido
-              </button>
-            </div>
           </div>
         </div>
       )}

@@ -25,6 +25,7 @@ import Clients from './pages/Clients';
 import NotFound from './pages/NotFound';
 import Contacto from './pages/Contacto';
 import PreOrders from './pages/PreOrders';
+import SendPreorder from './pages/SendPreorder';
 // UserForm deprecated — all CRUD via modal in Users.jsx
 // import UserForm from './pages/UserForm';
 
@@ -77,6 +78,7 @@ function App() {
                 <Route path="/users/:id/edit" element={<Navigate to="/users" replace />} />
                 <Route path="/clientes" element={<Clients />} />
                 <Route path="/pedidos" element={<PreOrders />} />
+                <Route path="/pedidos/enviar" element={<SendPreorder />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/aviso-legal" element={<AvisoLegal />} />
                 <Route path="/condiciones-generales" element={<CondicionesGenerales />} />
