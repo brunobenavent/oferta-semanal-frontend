@@ -273,8 +273,10 @@ export default function UsersPage({ mode = 'empleados' }) {
                 { key: 'commercial', label: 'Comerciales' },
               ]
           ).map(tab => {
-            const count = tab.key === 'all'
-              ? users.length
+              const count = tab.key === 'all'
+                ? (mode === 'clientes'
+                    ? users.filter(u => (u.roles || [u.role]).includes('client')).length
+                    : users.filter(u => !(u.roles || [u.role]).includes('client')).length)
               : tab.key === 'admin'
                 ? users.filter(u => (u.roles || [u.role]).includes('admin') || (u.roles || [u.role]).includes('superadmin')).length
                 : tab.key === 'employee'
