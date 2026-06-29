@@ -342,25 +342,34 @@ export default function PreOrders() {
                       <td className="preorders-draft-code">{item.codigoArticulo}</td>
                       <td>
                         {item.undsCarro > 0 ? (
-                          <input type="number" min="0" max="9999" className="pedido-input pedido-input-sm"
-                            value={item.karrys || 0}
-                            onChange={e => setFromKarrys(item.codigoArticulo, parseInt(e.target.value) || 0, item)}
-                          />
+                          <div className="preorders-draft-btns">
+                            <button className="preorders-draft-btn" onClick={() => setFromKarrys(item.codigoArticulo, Math.max(0, (item.karrys || 0) - 1), item)}>−</button>
+                            <span className="preorders-draft-val">{item.karrys || 0}</span>
+                            <button className="preorders-draft-btn preorders-draft-btn--add" onClick={() => setFromKarrys(item.codigoArticulo, (item.karrys || 0) + 1, item)}>+</button>
+                          </div>
                         ) : '—'}
                       </td>
                       <td>
                         {item.undsTabla > 0 ? (
-                          <input type="number" min="0" max="9999" className="pedido-input pedido-input-sm"
-                            value={item.tablas || 0}
-                            onChange={e => setFromTablas(item.codigoArticulo, parseInt(e.target.value) || 0, item)}
-                          />
+                          <div className="preorders-draft-btns">
+                            <button className="preorders-draft-btn" onClick={() => setFromTablas(item.codigoArticulo, Math.max(0, (item.tablas || 0) - 1), item)}>−</button>
+                            <span className="preorders-draft-val">{item.tablas || 0}</span>
+                            <button className="preorders-draft-btn preorders-draft-btn--add" onClick={() => setFromTablas(item.codigoArticulo, (item.tablas || 0) + 1, item)}>+</button>
+                          </div>
                         ) : '—'}
                       </td>
                       <td>
-                        <input type="number" min="0" max="9999" className="pedido-input pedido-input-sm"
-                          value={item.unidades || 0}
-                          onChange={e => updateUnidades(item.codigoArticulo, parseInt(e.target.value) || 0, item)}
-                        />
+                        <div className="preorders-draft-btns">
+                          <button className="preorders-draft-btn" onClick={() => updateUnidades(item.codigoArticulo, -1, item)}>−</button>
+                          <span className="preorders-draft-val">{item.unidades || 0}</span>
+                          <button className="preorders-draft-btn preorders-draft-btn--add" onClick={() => updateUnidades(item.codigoArticulo, 1, item)}>+</button>
+                          {item.undsCarro === 0 && item.undsTabla === 0 && (
+                            <>
+                              <button className="preorders-draft-btn preorders-draft-btn--muted" onClick={() => updateUnidades(item.codigoArticulo, -10, item)}>−10</button>
+                              <button className="preorders-draft-btn preorders-draft-btn--muted" onClick={() => updateUnidades(item.codigoArticulo, 10, item)}>+10</button>
+                            </>
+                          )}
+                        </div>
                       </td>
                       <td className="preorders-draft-total">{total} uds</td>
                       <td>

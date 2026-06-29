@@ -1156,11 +1156,53 @@
 }
 
 /* ── Draft table inputs ── */
-.pedido-input-sm {
-  width: 56px;
-  padding: 4px 6px;
-  font-size: 0.8rem;
+.preorders-draft-btns {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.preorders-draft-btn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 4px;
+  background: var(--color-bg, #fff);
+  color: var(--color-text, #333);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: all 0.1s;
+}
+.preorders-draft-btn:hover {
+  background: var(--color-bg-hover, #f0f0f0);
+}
+
+.preorders-draft-btn--add {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.preorders-draft-btn--add:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.preorders-draft-btn--muted {
+  font-size: 0.6rem;
+  width: 28px;
+  color: var(--color-text-muted, #999);
+}
+
+.preorders-draft-val {
+  display: inline-block;
+  min-width: 20px;
   text-align: center;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
 .preorders-draft-remove {
