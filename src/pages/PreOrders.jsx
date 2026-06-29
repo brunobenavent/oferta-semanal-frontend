@@ -284,11 +284,10 @@ export default function PreOrders() {
     <div className="preorders-page">
       {/* ── Header ── */}
       <div className="preorders-header">
-        <div className="preorders-title-section">
+        <div className="auth-header">
+          <ShoppingBag size={32} />
           <h1>Pedidos</h1>
-          <p className="preorders-count">
-            {!loading && `${orders.length} pedido${orders.length !== 1 ? 's' : ''}`}
-          </p>
+          <p>{!loading && `${orders.length} pedido${orders.length !== 1 ? 's' : ''}`}</p>
         </div>
         <div className="preorders-toolbar">
           <div className="preorders-search-wrapper">
