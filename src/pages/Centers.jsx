@@ -54,17 +54,17 @@ const L = window.L;
 
 const createGardenIcon = () => L.divIcon({
   className: 'custom-icon',
-  html: `<img src="/vigu-rojo.svg" style="width:100px;height:120px;display:block" />`,
-  iconSize: [100, 120],
-  iconAnchor: [50, 120],
+  html: `<img src="/vigu-rojo.svg" style="width:35px;height:42px;display:block" />`,
+  iconSize: [35, 42],
+  iconAnchor: [17, 42],
   popupAnchor: [0, -110],
 });
 
 const createProdIcon = () => L.divIcon({
   className: 'custom-icon',
-  html: `<img src="/corazon-verde.svg" style="width:80px;height:70px;display:block" />`,
-  iconSize: [80, 70],
-  iconAnchor: [40, 70],
+  html: `<img src="/corazon-verde.svg" style="width:28px;height:25px;display:block" />`,
+  iconSize: [28, 25],
+  iconAnchor: [14, 25],
   popupAnchor: [0, -60],
 });
 
