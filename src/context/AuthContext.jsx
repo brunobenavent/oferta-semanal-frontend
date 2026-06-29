@@ -118,6 +118,7 @@ export function AuthProvider({ children }) {
     token,
     loading,
     isAuthenticated,
+    roles,
     isSuperadmin,
     isAdmin,
     isEmployee,
