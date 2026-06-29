@@ -259,6 +259,9 @@ export default function PreOrders() {
 
     if (statusFilter && order.estado !== statusFilter) return false;
 
+    // Hide empty borrador drafts from client's table
+    if (isClient && order.estado === 'borrador' && (!order.items || order.items.length === 0)) return false;
+
     return true;
   }) : [];
 
