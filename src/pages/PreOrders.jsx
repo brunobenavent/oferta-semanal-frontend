@@ -73,6 +73,14 @@ export default function PreOrders() {
   const { addToast } = useToast();
   const assignedCommercials = user?.assignedCommercials || [];
 
+  const [allCommercials, setAllCommercials] = useState([]);
+
+  useEffect(() => {
+    api.get('/commercials')
+      .then(res => setAllCommercials(res.data?.commercials || []))
+      .catch(() => setAllCommercials([]));
+  }, []);
+
   const [orders, setOrders] = useState([]);
   const [showSendModal, setShowSendModal] = useState(false);
   const [sendCommercials, setSendCommercials] = useState([]);
@@ -280,6 +288,8 @@ export default function PreOrders() {
   const draftItems = preOrderCtx?.draftItems || new Map();
   const isDraftEmpty = !isClient || draftItems.size === 0;
   const sendPreorder = preOrderCtx?.sendPreorder || (() => {});
+
+  const assignedIds = new Set(assignedCommercials.map(c => c._id));
 
   // ── Render ──
   return (
@@ -726,25 +736,30 @@ export default function PreOrders() {
             
             <div className="send-modal-section">
               <label>Comercial asignado</label>
-              {assignedCommercials.length === 0 ? (
-                <p className="send-modal-hint">No tenés comerciales asignados. El pedido se enviará sin asignar.</p>
+              {allCommercials.length === 0 ? (
+                <p className="send-modal-hint">No hay comerciales disponibles.</p>
               ) : (
-                assignedCommercials.map(c => (
-                  <label key={c._id} className="send-modal-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={sendCommercials.includes(c._id)}
-                      onChange={e => {
-                        if (e.target.checked) {
-                          setSendCommercials(prev => [...prev, c._id]);
-                        } else {
-                          setSendCommercials(prev => prev.filter(id => id !== c._id));
-                        }
-                      }}
-                    />
-                    <span>{c.nombre} ({c.email})</span>
-                  </label>
-                ))
+                <>
+                  {assignedCommercials.length > 0 && (
+                    <p className="send-modal-hint">Los comerciales asignados ya están marcados.</p>
+                  )}
+                  {allCommercials.map(c => (
+                    <label key={c._id} className="send-modal-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={sendCommercials.includes(c._id)}
+                        onChange={e => {
+                          if (e.target.checked) {
+                            setSendCommercials(prev => [...prev, c._id]);
+                          } else {
+                            setSendCommercials(prev => prev.filter(id => id !== c._id));
+                          }
+                        }}
+                      />
+                      <span>{c.name || c.nombre} ({c.email})</span>
+                    </label>
+                  ))}
+                </>
               )}
             </div>
             
