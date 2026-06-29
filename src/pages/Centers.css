@@ -49,6 +49,7 @@
 
 .centers-list h2:last-of-type {
   padding-top: 1.25rem;
+  margin-top: 2.5rem;
   border-top: 1px solid var(--color-border, #e0e0e0);
 }
 
