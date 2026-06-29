@@ -21,7 +21,7 @@ const buildEmptyForm = (pageMode) => ({
   assignedCommercials: [],
 });
 
-export default function UserForm({ mode, user, pageMode = 'empleados', commercials = [], onSaved, onCancel }) {
+export default function UserForm({ mode, user, pageMode = 'empleados', commercials = [], onSaved, onCancel, gridLayout = false }) {
   const { createUser, updateUserById, fetchUsers } = useAuth();
   const isEdit = mode === 'edit';
 
@@ -300,32 +300,59 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
       )}
 
       {/* Form fields */}
-      <div className="auth-form">
-        {/* Shared: Email */}
-        <div className="auth-field">
-          <label>Email *</label>
-          <input
-            type="email"
-            value={form.email}
-            onChange={e => handleChange('email', e.target.value)}
-            disabled={isEdit}
-            placeholder="usuario@ejemplo.com"
-          />
-          {isEdit && (
-            <span className="field-hint">El email no se puede modificar</span>
-          )}
-        </div>
-
-        {/* Shared: Nombre */}
-        <div className="auth-field">
-          <label>Nombre *</label>
-          <input
-            type="text"
-            value={form.nombre}
-            onChange={e => handleChange('nombre', e.target.value)}
-            placeholder="Nombre completo"
-          />
-        </div>
+      <div className={gridLayout ? "auth-form auth-form-grid" : "auth-form"}>
+        {/* Shared: Email + Nombre (row in grid mode) */}
+        {gridLayout ? (
+          <div className="auth-form-row">
+            <div className="auth-field">
+              <label>Email *</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={e => handleChange('email', e.target.value)}
+                disabled={isEdit}
+                placeholder="usuario@ejemplo.com"
+              />
+              {isEdit && (
+                <span className="field-hint">El email no se puede modificar</span>
+              )}
+            </div>
+            <div className="auth-field">
+              <label>Nombre *</label>
+              <input
+                type="text"
+                value={form.nombre}
+                onChange={e => handleChange('nombre', e.target.value)}
+                placeholder="Nombre completo"
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="auth-field">
+              <label>Email *</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={e => handleChange('email', e.target.value)}
+                disabled={isEdit}
+                placeholder="usuario@ejemplo.com"
+              />
+              {isEdit && (
+                <span className="field-hint">El email no se puede modificar</span>
+              )}
+            </div>
+            <div className="auth-field">
+              <label>Nombre *</label>
+              <input
+                type="text"
+                value={form.nombre}
+                onChange={e => handleChange('nombre', e.target.value)}
+                placeholder="Nombre completo"
+              />
+            </div>
+          </>
+        )}
 
         {/* ── Photo ── */}
         <div className="auth-field">

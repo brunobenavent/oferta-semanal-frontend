@@ -55,17 +55,20 @@ export default function EditUser() {
         <h2>Editar Usuario</h2>
         <div />
       </div>
-      <UserForm
-        mode="edit"
-        user={user}
-        pageMode={pageMode}
-        commercials={commercials}
-        onSaved={() => {
-          addToast('Usuario actualizado', 'success');
-          navigate(backUrl);
-        }}
-        onCancel={() => navigate('/users')}
-      />
+      <div className="edit-user-form-grid">
+        <UserForm
+          mode="edit"
+          user={user}
+          pageMode={pageMode}
+          commercials={commercials}
+          gridLayout
+          onSaved={() => {
+            addToast('Usuario actualizado', 'success');
+            navigate(backUrl);
+          }}
+          onCancel={() => navigate(backUrl)}
+        />
+      </div>
     </div>
   );
 }

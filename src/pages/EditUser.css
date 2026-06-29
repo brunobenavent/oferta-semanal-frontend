@@ -1,5 +1,5 @@
 .edit-user-page {
-  max-width: 640px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 1.5rem;
 }
@@ -32,6 +32,43 @@
   color: var(--color-text, #333);
 }
 
+/* ── Two-column form layout ── */
+.auth-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+}
+
+/* Row wrapper for email+nombre side by side */
+.auth-form-row {
+  display: contents;
+}
+
+/* Full-width elements in the grid */
+.auth-form-grid > .auth-field {
+  grid-column: 1 / -1;
+}
+
+/* Email+nombre children flow into the grid via display:contents */
+.auth-form-row > .auth-field {
+  grid-column: auto;
+}
+
+@media (max-width: 640px) {
+  .auth-form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .auth-form-row {
+    display: block;
+  }
+  
+  .auth-form-grid > .auth-field,
+  .auth-form-row > .auth-field {
+    grid-column: 1 / -1;
+  }
+}
+
 .edit-user-loading {
   text-align: center;
   font-size: 0.9375rem;
@@ -52,4 +89,14 @@
   font-family: 'Archivo Narrow', sans-serif;
   font-size: 1.3rem;
   color: var(--color-text);
+}
+
+@media (max-width: 640px) {
+  .edit-user-form-grid .auth-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .edit-user-form-grid .auth-form > div {
+    grid-column: 1 / -1;
+  }
 }
