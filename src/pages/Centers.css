@@ -47,9 +47,9 @@
   border-left: 3px solid transparent;
 }
 
-.centers-list h2:last-of-type {
-  padding-top: 1.25rem;
-  margin-top: 2.5rem;
+.centers-list h2 + .centers-grid + h2 {
+  padding-top: 1.5rem;
+  margin-top: 3rem;
   border-top: 1px solid var(--color-border, #e0e0e0);
 }
 
