@@ -1,0 +1,55 @@
+.edit-user-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.edit-user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.edit-user-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.edit-user-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #666);
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.edit-user-back:hover {
+  background: var(--color-bg-hover, #f0f0f0);
+  color: var(--color-text, #333);
+}
+
+.edit-user-loading {
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  padding: var(--space-xl);
+}
+
+.edit-user-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.edit-user-error h2 {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 1.3rem;
+  color: var(--color-text);
+}

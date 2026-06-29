@@ -15,7 +15,7 @@ export default function UsersPage({ mode = 'empleados' }) {
   const [roleFilter, setRoleFilter] = useState('all');
   const [commercials, setCommercials] = useState([]);
 
-  // ── Unified form modal: null | 'add' | user object ──
+  // ── Unified form modal: null | 'add' ──
   const [formModal, setFormModal] = useState(null);
 
   // ── Delete modal ──
@@ -428,7 +428,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                     filteredUsers.map(u => (
                       <tr
                         key={u._id}
-                        onClick={() => setFormModal(u)}
+                        onClick={() => navigate(`/users/${u._id || u.id}/edit`)}
                         style={{ cursor: 'pointer' }}
                       >
                         <td>
@@ -529,7 +529,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                           <div className="user-actions">
                             {!(u.roles || [u.role]).includes('superadmin') && (
                               <button
-                                onClick={(e) => { e.stopPropagation(); setFormModal(u); }}
+                                onClick={(e) => { e.stopPropagation(); navigate(`/users/${u._id || u.id}/edit`); }}
                                 className="user-action-btn"
                                 title="Editar"
                               >
@@ -656,7 +656,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                     <div className="user-card-actions">
                       {!(u.roles || [u.role]).includes('superadmin') && (
                         <button
-                          onClick={() => setFormModal(u)}
+                          onClick={() => navigate(`/users/${u._id || u.id}/edit`)}
                           className="user-action-btn"
                           title="Editar"
                         >
@@ -708,12 +708,12 @@ export default function UsersPage({ mode = 'empleados' }) {
         )}
         </div>
 
-      {/* ── UserFormModal (add/edit unificado) ── */}
-      {formModal && (
+      {/* ── UserFormModal (add only) ── */}
+      {formModal === 'add' && (
         <UserFormModal
           pageMode={mode}
-          mode={formModal === 'add' ? 'add' : 'edit'}
-          user={formModal === 'add' ? null : formModal}
+          mode="add"
+          user={null}
           onClose={() => setFormModal(null)}
           onSaved={handleFormSaved}
           commercials={commercials}

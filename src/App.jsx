@@ -22,6 +22,7 @@ import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import Users from './pages/Users';
 import Clients from './pages/Clients';
+import EditUser from './pages/EditUser';
 import NotFound from './pages/NotFound';
 import Contacto from './pages/Contacto';
 import PreOrders from './pages/PreOrders';
@@ -75,7 +76,7 @@ function App() {
                 <Route path="/contact" element={<Contacto />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/new" element={<Navigate to="/users" replace />} />
-                <Route path="/users/:id/edit" element={<Navigate to="/users" replace />} />
+                <Route path="/users/:id/edit" element={<EditUser />} />
                 <Route path="/clientes" element={<Clients />} />
                 <Route path="/pedidos" element={<PreOrders />} />
                 <Route path="/pedidos/enviar" element={<SendPreorder />} />
