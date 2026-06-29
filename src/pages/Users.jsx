@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { Users as UsersIcon, Search, X, RefreshCw, Trash, Pencil, UserCheck, Power, PowerOff, Plus } from 'lucide-react';
+import { Users as UsersIcon, Search, X, RefreshCw, Trash, Pencil, UserCheck, Power, PowerOff, Plus, Eye, EyeOff } from 'lucide-react';
 import UserFormModal from '../components/UserFormModal';
 import './AuthPages.css';
 
@@ -72,6 +72,17 @@ export default function UsersPage({ mode = 'empleados' }) {
       ));
     } catch (err) {
       console.error('Error toggling user active state:', err);
+    }
+  };
+
+  const handleToggleContactVisibility = async (user) => {
+    try {
+      await updateUserById(user._id, { showInContact: !(user.showInContact !== false) });
+      setUsers(prev => prev.map(u =>
+        u._id === user._id ? { ...u, showInContact: !(u.showInContact !== false) } : u
+      ));
+    } catch (err) {
+      console.error('Error toggling contact visibility:', err);
     }
   };
 
@@ -547,6 +558,15 @@ export default function UsersPage({ mode = 'empleados' }) {
                                 {u.isActive ? <PowerOff size={15} /> : <Power size={15} />}
                               </button>
                             )}
+                            {(u.roles || [u.role]).includes('commercial') && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleToggleContactVisibility(u); }}
+                                className="user-action-btn"
+                                title={u.showInContact !== false ? 'Ocultar de Contacto' : 'Mostrar en Contacto'}
+                              >
+                                {u.showInContact !== false ? <Eye size={15} /> : <EyeOff size={15} />}
+                              </button>
+                            )}
                             {!u.isVerified && (
                               <>
                                 <button
@@ -672,6 +692,15 @@ export default function UsersPage({ mode = 'empleados' }) {
                           title={u.isActive ? 'Desactivar usuario' : 'Activar usuario'}
                         >
                           {u.isActive ? <PowerOff size={15} /> : <Power size={15} />}
+                        </button>
+                      )}
+                      {(u.roles || [u.role]).includes('commercial') && (
+                        <button
+                          onClick={() => handleToggleContactVisibility(u)}
+                          className="user-action-btn"
+                          title={u.showInContact !== false ? 'Ocultar de Contacto' : 'Mostrar en Contacto'}
+                        >
+                          {u.showInContact !== false ? <Eye size={15} /> : <EyeOff size={15} />}
                         </button>
                       )}
                       {!u.isVerified && (
