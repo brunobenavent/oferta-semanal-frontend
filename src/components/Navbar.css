@@ -226,10 +226,10 @@
 }
 
 .nav-login-link {
-  font-size: 0.8125rem;
+  font-size: 0.72rem;
   color: var(--color-primary);
   text-decoration: none;
-  padding: var(--space-xs) var(--space-sm);
+  padding: 3px 10px;
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
