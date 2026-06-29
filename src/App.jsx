@@ -25,6 +25,7 @@ import Clients from './pages/Clients';
 import EditUser from './pages/EditUser';
 import NotFound from './pages/NotFound';
 import Contacto from './pages/Contacto';
+import Centers from './pages/Centers';
 import PreOrders from './pages/PreOrders';
 import SendPreorder from './pages/SendPreorder';
 import DraftCart from './pages/DraftCart';
@@ -75,6 +76,7 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/contact" element={<Contacto />} />
+                <Route path="/centros" element={<Centers />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/new" element={<Navigate to="/users" replace />} />
                 <Route path="/users/:id/edit" element={<EditUser />} />
