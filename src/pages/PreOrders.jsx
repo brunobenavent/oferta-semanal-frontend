@@ -267,6 +267,10 @@ export default function PreOrders() {
   // ── Client: current draft from PreOrderContext ──
   const draftItems = preOrderCtx?.draftItems || new Map();
   const isDraftEmpty = !isClient || draftItems.size === 0;
+  const updateUnidades = preOrderCtx?.updateUnidades || (() => {});
+  const setFromKarrys = preOrderCtx?.setFromKarrys || (() => {});
+  const setFromTablas = preOrderCtx?.setFromTablas || (() => {});
+  const removeItem = preOrderCtx?.removeItem || (() => {});
 
   // ── Render ──
   return (
@@ -325,6 +329,7 @@ export default function PreOrders() {
                   <th>Tablas</th>
                   <th>Uds</th>
                   <th>Total</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -335,10 +340,35 @@ export default function PreOrders() {
                     <tr key={item.codigoArticulo}>
                       <td className="preorders-draft-name">{item.descripcionArticulo}</td>
                       <td className="preorders-draft-code">{item.codigoArticulo}</td>
-                      <td>{item.karrys || 0}</td>
-                      <td>{item.tablas || 0}</td>
-                      <td>{item.unidades || 0}</td>
+                      <td>
+                        {item.undsCarro > 0 ? (
+                          <input type="number" min="0" max="9999" className="pedido-input pedido-input-sm"
+                            value={item.karrys || 0}
+                            onChange={e => setFromKarrys(item.codigoArticulo, parseInt(e.target.value) || 0, item)}
+                          />
+                        ) : '—'}
+                      </td>
+                      <td>
+                        {item.undsTabla > 0 ? (
+                          <input type="number" min="0" max="9999" className="pedido-input pedido-input-sm"
+                            value={item.tablas || 0}
+                            onChange={e => setFromTablas(item.codigoArticulo, parseInt(e.target.value) || 0, item)}
+                          />
+                        ) : '—'}
+                      </td>
+                      <td>
+                        <input type="number" min="0" max="9999" className="pedido-input pedido-input-sm"
+                          value={item.unidades || 0}
+                          onChange={e => updateUnidades(item.codigoArticulo, parseInt(e.target.value) || 0, item)}
+                        />
+                      </td>
                       <td className="preorders-draft-total">{total} uds</td>
+                      <td>
+                        <button className="preorders-draft-remove" title="Eliminar artículo"
+                          onClick={() => removeItem(item.codigoArticulo)}>
+                          <Trash2 size={14} />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}

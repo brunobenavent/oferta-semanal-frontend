@@ -1154,3 +1154,25 @@
   padding-top: 1rem;
   border-top: 1px solid var(--color-border, #eee);
 }
+
+/* ── Draft table inputs ── */
+.pedido-input-sm {
+  width: 56px;
+  padding: 4px 6px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.preorders-draft-remove {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+.preorders-draft-remove:hover {
+  color: var(--color-error, #e53e3e);
+  background: rgba(229, 62, 62, 0.08);
+}
