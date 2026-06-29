@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from '../api/axios';
 import UserForm from '../components/UserForm';
@@ -9,24 +9,26 @@ import './EditUser.css';
 export default function EditUser() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToast } = useToast();
-  const [user, setUser] = useState(null);
+  
+  // User is passed via React Router state from Users.jsx (no GET /users/:id endpoint)
+  const [user, setUser] = useState(location.state?.user || null);
   const [commercials, setCommercials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      api.get(`/users/${id}`).then(r => r.data?.user || r.data),
-      api.get('/commercials').then(r => r.data?.commercials || [])
-    ]).then(([userData, commList]) => {
-      setUser(userData);
-      setCommercials(commList);
+    if (!user) {
+      // State was lost (page refresh) — redirect back
+      setError('Usuario no encontrado. Volvé a la lista e intentá de nuevo.');
       setLoading(false);
-    }).catch(err => {
-      setError('Usuario no encontrado');
-      setLoading(false);
-    });
+      return;
+    }
+    api.get('/commercials')
+      .then(r => setCommercials(r.data?.commercials || []))
+      .catch(() => setCommercials([]))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const pageMode = user?.roles?.includes('client') || user?.role === 'client' ? 'clientes' : 'empleados';

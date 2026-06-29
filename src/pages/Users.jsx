@@ -529,7 +529,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                           <div className="user-actions">
                             {!(u.roles || [u.role]).includes('superadmin') && (
                               <button
-                                onClick={(e) => { e.stopPropagation(); navigate(`/users/${u._id || u.id}/edit`); }}
+                                onClick={(e) => { e.stopPropagation(); navigate(`/users/${u._id || u.id}/edit`, { state: { user: u } }); }}
                                 className="user-action-btn"
                                 title="Editar"
                               >
@@ -656,7 +656,7 @@ export default function UsersPage({ mode = 'empleados' }) {
                     <div className="user-card-actions">
                       {!(u.roles || [u.role]).includes('superadmin') && (
                         <button
-                          onClick={() => navigate(`/users/${u._id || u.id}/edit`)}
+                        onClick={() => navigate(`/users/${u._id || u.id}/edit`, { state: { user: u } })}
                           className="user-action-btn"
                           title="Editar"
                         >
