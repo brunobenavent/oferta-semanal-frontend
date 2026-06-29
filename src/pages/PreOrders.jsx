@@ -33,6 +33,7 @@ function getStatusActions(estado, roles) {
     if (estado === 'pendiente')  return [
       { label: 'Revisar',        action: 'revisado',  icon: Eye },
       { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
+      { label: 'Volver a borrador', action: 'borrador', icon: RotateCcw },
     ];
     if (estado === 'revisado')   return [
       { label: 'Confirmar',      action: 'confirmado', icon: Check },
@@ -42,6 +43,10 @@ function getStatusActions(estado, roles) {
     if (estado === 'confirmado') return [
       { label: 'Enviar a almacén', action: 'enviado',  icon: Package },
       { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
+      { label: 'Devolver a revisado', action: 'revisado', icon: Undo2 },
+    ];
+    if (estado === 'enviado')  return [
+      { label: 'Devolver a confirmado', action: 'confirmado', icon: Undo2 },
     ];
     if (estado === 'rechazado')  return [
       { label: 'Reabrir',        action: 'borrador',   icon: RotateCcw },
