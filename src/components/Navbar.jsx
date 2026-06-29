@@ -89,7 +89,7 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
               ) : (
                 <div className="nav-user-section">
                 {isClient && (
-                  <div className="nav-order-indicators">
+                  <Link to="/pedido" className="nav-order-indicators">
                     <span className="nav-order-badge" title="Unidades">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-label="Planta">
                         <path d="M12 22 L12 13" />
@@ -120,7 +120,7 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
                       </svg>
                       <span>{totals.karrys}</span>
                     </span>
-                  </div>
+                  </Link>
                 )}
                 <div className="nav-user-info">
                 <Link to="/profile" className="nav-user-avatar">

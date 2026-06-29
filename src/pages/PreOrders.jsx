@@ -70,9 +70,8 @@ function shortId(id) {
 }
 
 export default function PreOrders() {
-  const { user, roles, isSuperadminOrAdmin, isClient, isCommercial } = useAuth();
+  const { user, roles, isSuperadminOrAdmin } = useAuth();
   const { addToast } = useToast();
-  const assignedCommercials = user?.assignedCommercials || [];
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -264,14 +263,6 @@ export default function PreOrders() {
   const orderActions = displayOrder ? getStatusActions(displayOrder.estado, roles) : [];
   const canDelete = isSuperadminOrAdmin && displayOrder;
 
-  // ── Client: current draft from PreOrderContext ──
-  const draftItems = preOrderCtx?.draftItems || new Map();
-  const isDraftEmpty = !isClient || draftItems.size === 0;
-  const updateUnidades = preOrderCtx?.updateUnidades || (() => {});
-  const setFromKarrys = preOrderCtx?.setFromKarrys || (() => {});
-  const setFromTablas = preOrderCtx?.setFromTablas || (() => {});
-  const removeItem = preOrderCtx?.removeItem || (() => {});
-
   // ── Render ──
   return (
     <div className="preorders-page">
@@ -314,87 +305,6 @@ export default function PreOrders() {
           </button>
         </div>
       </div>
-
-      {/* ── Client: Mi Pedido Actual ── */}
-      {isClient && !isDraftEmpty && (
-        <div className="preorders-client-draft">
-          <h2>Mi Pedido Actual</h2>
-          <div className="preorders-draft-items">
-            <table className="preorders-draft-table">
-              <thead>
-                <tr>
-                  <th>Artículo</th>
-                  <th>Código</th>
-                  <th>Karrys</th>
-                  <th>Tablas</th>
-                  <th>Uds</th>
-                  <th>Total</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from(draftItems.values()).map(item => {
-                  const total = (item.karrys || 0) * (item.undsCarro || 0) + (item.tablas || 0) * (item.undsTabla || 0) + (item.unidades || 0);
-                  if (total === 0) return null;
-                  return (
-                    <tr key={item.codigoArticulo}>
-                      <td className="preorders-draft-name">{item.descripcionArticulo}</td>
-                      <td className="preorders-draft-code">{item.codigoArticulo}</td>
-                      <td>
-                        {item.undsCarro > 0 ? (
-                          <div className="preorders-draft-btns">
-                            <button className="preorders-draft-btn" onClick={() => setFromKarrys(item.codigoArticulo, Math.max(0, (item.karrys || 0) - 1), item)}>−</button>
-                            <span className="preorders-draft-val">{item.karrys || 0}</span>
-                            <button className="preorders-draft-btn preorders-draft-btn--add" onClick={() => setFromKarrys(item.codigoArticulo, (item.karrys || 0) + 1, item)}>+</button>
-                          </div>
-                        ) : '—'}
-                      </td>
-                      <td>
-                        {item.undsTabla > 0 ? (
-                          <div className="preorders-draft-btns">
-                            <button className="preorders-draft-btn" onClick={() => setFromTablas(item.codigoArticulo, Math.max(0, (item.tablas || 0) - 1), item)}>−</button>
-                            <span className="preorders-draft-val">{item.tablas || 0}</span>
-                            <button className="preorders-draft-btn preorders-draft-btn--add" onClick={() => setFromTablas(item.codigoArticulo, (item.tablas || 0) + 1, item)}>+</button>
-                          </div>
-                        ) : '—'}
-                      </td>
-                      <td>
-                        <div className="preorders-draft-btns">
-                          <button className="preorders-draft-btn" onClick={() => updateUnidades(item.codigoArticulo, -1, item)}>−</button>
-                          <span className="preorders-draft-val">{item.unidades || 0}</span>
-                          <button className="preorders-draft-btn preorders-draft-btn--add" onClick={() => updateUnidades(item.codigoArticulo, 1, item)}>+</button>
-                          {item.undsCarro === 0 && item.undsTabla === 0 && (
-                            <>
-                              <button className="preorders-draft-btn preorders-draft-btn--muted" onClick={() => updateUnidades(item.codigoArticulo, -10, item)}>−10</button>
-                              <button className="preorders-draft-btn preorders-draft-btn--muted" onClick={() => updateUnidades(item.codigoArticulo, 10, item)}>+10</button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                      <td className="preorders-draft-total">{total} uds</td>
-                      <td>
-                        <button className="preorders-draft-remove" title="Eliminar artículo"
-                          onClick={() => removeItem(item.codigoArticulo)}>
-                          <Trash2 size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="preorders-draft-footer">
-            <div className="preorders-draft-grand-total">
-              {Array.from(draftItems.values()).reduce((sum, item) => sum + (item.karrys || 0) * (item.undsCarro || 0) + (item.tablas || 0) * (item.undsTabla || 0) + (item.unidades || 0), 0)} uds totales
-            </div>
-            <Link to="/pedidos/enviar" className="btn btn-primary preorders-send-btn">
-              <Send size={18} />
-              ENVIAR PEDIDO
-            </Link>
-          </div>
-        </div>
-      )}
 
       {/* ── Content ── */}
       {loading ? (
