@@ -955,6 +955,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
+  table-layout: fixed;
 }
 
 .preorders-draft-table th {
@@ -966,9 +967,23 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.preorders-draft-table th:nth-child(1) { width: auto; }
+.preorders-draft-table th:nth-child(2) { width: 58px; }
+.preorders-draft-table th:nth-child(3) { width: 70px; text-align: center; }
+.preorders-draft-table th:nth-child(4) { width: 70px; text-align: center; }
+.preorders-draft-table th:nth-child(5) { width: 110px; text-align: center; }
+.preorders-draft-table th:nth-child(6) { width: 56px; }
+.preorders-draft-table th:nth-child(7) { width: 36px; }
+
 .preorders-draft-table td {
   padding: 8px 10px;
   border-bottom: 1px solid var(--color-border-light);
+}
+
+.preorders-draft-table td:nth-child(3),
+.preorders-draft-table td:nth-child(4),
+.preorders-draft-table td:nth-child(5) {
+  text-align: center;
 }
 
 .preorders-draft-name {
