@@ -446,13 +446,6 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             <button className="pedido-add-btn pedido-add-btn--plus"
                               onClick={() => setFromTablas(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.tablas || 0) + 1, offer)}>+</button>
                           </div>
-                          <div className="pedido-progress">
-                            <div className="pedido-progress-fill" style={{width: `${(() => {
-                              const item = draftItems.get(offer.codigoArticulo);
-                              const totalUds = (item?.karrys || 0) * (offer.undsCarro || 0) + (item?.tablas || 0) * (offer.undsTabla || 0) + (item?.unidades || 0);
-                              return offer.undsTabla > 0 ? ((totalUds % offer.undsTabla) / offer.undsTabla) * 100 : 0;
-                            })()}%`}} />
-                          </div>
                         </div>
                       )}
                       {(offer.undsCarro > 0) && (
@@ -474,13 +467,6 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             <span className="pedido-val">{draftItems.get(offer.codigoArticulo)?.karrys || 0}</span>
                             <button className="pedido-add-btn pedido-add-btn--plus"
                               onClick={() => setFromKarrys(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.karrys || 0) + 1, offer)}>+</button>
-                          </div>
-                          <div className="pedido-progress">
-                            <div className="pedido-progress-fill" style={{width: `${(() => {
-                              const item = draftItems.get(offer.codigoArticulo);
-                              const totalUds = (item?.karrys || 0) * (offer.undsCarro || 0) + (item?.tablas || 0) * (offer.undsTabla || 0) + (item?.unidades || 0);
-                              return offer.undsCarro > 0 ? ((totalUds % offer.undsCarro) / offer.undsCarro) * 100 : 0;
-                            })()}%`}} />
                           </div>
                         </div>
                       )}
