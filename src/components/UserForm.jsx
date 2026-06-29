@@ -463,41 +463,25 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
                         <UserCheck size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
                         Comerciales asignados
                       </label>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                      <div className="send-commercial-list" style={{ marginTop: 8 }}>
                         {commercials.map(com => {
-                          const isSelected = form.assignedCommercials.includes(com._id);
+                          const isSelected = (form.assignedCommercials || []).includes(com._id);
                           return (
-                            <label
-                              key={com._id}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                padding: '8px 12px',
-                                borderRadius: 'var(--radius-md)',
-                                background: isSelected ? 'rgba(59,130,246,0.08)' : 'var(--color-surface)',
-                                border: `1px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                                cursor: 'pointer',
-                                transition: 'all 0.15s ease',
-                                fontSize: '0.875rem',
-                              }}
-                            >
+                            <label key={com._id} className="send-commercial-row">
                               <input
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={() => handleToggleCommercial(com._id)}
-                                style={{ accentColor: 'var(--color-primary)' }}
                               />
-                              <UserCheck
-                                size={14}
-                                style={{ color: isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)' }}
-                              />
-                              <span>{com.nombre || com.name || 'Sin nombre'}</span>
+                              <div className="send-commercial-info">
+                                <span className="send-commercial-name">{com.name || com.nombre || 'Sin nombre'}</span>
+                                <span className="send-commercial-email">{com.email}</span>
+                              </div>
                             </label>
                           );
                         })}
                       </div>
-                      {form.assignedCommercials.length === 0 && (
+                      {(form.assignedCommercials || []).length === 0 && (
                         <span className="field-hint">Selecciona uno o más comerciales para asignar a este cliente</span>
                       )}
                     </>
