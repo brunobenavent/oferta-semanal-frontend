@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import {
   User, Shield, ShieldCheck, BadgeCheck, Briefcase, Mail, DollarSign, Store,
-  FileText, Lock, CheckCircle2, Camera, Crop, MapPin,
+  FileText, Lock, CheckCircle2, Camera, Crop, MapPin, Search,
 } from 'lucide-react';
 import PhotoCropOverlay from '../components/PhotoCropOverlay';
 import './AuthPages.css';
@@ -21,7 +22,7 @@ const priceTierLabels = {
 };
 
 export default function Profile() {
-  const { user, isSuperadmin, isAdmin, isEmployee, changePassword, verifyMe, updateUser } = useAuth();
+  const { user, isSuperadmin, isAdmin, isEmployee, isClient, changePassword, verifyMe, updateUser } = useAuth();
 
   // ── Password state ──
   const [currentPassword, setCurrentPassword] = useState('');
@@ -31,6 +32,11 @@ export default function Profile() {
   const [success, setSuccess] = useState('');
   const [saving, setSaving] = useState(false);
   const [verifying, setVerifying] = useState(false);
+
+  // ── Orders state ──
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [ordersSearch, setOrdersSearch] = useState('');
 
   // ── Photo state ──
   const [cropFile, setCropFile] = useState(null);
@@ -52,6 +58,18 @@ export default function Profile() {
       initialized.current = true;
     }
   }, [user]);
+
+  // ── Load orders ──
+  useEffect(() => {
+    if (!isClient) return;
+    api.get('/preorders')
+      .then(res => {
+        const list = res.data?.preorders || res.data?.data || res.data?.orders || res.data;
+        setOrders(Array.isArray(list) ? list : []);
+      })
+      .catch(() => setOrders([]))
+      .finally(() => setOrdersLoading(false));
+  }, [isClient]);
 
   if (!user) return null;
 
@@ -218,7 +236,7 @@ export default function Profile() {
         />
       )}
 
-      <div className="profile-page">
+      <div className={`profile-page${isClient ? ' profile-page--with-orders' : ''}`}>
         <div className="profile-card">
           {/* ── Header with photo ── */}
           <div className="profile-header">
@@ -627,6 +645,74 @@ export default function Profile() {
             </form>
           </div>
         </div>
+        {isClient && (
+  <div className="profile-orders-card">
+    <h3>Mis Pedidos</h3>
+    <div className="profile-orders-search">
+      <Search size={14} />
+      <input
+        type="text"
+        placeholder="Buscar pedido..."
+        value={ordersSearch}
+        onChange={e => setOrdersSearch(e.target.value)}
+      />
+    </div>
+    {ordersLoading ? (
+      <p className="profile-orders-loading">Cargando...</p>
+    ) : orders.length === 0 ? (
+      <p className="profile-orders-empty">No tenés pedidos todavía.</p>
+    ) : (
+      <div className="profile-orders-list">
+        {orders
+          .filter(o => {
+            if (!ordersSearch) return true;
+            const q = ordersSearch.toLowerCase();
+            return (o._id || '').toLowerCase().includes(q)
+              || (o.pedidoId || '').toLowerCase().includes(q);
+          })
+          .slice(0, 20)
+          .map(order => {
+            const itemsCount = order.items?.length || order.itemsCount || '—';
+            const totalUds = order.items?.reduce((s, i) => s + (i.unidades || 0), 0) || order.totalUnidades || '—';
+            const estado = order.estado || 'borrador';
+            const statusColors = {
+              borrador: '#9ca3af', pendiente: '#f59e0b', revisado: '#3b82f6',
+              confirmado: '#10b981', enviado: '#8b5cf6', rechazado: '#ef4444'
+            };
+            const statusLabels = {
+              borrador: 'Borrador', pendiente: 'Pendiente', revisado: 'Revisado',
+              confirmado: 'Confirmado', enviado: 'Enviado', rechazado: 'Rechazado'
+            };
+            const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+            return (
+              <Link
+                key={order._id}
+                to="/pedidos"
+                className="profile-order-item"
+              >
+                <div className="profile-order-header">
+                  <span className="profile-order-id">#{order.pedidoId || (order._id ? order._id.slice(-4) : '—')}</span>
+                  <span className="profile-order-status" style={{ background: statusColors[estado] || '#9ca3af' }}>
+                    {statusLabels[estado] || estado}
+                  </span>
+                </div>
+                <div className="profile-order-meta">
+                  <span>{dateStr}</span>
+                  <span>·</span>
+                  <span>{itemsCount} {itemsCount === 1 ? 'ítem' : 'ítems'}</span>
+                  <span>·</span>
+                  <span>{totalUds} uds</span>
+                </div>
+              </Link>
+            );
+          })}
+      </div>
+    )}
+    <Link to="/pedidos" className="profile-orders-view-all">
+      Ver todos los pedidos →
+    </Link>
+  </div>
+)}
       </div>
     </>
   );
