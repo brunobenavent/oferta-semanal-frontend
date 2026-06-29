@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import {
   Search, X, RefreshCw, Loader2, AlertCircle,
   FileEdit, Clock, SearchCheck, CheckCircle,
@@ -29,21 +29,32 @@ function getStatusActions(estado, roles) {
   const isAdmin = safeRoles.includes('superadmin') || safeRoles.includes('admin');
 
   if (isClient) {
-    if (estado === 'borrador') return [{ label: 'Enviar',        action: 'pendiente', icon: Send }];
+    if (estado === 'borrador')  return [{ label: 'Enviar',          action: 'pendiente', icon: Send }];
     if (estado === 'pendiente') return [{ label: 'Volver a borrador', action: 'borrador', icon: RotateCcw }];
     return [];
   }
   if (isCommercial) {
-    if (estado === 'pendiente') return [{ label: 'Revisar',      action: 'revisado',  icon: Eye }];
-    if (estado === 'revisado')  return [{ label: 'Devolver',     action: 'pendiente', icon: Undo2 }];
+    if (estado === 'pendiente')  return [{ label: 'Revisar',        action: 'revisado',  icon: Eye }];
+    if (estado === 'confirmado') return [{ label: 'Enviar a almacén', action: 'enviado', icon: Package }];
     return [];
   }
   if (isAdmin) {
-    if (estado === 'revisado') return [
-      { label: 'Confirmar',       action: 'confirmado', icon: Check },
-      { label: 'Rechazar',        action: 'rechazado',  icon: Ban },
+    if (estado === 'pendiente')  return [
+      { label: 'Revisar',        action: 'revisado',  icon: Eye },
+      { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
     ];
-    if (estado === 'confirmado') return [{ label: 'Enviar a almacén', action: 'enviado', icon: Package }];
+    if (estado === 'revisado')   return [
+      { label: 'Confirmar',      action: 'confirmado', icon: Check },
+      { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
+      { label: 'Devolver',       action: 'pendiente',  icon: Undo2 },
+    ];
+    if (estado === 'confirmado') return [
+      { label: 'Enviar a almacén', action: 'enviado',  icon: Package },
+      { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
+    ];
+    if (estado === 'rechazado')  return [
+      { label: 'Reabrir',        action: 'borrador',   icon: RotateCcw },
+    ];
     return [];
   }
   return [];
@@ -70,7 +81,12 @@ function shortId(id) {
 }
 
 export default function PreOrders() {
-  const { user, roles, isSuperadminOrAdmin } = useAuth();
+  const { user, roles, isSuperadminOrAdmin, isClient, isCommercial, isAuthenticated, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  if (!authLoading && !isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
   const { addToast } = useToast();
 
   const [orders, setOrders] = useState([]);

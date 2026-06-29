@@ -74,6 +74,12 @@ export default function Navbar({ semana, totalSinFiltros, filteredCount }) {
                   {(isSuperadminOrAdmin || isCommercial) && (
                     <Link to="/clientes" className={`nav-link nav-link-uppercase${pathname.startsWith('/clientes') ? ' nav-link--active' : ''}`}>CLIENTES</Link>
                   )}
+                  {(isSuperadminOrAdmin || isCommercial) && (
+                    <>
+                      <span className="nav-link-sep">|</span>
+                      <Link to="/pedidos" className={`nav-link nav-link-uppercase${pathname.startsWith('/pedidos') ? ' nav-link--active' : ''}`}>PEDIDOS</Link>
+                    </>
+                  )}
                 </div>
               )}
               {loading ? (

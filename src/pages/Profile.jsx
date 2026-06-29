@@ -22,7 +22,7 @@ const priceTierLabels = {
 };
 
 export default function Profile() {
-  const { user, isSuperadmin, isAdmin, isEmployee, isClient, changePassword, verifyMe, updateUser } = useAuth();
+  const { user, isSuperadmin, isAdmin, isEmployee, isClient, isCommercial, isSuperadminOrAdmin, changePassword, verifyMe, updateUser } = useAuth();
 
   // ── Password state ──
   const [currentPassword, setCurrentPassword] = useState('');
@@ -61,7 +61,7 @@ export default function Profile() {
 
   // ── Load orders ──
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient && !isCommercial && !isSuperadminOrAdmin) return;
     api.get('/preorders')
       .then(res => {
         const list = res.data?.preorders || res.data?.data || res.data?.orders || res.data;
@@ -69,7 +69,7 @@ export default function Profile() {
       })
       .catch(() => setOrders([]))
       .finally(() => setOrdersLoading(false));
-  }, [isClient]);
+  }, [isClient, isCommercial, isSuperadminOrAdmin]);
 
   if (!user) return null;
 
@@ -645,7 +645,7 @@ export default function Profile() {
             </form>
           </div>
         </div>
-        {isClient && (
+        {(isClient || isCommercial || isSuperadminOrAdmin) && (
   <div className="profile-orders-card">
     <h3>Mis Pedidos</h3>
     <div className="profile-orders-search">
