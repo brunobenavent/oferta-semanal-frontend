@@ -256,7 +256,9 @@ export function PreOrderProvider({ children }) {
   }, [draft, scheduleSave]);
 
   // ── Send preorder (borrador → pendiente) ──
-  const sendPreorder = useCallback(async () => {
+  const sendPreorder = useCallback(async (opts = {}) => {
+    const { comerciales = [], medio = 'email', observaciones = '' } = opts;
+
     if (!draft?._id || draft.estado !== 'borrador') return;
     if (draftItems.size === 0) {
       addToast('No hay artículos para enviar', 'error');
@@ -290,6 +292,9 @@ export function PreOrderProvider({ children }) {
 
       const { data } = await api.patch(`/preorders/${draft._id}/estado`, {
         estado: 'pendiente',
+        comerciales,
+        medio,
+        observaciones,
       });
 
       addToast('Pedido enviado al comercial', 'success');

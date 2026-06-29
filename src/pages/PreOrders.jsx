@@ -71,8 +71,13 @@ function shortId(id) {
 export default function PreOrders() {
   const { user, roles, isSuperadminOrAdmin, isClient, isCommercial } = useAuth();
   const { addToast } = useToast();
+  const assignedCommercials = user?.assignedCommercials || [];
 
   const [orders, setOrders] = useState([]);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [sendCommercials, setSendCommercials] = useState([]);
+  const [sendMedio, setSendMedio] = useState('email');
+  const [sendObservaciones, setSendObservaciones] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -209,6 +214,15 @@ export default function PreOrders() {
       setActionLoading(null);
     }
   }, [actionLoading, addToast, closeModal]);
+
+  const handleConfirmSend = async () => {
+    setShowSendModal(false);
+    await sendPreorder({
+      comerciales: sendCommercials,
+      medio: sendMedio,
+      observaciones: sendObservaciones,
+    });
+  };
 
   // ── Filter orders locally ──
   const filteredOrders = Array.isArray(orders) ? orders.filter(order => {
@@ -350,7 +364,10 @@ export default function PreOrders() {
             </div>
             <button
               className="btn btn-primary preorders-send-btn"
-              onClick={() => sendPreorder()}
+              onClick={() => {
+                setSendCommercials(assignedCommercials.map(c => c._id));
+                setShowSendModal(true);
+              }}
             >
               <Send size={18} />
               ENVIAR PEDIDO
@@ -699,6 +716,67 @@ export default function PreOrders() {
                 )}
               </div>
             ) : null}
+          </div>
+        </div>
+      )}
+      {showSendModal && (
+        <div className="send-modal-overlay" onClick={() => setShowSendModal(false)}>
+          <div className="send-modal" onClick={e => e.stopPropagation()}>
+            <h3>Enviar pedido</h3>
+            
+            <div className="send-modal-section">
+              <label>Comercial asignado</label>
+              {assignedCommercials.length === 0 ? (
+                <p className="send-modal-hint">No tenés comerciales asignados. El pedido se enviará sin asignar.</p>
+              ) : (
+                assignedCommercials.map(c => (
+                  <label key={c._id} className="send-modal-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={sendCommercials.includes(c._id)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setSendCommercials(prev => [...prev, c._id]);
+                        } else {
+                          setSendCommercials(prev => prev.filter(id => id !== c._id));
+                        }
+                      }}
+                    />
+                    <span>{c.nombre} ({c.email})</span>
+                  </label>
+                ))
+              )}
+            </div>
+            
+            <div className="send-modal-section">
+              <label>Medio de notificación</label>
+              <select value={sendMedio} onChange={e => setSendMedio(e.target.value)}>
+                <option value="email">Email</option>
+              </select>
+            </div>
+            
+            <div className="send-modal-section">
+              <label>Observaciones (opcional)</label>
+              <textarea
+                value={sendObservaciones}
+                onChange={e => setSendObservaciones(e.target.value)}
+                placeholder="Notas para el comercial..."
+                rows={3}
+              />
+            </div>
+            
+            <div className="send-modal-actions">
+              <button className="btn btn-secondary" onClick={() => setShowSendModal(false)}>
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleConfirmSend}
+                disabled={sendCommercials.length === 0 && assignedCommercials.length > 0}
+              >
+                <Send size={16} /> Enviar pedido
+              </button>
+            </div>
           </div>
         </div>
       )}
