@@ -24,21 +24,12 @@ const STATUS_CONFIG = {
 
 function getStatusActions(estado, roles) {
   const safeRoles = Array.isArray(roles) ? roles : [];
-  const isClient = safeRoles.includes('client');
-  const isCommercial = safeRoles.includes('commercial');
   const isAdmin = safeRoles.includes('superadmin') || safeRoles.includes('admin');
+  const isCommercial = safeRoles.includes('commercial');
+  const isClient = safeRoles.includes('client');
 
-  if (isClient) {
-    if (estado === 'borrador')  return [{ label: 'Enviar',          action: 'pendiente', icon: Send }];
-    if (estado === 'pendiente') return [{ label: 'Volver a borrador', action: 'borrador', icon: RotateCcw }];
-    return [];
-  }
-  if (isCommercial) {
-    if (estado === 'pendiente')  return [{ label: 'Revisar',        action: 'revisado',  icon: Eye }];
-    if (estado === 'confirmado') return [{ label: 'Enviar a almacén', action: 'enviado', icon: Package }];
-    return [];
-  }
   if (isAdmin) {
+    if (estado === 'borrador')   return [{ label: 'Enviar',          action: 'pendiente', icon: Send }];
     if (estado === 'pendiente')  return [
       { label: 'Revisar',        action: 'revisado',  icon: Eye },
       { label: 'Rechazar',       action: 'rechazado',  icon: Ban },
@@ -55,6 +46,16 @@ function getStatusActions(estado, roles) {
     if (estado === 'rechazado')  return [
       { label: 'Reabrir',        action: 'borrador',   icon: RotateCcw },
     ];
+    return [];
+  }
+  if (isCommercial) {
+    if (estado === 'pendiente')  return [{ label: 'Revisar',        action: 'revisado',  icon: Eye }];
+    if (estado === 'confirmado') return [{ label: 'Enviar a almacén', action: 'enviado', icon: Package }];
+    return [];
+  }
+  if (isClient) {
+    if (estado === 'borrador')  return [{ label: 'Enviar',          action: 'pendiente', icon: Send }];
+    if (estado === 'pendiente') return [{ label: 'Volver a borrador', action: 'borrador', icon: RotateCcw }];
     return [];
   }
   return [];
