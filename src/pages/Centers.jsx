@@ -57,7 +57,7 @@ const createGardenIcon = () => L.divIcon({
   html: `<img src="/vigu-rojo.svg" style="width:35px;height:42px;display:block" />`,
   iconSize: [35, 42],
   iconAnchor: [17, 42],
-  popupAnchor: [0, -110],
+  popupAnchor: [0, -40],
 });
 
 const createProdIcon = () => L.divIcon({
@@ -65,7 +65,7 @@ const createProdIcon = () => L.divIcon({
   html: `<img src="/corazon-verde.svg" style="width:28px;height:25px;display:block" />`,
   iconSize: [28, 25],
   iconAnchor: [14, 25],
-  popupAnchor: [0, -60],
+  popupAnchor: [0, -22],
 });
 
 export default function Centers() {
