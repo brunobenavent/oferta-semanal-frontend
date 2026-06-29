@@ -43,6 +43,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-left: 12px;
+  border-left: 3px solid transparent;
+}
+
+.centers-legend-garden {
+  border-left-color: #d9000d !important;
+}
+
+.centers-legend-prod {
+  border-left-color: #76bc21 !important;
 }
 
 .centers-list h2 img {
