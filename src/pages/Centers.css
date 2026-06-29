@@ -108,6 +108,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   border: 3px solid transparent;
   transition: all 0.2s;
+  overflow: hidden;
 }
 
 .custom-marker--garden {
@@ -126,6 +127,17 @@
 .custom-marker {
   background: transparent !important;
   border: none !important;
+}
+
+/* Prevent any Leaflet default icon bleed-through */
+.custom-marker::before,
+.custom-marker::after {
+  display: none !important;
+}
+
+.leaflet-marker-icon.custom-marker {
+  width: 120px !important;
+  height: 120px !important;
 }
 
 .leaflet-popup-content-wrapper {
