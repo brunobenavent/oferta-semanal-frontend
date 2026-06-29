@@ -98,14 +98,8 @@ export function PreOrderProvider({ children }) {
           items: itemsArray,
           updatedAt: lastSavedRef.current,
         });
-        setDraft(data);
+        // Only update timestamp — don't replace draftItems to avoid flash
         lastSavedRef.current = data.updatedAt;
-        setDraftItems(new Map(data.items.map(i => [i.codigoArticulo, {
-          ...i,
-          karrys: i.karrys || 0,
-          tablas: i.tablas || 0,
-          unidades: i.unidades || 0,
-        }])));
       } catch (err) {
         if (err.response?.status === 409) {
           // Silently reload — our version was stale
