@@ -1693,12 +1693,14 @@
     top: 101px;
   }
 
-  /* Mostrar columna INFO */
+  /* Mostrar columna INFO (anula width:0 del desktop) */
   .th-info { 
-    display: table-cell; 
+    display: table-cell;
+    width: auto;
   }
   .cell-info { 
-    display: table-cell; 
+    display: table-cell;
+    width: auto;
   }
 
   /* Ocultar columnas individuales reemplazadas por INFO */
@@ -1707,10 +1709,13 @@
   .th-ac, .offer-table td:nth-child(6),
   .th-uds, .cell-uds,
   .th-fam, .cell-fam,
-  .th-precios, .cell-precios,
-  .th-pedido, .cell-pedido {
+  .th-precios, .cell-precios {
     display: none;
   }
+
+  /* PEDIDO: visible en mobile, ancho reducido */
+  .th-pedido { width: 100px; }
+  .cell-pedido { padding: 4px 6px !important; }
 
   /* Ajustar anchos en mobile */
   .th-img, .offer-table td:nth-child(1) { width: 88px; padding: 4px; }
