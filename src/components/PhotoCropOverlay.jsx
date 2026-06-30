@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import { Crop, ZoomIn, ZoomOut } from 'lucide-react';
 
@@ -42,6 +42,11 @@ export default function PhotoCropOverlay({ imageUrl, initialZoom = 1, onCancel, 
   const [zoom, setZoom] = useState(initialZoom);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [processing, setProcessing] = useState(false);
+
+  // Safety: ensure processing resets on unmount
+  useEffect(() => {
+    return () => setProcessing(false);
+  }, []);
 
   const onCropChange = useCallback((location) => {
     setCrop(location);
