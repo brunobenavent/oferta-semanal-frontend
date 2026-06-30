@@ -41,7 +41,7 @@ function getPriceConfig(roles, priceTier) {
 export default function OfferTable({ offers, onSelect, onExport, onShare, pagination, onPageChange, sortBy, onSortChange, loading, exporting, onRefresh }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user, isClient } = useAuth();
-  const { draftItems, updateUnidades, setFromKarrys, setFromTablas } = usePreOrder();
+  const { draftItems, updateUnidades, setFromKarrys, setFromTablas, loading: draftLoading } = usePreOrder();
   const { addToast } = useToast();
   const fileInputRef = useRef(null);
   const [uploadingCodigo, setUploadingCodigo] = useState(null);
@@ -397,6 +397,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             }}
                             title="-1 unidad"
                             type="button"
+                            disabled={draftLoading}
                           >−</button>
                           <span className="pedido-val">
                             {draftItems.get(offer.codigoArticulo)?.unidades || 0}
@@ -406,6 +407,7 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                             onClick={() => updateUnidades(offer.codigoArticulo, 1, offer)}
                             title="+1 unidad"
                             type="button"
+                            disabled={draftLoading}
                           >+</button>
                         </div>
                         {offer.undsTabla === 0 && offer.undsCarro === 0 && (
@@ -419,11 +421,13 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                                 }
                               }}
                               type="button"
+                              disabled={draftLoading}
                             >−10</button>
                             <button
                               className="pedido-add-btn pedido-add-btn--x10"
                               onClick={() => updateUnidades(offer.codigoArticulo, 10, offer)}
                               type="button"
+                              disabled={draftLoading}
                             >+10</button>
                           </div>
                         )}
@@ -441,10 +445,12 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                               <path d="M20 16 L23 16" />
                             </svg>
                             <button className="pedido-add-btn pedido-add-btn--minus"
-                              onClick={() => setFromTablas(offer.codigoArticulo, Math.max(0, (draftItems.get(offer.codigoArticulo)?.tablas || 0) - 1), offer)}>−</button>
+                              onClick={() => setFromTablas(offer.codigoArticulo, Math.max(0, (draftItems.get(offer.codigoArticulo)?.tablas || 0) - 1), offer)}
+                              disabled={draftLoading}>−</button>
                             <span className="pedido-val">{draftItems.get(offer.codigoArticulo)?.tablas || 0}</span>
                             <button className="pedido-add-btn pedido-add-btn--plus"
-                              onClick={() => setFromTablas(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.tablas || 0) + 1, offer)}>+</button>
+                              onClick={() => setFromTablas(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.tablas || 0) + 1, offer)}
+                              disabled={draftLoading}>+</button>
                           </div>
                         </div>
                       )}
@@ -463,10 +469,12 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                               <circle cx="15" cy="19" r="1.8" />
                             </svg>
                             <button className="pedido-add-btn pedido-add-btn--minus"
-                              onClick={() => setFromKarrys(offer.codigoArticulo, Math.max(0, (draftItems.get(offer.codigoArticulo)?.karrys || 0) - 1), offer)}>−</button>
+                              onClick={() => setFromKarrys(offer.codigoArticulo, Math.max(0, (draftItems.get(offer.codigoArticulo)?.karrys || 0) - 1), offer)}
+                              disabled={draftLoading}>−</button>
                             <span className="pedido-val">{draftItems.get(offer.codigoArticulo)?.karrys || 0}</span>
                             <button className="pedido-add-btn pedido-add-btn--plus"
-                              onClick={() => setFromKarrys(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.karrys || 0) + 1, offer)}>+</button>
+                              onClick={() => setFromKarrys(offer.codigoArticulo, (draftItems.get(offer.codigoArticulo)?.karrys || 0) + 1, offer)}
+                              disabled={draftLoading}>+</button>
                           </div>
                         </div>
                       )}
