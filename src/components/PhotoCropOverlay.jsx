@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import { Crop, ZoomIn, ZoomOut } from 'lucide-react';
 
@@ -43,9 +43,10 @@ export default function PhotoCropOverlay({ imageUrl, initialZoom = 1, onCancel, 
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [processing, setProcessing] = useState(false);
 
-  // Safety: ensure processing resets on unmount
+  // Safety: ensure processing resets on unmount + abort detection
+  const abortedRef = useRef(false);
   useEffect(() => {
-    return () => setProcessing(false);
+    return () => { setProcessing(false); };
   }, []);
 
   const onCropChange = useCallback((location) => {
@@ -62,17 +63,17 @@ export default function PhotoCropOverlay({ imageUrl, initialZoom = 1, onCancel, 
 
   const handleCancel = () => {
     setProcessing(false);
+    abortedRef.current = true;
     onCancel();
   };
   const handleApply = async () => {
     if (!croppedAreaPixels) return;
+    abortedRef.current = false;
     setProcessing(true);
     try {
-      console.log('[Crop] Applying crop:', croppedAreaPixels, 'image:', imageUrl);
       const blob = await getCroppedBlob(imageUrl, croppedAreaPixels);
-      console.log('[Crop] Blob size:', blob.size, 'type:', blob.type);
+      if (abortedRef.current) return;
       const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-      console.log('[Crop] Created file:', file.size, 'bytes');
       onCropComplete(file);
     } catch (err) {
       console.error('[Crop] Error cropping image:', err);
