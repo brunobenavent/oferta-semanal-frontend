@@ -333,7 +333,7 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
                 onChange={e => handleChange('role', e.target.value)}
                 className="auth-select"
               >
-                <option value="admin">Admin</option>
+                {pageMode !== 'clientes' && <option value="admin">Admin</option>}
                 <option value="employee">Empleado</option>
                 <option value="client">Cliente</option>
                 <option value="commercial">Comercial</option>
@@ -820,8 +820,8 @@ export default function UserForm({ mode, user, pageMode = 'empleados', commercia
                 onChange={e => handleChange('role', e.target.value)}
                 className="auth-select"
               >
-                <option value="admin">Admin</option>
-                <option value="employee">Empleado</option>
+                {pageMode !== 'clientes' && <option value="admin">Admin</option>}
+                {pageMode !== 'clientes' && <option value="employee">Empleado</option>}
                 <option value="client">Cliente</option>
                 <option value="commercial">Comercial</option>
               </select>
