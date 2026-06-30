@@ -112,7 +112,6 @@ export default function Profile() {
 
   const handleCropCancel = () => {
     setShowCrop(false);
-    URL.revokeObjectURL(cropImageUrl);
     setCropImageUrl(null);
   };
 
