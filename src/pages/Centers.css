@@ -108,6 +108,15 @@
   margin: 0 0 0.4rem;
 }
 
+.center-phone {
+  display: flex;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin: 0 0 0.4rem;
+  gap: 4px;
+}
+
 .center-desc {
   font-size: 0.78rem;
   color: var(--color-text);
