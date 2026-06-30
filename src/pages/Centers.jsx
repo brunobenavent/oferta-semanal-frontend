@@ -9,6 +9,8 @@ const GARDEN_CENTERS = [
     lat: 36.654963,
     lng: -4.573451,
     location: 'Alhaurín de la Torre, Málaga',
+    address: 'C/ Joaquín Blume sn, 29130 Alhaurín de la Torre - Málaga',
+    phone: '952 411 351',
     desc: 'Garden Center con mercado gastronómico, restaurante, floristería, bricojardinería, muebles y cerámica.',
     mapsUrl: 'https://maps.google.com/?q=36.654963,-4.573451',
   },
@@ -18,6 +20,8 @@ const GARDEN_CENTERS = [
     lat: 36.51325,
     lng: -4.864495,
     location: 'Marbella, Málaga',
+    address: 'Finca la Paloma P.I. la Ermita | Ctra. Nac. 340 (A7), Km. 183, 29603 Marbella - Málaga',
+    phone: '952 898 451',
     desc: 'Garden Center especializado en palmeras con cerámica, mármol, floristería y muebles de jardín.',
     mapsUrl: 'https://maps.google.com/?q=36.51325,-4.864495',
   },
@@ -27,30 +31,32 @@ const GARDEN_CENTERS = [
     lat: 28.50993,
     lng: -16.40838,
     location: 'Tacoronte, Santa Cruz de Tenerife',
+    address: 'Calle Tagoro, 54, 38350 Santa Cruz de Tenerife',
+    phone: '922 077 021',
     desc: 'Garden Center con amplio surtido de plantas y cerámica en las Islas Canarias.',
     mapsUrl: 'https://maps.google.com/?q=28.50993,-16.40838',
   },
 ];
 
 const PRODUCTION_CENTERS = [
-  { name: 'Cortijo Blanco', lat: 36.674461, lng: -4.529531, location: 'Alhaurín de la Torre, Málaga', desc: 'Olivos grandes, Palmáceas, Chorisias, bahuinias.', mapsUrl: 'https://maps.google.com/?q=36.674461,-4.529531' },
-  { name: 'Finca Lagar de las Pitas', lat: 36.682729, lng: -4.579319, location: 'Alhaurín de la Torre, Málaga', desc: 'Geranios, gitanillas, Buganvilla, frutales, Ficus, Echinocactus, Aloe Vera.', mapsUrl: 'https://maps.google.com/?q=36.682729,-4.579319' },
-  { name: 'Jardines de la Gamera', lat: 36.664021, lng: -4.514277, location: 'Alhaurín de la Torre, Málaga', desc: 'Olivos pequeños y aguacates.', mapsUrl: 'https://maps.google.com/?q=36.664021,-4.514277' },
-  { name: 'Europlantas', lat: 36.692127, lng: -4.754255, location: 'Coín, Málaga', desc: 'Rosales, Cyclamen, Ponsettias, Begonias.', mapsUrl: 'https://maps.google.com/?q=36.692127,-4.754255' },
-  { name: 'El Guincho', lat: 28.537511, lng: -16.390816, location: 'Tacoronte, Santa Cruz de Tenerife', desc: 'Producción en Canarias.', mapsUrl: 'https://maps.google.com/?q=28.537511,-16.390816' },
-  { name: 'Lebrija', lat: 36.931925, lng: -6.139545, location: 'Lebrija, Sevilla', desc: 'Centro de producción en Sevilla.', mapsUrl: 'https://maps.google.com/?q=36.931925,-6.139545' },
-  { name: 'Fahala', lat: 36.69879, lng: -4.67628, location: 'Alhaurín de la Torre, Málaga', desc: 'Palmeras, phoenix canadiensis, phoenix datilífera, arecastrum.', mapsUrl: 'https://maps.google.com/?q=36.69879,-4.67628' },
-  { name: 'Arroyo Hondo', lat: 36.663163, lng: -4.604336, location: 'Alhaurín de la Torre, Málaga', desc: 'Eugenias, metrosideros, Calistemun, carisa.', mapsUrl: 'https://maps.google.com/?q=36.663163,-4.604336' },
-  { name: 'Nuevo Espacio', lat: 36.676792, lng: -4.540122, location: 'Alhaurín de la Torre, Málaga', desc: 'Aromáticas, aloe vera, Poinsettias, ficus de copa, claveles, Crisantemo. Cash & Carry.', mapsUrl: 'https://maps.google.com/?q=36.676792,-4.540122' },
-  { name: 'Finca La Estación', lat: 36.679128, lng: -4.62502, location: 'Alhaurín de la Torre, Málaga', desc: 'Phoenix canadiensis, phoenix datilífera, arecastrum y olivos bonsáis.', mapsUrl: 'https://maps.google.com/?q=36.679128,-4.62502' },
-  { name: 'Piamonte', lat: 36.680449, lng: -4.553511, location: 'Alhaurín de la Torre, Málaga', desc: 'Buxus, Washingtonia robusta, cycas revolutas.', mapsUrl: 'https://maps.google.com/?q=36.680449,-4.553511' },
-  { name: 'Bahía Málaga', lat: 36.659365, lng: -4.479527, location: 'Alhaurín de la Torre, Málaga', desc: 'Cítricos, Hibiscus, ficus variedades, eugenias.', mapsUrl: 'https://maps.google.com/?q=36.659365,-4.479527' },
-  { name: 'Sevilla', lat: 37.363583, lng: -6.129275, location: 'Bollullos, Sevilla', desc: 'Palmeras Washingtonia.', mapsUrl: 'https://maps.google.com/?q=37.363583,-6.129275' },
-  { name: 'Expopalm', lat: 10.176438, lng: -83.616698, location: 'Costa Rica', desc: 'Phoenix rubelinis. Producción en Costa Rica.', mapsUrl: 'https://maps.google.com/?q=10.176438,-83.616698' },
-  { name: 'El Ejido', lat: 36.77144, lng: -2.83699, location: 'El Ejido, Almería', desc: 'Ficus de tutor, Pothos de tutor, Croton, scheflera de tutor.', mapsUrl: 'https://maps.google.com/?q=36.77144,-2.83699' },
-  { name: 'San Martín', lat: 36.338483, lng: -5.320734, location: 'San Martín del Tesorillo, Cádiz', desc: 'Naranjos, mandarinos y limones.', mapsUrl: 'https://maps.google.com/?q=36.338483,-5.320734' },
-  { name: 'San Francisco', lat: 36.677215, lng: -4.539438, location: 'Alhaurín de la Torre, Málaga', desc: 'Cítricos, aguacates.', mapsUrl: 'https://maps.google.com/?q=36.677215,-4.539438' },
-  { name: 'Laboratorio Guzmán Biotech', lat: 36.676792, lng: -4.540122, location: 'Alhaurín de la Torre, Málaga', desc: 'Laboratorio de biotecnología vegetal. Cultivo in vitro y micropropagación.', mapsUrl: 'https://maps.google.com/?q=36.676792,-4.540122' },
+  { name: 'Cortijo Blanco', lat: 36.674461, lng: -4.529531, location: 'Alhaurín de la Torre, Málaga', address: 'Ctra. Coín A-404 km 25, 29130 Alhaurín de la Torre - Málaga', phone: '952 118 015', desc: 'Olivos grandes, Palmáceas, Chorisias, bahuinias.', mapsUrl: 'https://maps.google.com/?q=36.674461,-4.529531' },
+  { name: 'Finca Lagar de las Pitas', lat: 36.682729, lng: -4.579319, location: 'Alhaurín de la Torre, Málaga', address: 'Ctra. El Romeral - Torrealquería s/n, 29130 Alhaurín de la Torre', phone: '952 411 351', desc: 'Geranios, gitanillas, Buganvilla, frutales, Ficus, Echinocactus, Aloe Vera.', mapsUrl: 'https://maps.google.com/?q=36.682729,-4.579319' },
+  { name: 'Jardines de la Gamera', lat: 36.664021, lng: -4.514277, location: 'Alhaurín de la Torre, Málaga', address: 'Hacienda la Gamera | C/ Camerun sn, 29140 Churriana - Málaga', phone: '952 410 150', desc: 'Olivos pequeños y aguacates.', mapsUrl: 'https://maps.google.com/?q=36.664021,-4.514277' },
+  { name: 'Europlantas', lat: 36.692127, lng: -4.754255, location: 'Coín, Málaga', address: 'Hacienda la Moreta | Partido Lagar de Rueda, 29100 Coín - Málaga', phone: '952 112 106', desc: 'Rosales, Cyclamen, Ponsettias, Begonias.', mapsUrl: 'https://maps.google.com/?q=36.692127,-4.754255' },
+  { name: 'El Guincho', lat: 28.537511, lng: -16.390816, location: 'Tacoronte, Santa Cruz de Tenerife', address: 'Camino el Guincho sn, 38458 Santa Cruz de Tenerife', phone: '', desc: 'Producción en Canarias.', mapsUrl: 'https://maps.google.com/?q=28.537511,-16.390816' },
+  { name: 'Lebrija', lat: 36.931925, lng: -6.139545, location: 'Lebrija, Sevilla', address: 'Lebrija, 41740 Sevilla', phone: '952 411 351', desc: 'Centro de producción en Sevilla.', mapsUrl: 'https://maps.google.com/?q=36.931925,-6.139545' },
+  { name: 'Fahala', lat: 36.69879, lng: -4.67628, location: 'Alhaurín de la Torre, Málaga', address: 'Ctra. Cártama - Coín, Km 4,500, 29570 Cártama - Málaga', phone: '952 411 351', desc: 'Palmeras, phoenix canadiensis, phoenix datilífera, arecastrum.', mapsUrl: 'https://maps.google.com/?q=36.69879,-4.67628' },
+  { name: 'Arroyo Hondo', lat: 36.663163, lng: -4.604336, location: 'Alhaurín de la Torre, Málaga', address: 'Camino del Comendador, sn, 29130 Alhaurín de la Torre - Málaga', phone: '610 118 886', desc: 'Eugenias, metrosideros, Calistemun, carisa.', mapsUrl: 'https://maps.google.com/?q=36.663163,-4.604336' },
+  { name: 'Nuevo Espacio', lat: 36.676792, lng: -4.540122, location: 'Alhaurín de la Torre, Málaga', address: 'Ctra. Churriana-Cártama A-7052 Km 0,6, 29130 Alhaurín de la Torre - Málaga', phone: '952 410 150', desc: 'Aromáticas, aloe vera, Poinsettias, ficus de copa, claveles, Crisantemo. Cash & Carry.', mapsUrl: 'https://maps.google.com/?q=36.676792,-4.540122' },
+  { name: 'Finca La Estación', lat: 36.679128, lng: -4.62502, location: 'Alhaurín de la Torre, Málaga', address: 'Carretera A-366 (Frente a Venta Purguine) La Alquería, 29130 Alhaurín de la Torre - Málaga', phone: '952 411 351', desc: 'Phoenix canadiensis, phoenix datilífera, arecastrum y olivos bonsáis.', mapsUrl: 'https://maps.google.com/?q=36.679128,-4.62502' },
+  { name: 'Piamonte', lat: 36.680449, lng: -4.553511, location: 'Alhaurín de la Torre, Málaga', address: 'Camino Piamonte sn, 29130 Alhaurín de la Torre - Málaga', phone: '952 411 351', desc: 'Buxus, Washingtonia robusta, cycas revolutas.', mapsUrl: 'https://maps.google.com/?q=36.680449,-4.553511' },
+  { name: 'Bahía Málaga', lat: 36.659365, lng: -4.479527, location: 'Alhaurín de la Torre, Málaga', address: 'Camino de la Loma sn (Junto a C.C. Plaza Mayor), 29004 Málaga', phone: '952 411 351', desc: 'Cítricos, Hibiscus, ficus variedades, eugenias.', mapsUrl: 'https://maps.google.com/?q=36.659365,-4.479527' },
+  { name: 'Sevilla', lat: 37.363583, lng: -6.129275, location: 'Bollullos, Sevilla', address: 'Autopista del V Centenario (A49), Bollullos, Sevilla', phone: '952 411 351', desc: 'Palmeras Washingtonia.', mapsUrl: 'https://maps.google.com/?q=37.363583,-6.129275' },
+  { name: 'Expopalm', lat: 10.176438, lng: -83.616698, location: 'Costa Rica', address: 'Costa Rica', phone: '952 411 351', desc: 'Phoenix rubelinis. Producción en Costa Rica.', mapsUrl: 'https://maps.google.com/?q=10.176438,-83.616698' },
+  { name: 'El Ejido', lat: 36.77144, lng: -2.83699, location: 'El Ejido, Almería', address: 'Barrio Fuente Nueva (frente semillero Fuente Nueva), 04700 El Ejido - Almería', phone: '952 411 351', desc: 'Ficus de tutor, Pothos de tutor, Croton, scheflera de tutor.', mapsUrl: 'https://maps.google.com/?q=36.77144,-2.83699' },
+  { name: 'San Martín', lat: 36.338483, lng: -5.320734, location: 'San Martín del Tesorillo, Cádiz', address: 'Calle San Roque, 42-44, 11340 San Martín del Tesorillo - Cádiz', phone: '952 411 351', desc: 'Naranjos, mandarinos y limones.', mapsUrl: 'https://maps.google.com/?q=36.338483,-5.320734' },
+  { name: 'San Francisco', lat: 36.677215, lng: -4.539438, location: 'Alhaurín de la Torre, Málaga', address: 'Ctra. Churriana-Cártama A-7052 Km 0,6, 29130 Alhaurín de la Torre - Málaga', phone: '952 410 150', desc: 'Cítricos, aguacates.', mapsUrl: 'https://maps.google.com/?q=36.677215,-4.539438' },
+  { name: 'Laboratorio Guzmán Biotech', lat: 36.676792, lng: -4.540122, location: 'Alhaurín de la Torre, Málaga', address: 'Ctra. Churriana-Cártama A-7052 Km 0,6, 29130 Alhaurín de la Torre - Málaga', phone: '952 411 351', desc: 'Laboratorio de biotecnología vegetal. Cultivo in vitro y micropropagación.', mapsUrl: 'https://maps.google.com/?q=36.676792,-4.540122' },
 ];
 
 const L = window.L;
@@ -90,7 +96,7 @@ export default function Centers() {
         const icon = center.type === 'garden' ? gardenIcon : prodIcon;
         const marker = L.marker([center.lat, center.lng], { icon })
           .addTo(map)
-          .bindPopup(`<strong>${center.name}</strong><br>${center.location}<br><a href="${center.mapsUrl}" target="_blank">Ver en Google Maps</a>`);
+          .bindPopup(`<strong>${center.name}</strong><br>${center.address || center.location}<br>${center.phone ? '📞 ' + center.phone : ''}${center.phone ? '<br>' : ''}<a href="${center.mapsUrl}" target="_blank">Ver en Google Maps</a>`);
         markersRef.current[center.name] = marker;
       });
 
@@ -127,7 +133,8 @@ export default function Centers() {
           {GARDEN_CENTERS.map(c => (
             <div key={c.name} className="center-card" onClick={() => flyTo(c.name, c.lat, c.lng)}>
               <h3>{c.name}</h3>
-              <p className="center-location"><MapPin size={14} /> {c.location}</p>
+              <p className="center-location"><MapPin size={14} /> {c.address || c.location}</p>
+              {c.phone && <p className="center-phone">📞 {c.phone}</p>}
               <p className="center-desc">{c.desc}</p>
               <a href={c.mapsUrl} target="_blank" className="center-link" rel="noopener noreferrer"><ExternalLink size={14} /> Google Maps</a>
             </div>
@@ -139,7 +146,8 @@ export default function Centers() {
           {PRODUCTION_CENTERS.map(c => (
             <div key={c.name} className="center-card" onClick={() => flyTo(c.name, c.lat, c.lng)}>
               <h3>{c.name}</h3>
-              <p className="center-location"><MapPin size={14} /> {c.location}</p>
+              <p className="center-location"><MapPin size={14} /> {c.address || c.location}</p>
+              {c.phone && <p className="center-phone">📞 {c.phone}</p>}
               <p className="center-desc">{c.desc}</p>
               <a href={c.mapsUrl} target="_blank" className="center-link" rel="noopener noreferrer"><ExternalLink size={14} /> Google Maps</a>
             </div>
