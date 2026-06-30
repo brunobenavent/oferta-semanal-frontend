@@ -137,6 +137,8 @@ export default function Profile() {
 
     setPhotoSaving(true);
     setPhotoMsg('');
+    // Safety: force-reset spinner after 15s if it gets stuck
+    const safetyTimeout = setTimeout(() => setPhotoSaving(false), 15000);
     try {
       const fd = new FormData();
       fd.append('photo', cropFile);
@@ -144,20 +146,16 @@ export default function Profile() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // Update local state
       setPreviewUrl(data.photo);
       setCropFile(null);
-      // Set originalPhotoUrl on first upload so "Ajustar"/"Restaurar" work
       if (!originalPhotoUrl) setOriginalPhotoUrl(data.photo);
-
-      // Update context so header reflects the change immediately
       updateUser({ photo: data.photo });
-
       setPhotoMsg('Foto actualizada correctamente');
       setTimeout(() => setPhotoMsg(''), 3000);
     } catch (err) {
       setPhotoMsg(err.response?.data?.message || 'Error al guardar la foto');
     } finally {
+      clearTimeout(safetyTimeout);
       setPhotoSaving(false);
     }
   };

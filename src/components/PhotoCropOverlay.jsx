@@ -55,7 +55,10 @@ export default function PhotoCropOverlay({ imageUrl, initialZoom = 1, onCancel, 
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
-  const handleApply = async () => {
+  const handleCancel = () => {
+    setProcessing(false);
+    onCancel();
+  };
     if (!croppedAreaPixels) return;
     setProcessing(true);
     try {
@@ -95,7 +98,7 @@ export default function PhotoCropOverlay({ imageUrl, initialZoom = 1, onCancel, 
           <span style={{ fontWeight: 600, fontSize: '1rem' }}>Ajustar foto</span>
         </div>
         <button
-          onClick={onCancel}
+          onClick={handleCancel}
           style={{
             background: 'rgba(255,255,255,0.1)',
             border: 'none',
