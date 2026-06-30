@@ -264,7 +264,17 @@ export default function OfferTable({ offers, onSelect, onExport, onShare, pagina
                     {pc.isStaff && (
                       <button
                         className="btn-upload-table"
-                        onClick={(e) => { e.stopPropagation(); setUploadingCodigo(offer.codigoArticulo); fileInputRef.current?.click(); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setUploadingCodigo(offer.codigoArticulo);
+                          // If user cancels file dialog, onChange won't fire
+                          const handleFocus = () => {
+                            setTimeout(() => setUploadingCodigo(null), 200);
+                            window.removeEventListener('focus', handleFocus);
+                          };
+                          window.addEventListener('focus', handleFocus);
+                          fileInputRef.current?.click();
+                        }}
                         title="Cambiar imagen"
                       >
                         <Camera size={16} />
