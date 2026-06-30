@@ -59,6 +59,7 @@ export default function PhotoCropOverlay({ imageUrl, initialZoom = 1, onCancel, 
     setProcessing(false);
     onCancel();
   };
+  const handleApply = async () => {
     if (!croppedAreaPixels) return;
     setProcessing(true);
     try {
